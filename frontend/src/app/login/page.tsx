@@ -4,11 +4,12 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { ArrowRight, MapPin } from "lucide-react";
 import { api, cn } from "@/lib/api";
-import { Logo, Spinner, VERTICAL_LABEL } from "@/components/ui";
+import { HelpTip, Logo, Spinner, VERTICAL_LABEL, useTitle } from "@/components/ui";
 
 type Persona = { id: string; business_name: string; owner_name: string; vertical: string; emoji: string; tagline: string; location: string };
 
 function LoginInner() {
+  useTitle("Log in");
   const router = useRouter();
   const params = useSearchParams();
   const next = params.get("next") || "/dashboard";
@@ -19,15 +20,21 @@ function LoginInner() {
   const [form, setForm] = useState({ name: "", email: "", password: "" });
 
   useEffect(() => {
+    // already logged in? skip the login page
+    fetch("/api/me", { cache: "no-store" })
+      .then((r) => {
+        if (r.ok) router.replace(next);
+      })
+      .catch(() => {});
     api<Persona[]>("/auth/demo-accounts").then(setPersonas).catch((e) => setErr(e.message));
-  }, []);
+  }, [router, next]);
 
   const demo = async (id: string) => {
     setBusy(id);
     setErr(null);
     try {
       await api(`/auth/demo/${id}`, { method: "POST" });
-      router.push("/dashboard");
+      router.push(next);
     } catch (e) {
       setErr((e as Error).message);
       setBusy(null);
@@ -63,7 +70,12 @@ function LoginInner() {
           <h1 id="samples" className="mt-2 font-display text-3xl font-bold tracking-tight sm:text-4xl">
             Log in instantly as a real-world owner
           </h1>
-          <p className="mt-2 text-stone-600">Each sample comes with a saved profile, a past recommendation and a 30-day plan in progress.</p>
+          <p className="mt-2 flex items-center gap-1 text-stone-600">
+            No password needed.
+            <HelpTip label="About sample businesses">
+              Each sample comes with a saved profile, a past recommendation, verified reviews and a 30-day plan in progress, so you can explore every feature right away.
+            </HelpTip>
+          </p>
           <div className="mt-6 grid gap-3">
             {(personas || Array.from({ length: 3 }, () => null)).map((p, i) =>
               p ? (

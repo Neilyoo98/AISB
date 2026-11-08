@@ -11,4 +11,4 @@ export function middleware(req: NextRequest) {
   return NextResponse.next();
 }
 
-export const config = { matcher: ["/dashboard/:path*", "/war-room/:path*", "/onboard/:path*", "/profile/:path*"] };
+export const config = { matcher: ["/dashboard/:path*", "/war-room/:path*", "/onboard/:path*", "/profile/:path*", "/agents/:path*"] };

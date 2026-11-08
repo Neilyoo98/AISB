@@ -1,12 +1,23 @@
 "use client";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { BrainCircuit } from "lucide-react";
 import { api } from "@/lib/api";
 import type { Business, User } from "@/lib/types";
-import { AppHeader, Spinner, VERTICAL_LABEL } from "@/components/ui";
+import { AppHeader, PageHeader, PageState, VERTICAL_LABEL, useTitle } from "@/components/ui";
 
 type Fact = { subject: string; predicate: string; object: string; confidence: number };
-type Const = { business: Business; facts: Record<string, Fact[]>; episodes: { text: string }[] };
+type Details = {
+  business_type?: string | null;
+  team_size?: number | null;
+  budget?: string | null;
+  tech_comfort?: number | null;
+  current_tools?: string[];
+  security_must_haves?: string[];
+  goals?: string[];
+};
+type BusinessWithDetails = Business & { details?: Details | null };
+type Const = { business: BusinessWithDetails; facts: Record<string, Fact[]>; episodes: { text: string }[] };
 
 const CAT_LABEL: Record<string, string> = {
   identity: "Identity",
@@ -17,28 +28,78 @@ const CAT_LABEL: Record<string, string> = {
   pain: "Known pains",
   goal: "Goals",
 };
+const MUST_LABEL: Record<string, string> = { no_training: "No training on our data", soc2: "SOC 2" };
+
+function Answers({ d }: { d: Details }) {
+  const rows: [string, string][] = [
+    ["Type of business", d.business_type || ""],
+    ["Team size", d.team_size ? `${d.team_size} people` : ""],
+    ["Monthly budget", d.budget || ""],
+    ["Tech comfort", d.tech_comfort ? `${d.tech_comfort} / 5` : ""],
+    ["Tools already used", (d.current_tools || []).join(", ")],
+    ["Security must-haves", (d.security_must_haves || []).map((m) => MUST_LABEL[m] || m).join(", ")],
+    ["Goals", (d.goals || []).join(", ")],
+  ];
+  const shown = rows.filter(([, v]) => v);
+  if (!shown.length) return null;
+  return (
+    <div className="card p-5">
+      <h2 className="eyebrow">Your answers</h2>
+      <dl className="mt-3 grid gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
+        {shown.map(([k, v]) => (
+          <div key={k} className="flex justify-between gap-3 border-b border-stone-100 pb-2">
+            <dt className="text-stone-500">{k}</dt>
+            <dd className="text-right font-medium text-stone-800">{v}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  );
+}
 
 export default function ProfilePage() {
+  useTitle("Business Constitution");
   const [c, setC] = useState<Const | null>(null);
   const [me, setMe] = useState<User | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
-  useEffect(() => {
-    api<{ user: User }>("/me").then((m) => setMe(m.user));
+  const load = () => {
+    setErr(null);
     api<Const>("/constitution").then(setC).catch((e) => setErr(e.message));
+  };
+  useEffect(() => {
+    api<{ user: User }>("/me").then((m) => setMe(m.user)).catch(() => {});
+    load();
   }, []);
 
   return (
     <div className="min-h-dvh pb-16">
       <AppHeader businessName={c?.business.name} isDemo={me?.is_demo} />
       <main className="mx-auto max-w-4xl px-4 pt-8">
-        <p className="eyebrow">Business Constitution</p>
-        <h1 className="mt-1 font-display text-3xl font-bold tracking-tight sm:text-4xl">What your advisors remember</h1>
-        <p className="mt-2 max-w-2xl text-stone-600">
-          Every analysis adds durable facts and adoption outcomes here, stored as vector memory, so the advisors never start from zero.
-        </p>
-        {!c ? (
-          <div className="grid place-items-center py-24 text-stone-500">{err ? <p role="alert">{err}</p> : <Spinner />}</div>
+        <PageHeader
+          eyebrow="Business Constitution"
+          title="What your advisors remember"
+          help="Every analysis adds durable facts and adoption outcomes here, stored as vector memory, so your advisors never start from zero."
+          actions={
+            !me?.is_demo && (
+              <Link href="/onboard" className="btn-secondary">
+                Edit business
+              </Link>
+            )
+          }
+        />
+        {err ? (
+          err.toLowerCase().includes("no business") ? (
+            <PageState kind="empty" message="No business yet. Describe yours to start your Constitution.">
+              <Link href="/onboard" className="btn-primary mt-4">
+                Describe my business
+              </Link>
+            </PageState>
+          ) : (
+            <PageState kind="error" message={err} onRetry={load} />
+          )
+        ) : !c ? (
+          <PageState kind="loading" />
         ) : (
           <div className="mt-8 space-y-6">
             <div className="card p-6">
@@ -54,6 +115,8 @@ export default function ProfilePage() {
                 </details>
               )}
             </div>
+
+            {c.business.details && <Answers d={c.business.details} />}
 
             <div className="grid gap-4 sm:grid-cols-2">
               {Object.entries(c.facts).map(([cat, facts]) => (

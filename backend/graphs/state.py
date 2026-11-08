@@ -142,6 +142,7 @@ class AdvisorState(TypedDict, total=False):
     business_id: str
     business_name: str
     raw_input: str
+    details: dict  # structured onboarding answers; must-haves are enforced in code, not by the LLM
     profile: dict
     facts: list[dict]
     memory: dict

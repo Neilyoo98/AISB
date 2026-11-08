@@ -1,51 +1,2740 @@
 [
-  {"id":"smith-ai","name":"Smith.ai AI Receptionist","url":"https://smith.ai","category":"ai_receptionist","verticals":["hvac","landscaping","home_services","salon","retail"],"solves":["missed_calls","customer_followup"],"ai_features":["24/7 AI voice receptionist","lead qualification","appointment booking on calls","call summaries by text/email"],"description":"AI voice agent answers every call, qualifies leads, books jobs, with optional live-human backup.","price_monthly_min":98,"price_monthly_typical":195,"free_tier":false,"setup_hours":2,"tech_comfort_min":1,"integrates_with":["jobber","housecall-pro","google-calendar","hubspot"],"pros":["Human backup tier available","Strong for service businesses"],"cons":["Per-call pricing adds up in peak season"]},
-  {"id":"goodcall","name":"Goodcall","url":"https://goodcall.com","category":"ai_receptionist","verticals":["hvac","landscaping","home_services","restaurant","cafe","salon","retail"],"solves":["missed_calls","phone_orders"],"ai_features":["AI phone agent","answers FAQs","captures leads","texts summaries"],"description":"Low-cost AI phone agent that answers FAQs, takes messages and captures leads around the clock.","price_monthly_min":59,"price_monthly_typical":99,"free_tier":false,"setup_hours":1,"tech_comfort_min":1,"integrates_with":["google-calendar","google-sheets","zapier"],"pros":["Very fast setup","Flat monthly pricing"],"cons":["Less customizable than premium options"]},
-  {"id":"rosie","name":"Rosie AI Answering","url":"https://heyrosie.com","category":"ai_receptionist","verticals":["hvac","landscaping","home_services","salon"],"solves":["missed_calls"],"ai_features":["AI answering service","learns from your website","call transcripts"],"description":"AI answering service trained on your website that answers calls and texts you summaries.","price_monthly_min":49,"price_monthly_typical":49,"free_tier":false,"setup_hours":0.5,"tech_comfort_min":1,"integrates_with":["google-calendar"],"pros":["Cheapest credible option","Setup in minutes"],"cons":["Minute caps on starter plan"]},
-  {"id":"slang-ai","name":"Slang.ai","url":"https://slang.ai","category":"ai_receptionist","verticals":["restaurant"],"solves":["phone_orders","missed_calls"],"ai_features":["restaurant-specific voice AI","reservation handling","answers hours/menu questions"],"description":"Voice AI built for restaurants: answers calls, handles reservations and common questions.","price_monthly_min":399,"price_monthly_typical":399,"free_tier":false,"setup_hours":3,"tech_comfort_min":2,"integrates_with":["opentable","resy","toast"],"pros":["Restaurant-tuned"],"cons":["Expensive for a single small location"]},
-  {"id":"quo-openphone","name":"Quo (formerly OpenPhone)","url":"https://quo.com","category":"business_phone","verticals":["all"],"solves":["missed_calls","customer_followup"],"ai_features":["AI call summaries","AI-drafted text replies","shared team inbox"],"description":"Business phone app with shared numbers, AI call summaries and suggested replies.","price_monthly_min":15,"price_monthly_typical":46,"free_tier":false,"setup_hours":1,"tech_comfort_min":2,"integrates_with":["hubspot","google-contacts","zapier"],"pros":["Cheap per user","Great team texting"],"cons":["Does not answer calls for you by itself"]},
-
-  {"id":"nicejob","name":"NiceJob","url":"https://get.nicejob.com","category":"reviews","verticals":["hvac","landscaping","home_services","salon","cafe","restaurant","retail"],"solves":["reviews","customer_followup"],"ai_features":["automated review requests","AI review replies","review widgets for site"],"description":"Automatically asks every customer for a review and posts the best ones to your site.","price_monthly_min":75,"price_monthly_typical":75,"free_tier":false,"setup_hours":1,"tech_comfort_min":1,"integrates_with":["jobber","housecall-pro","quickbooks","square"],"pros":["Set and forget","Affordable"],"cons":["Fewer analytics than enterprise tools"]},
-  {"id":"birdeye","name":"Birdeye","url":"https://birdeye.com","category":"reviews","verticals":["all"],"solves":["reviews","customer_chat","customer_followup"],"ai_features":["AI review responses","sentiment insights","webchat"],"description":"Reputation platform that collects reviews, drafts AI replies and analyzes sentiment.","price_monthly_min":299,"price_monthly_typical":349,"free_tier":false,"setup_hours":4,"tech_comfort_min":2,"integrates_with":["square","quickbooks","google-business-profile"],"pros":["All-in-one reputation suite"],"cons":["Pricey for very small shops","Annual contracts"]},
-  {"id":"podium","name":"Podium","url":"https://podium.com","category":"reviews","verticals":["hvac","home_services","retail","salon"],"solves":["reviews","customer_chat","invoicing_payments","customer_followup"],"ai_features":["AI employee for lead replies","review requests via text","text-to-pay"],"description":"Text-first platform for reviews, lead replies and payments with an AI lead agent.","price_monthly_min":399,"price_monthly_typical":399,"free_tier":false,"setup_hours":4,"tech_comfort_min":2,"integrates_with":["quickbooks","housecall-pro","servicetitan"],"pros":["Strong texting workflows"],"cons":["Expensive","Sales-led onboarding"]},
-  {"id":"google-business-profile","name":"Google Business Profile","url":"https://business.google.com","category":"local_listing","verticals":["all"],"solves":["reviews","website","customer_chat"],"ai_features":["AI-suggested review replies","auto-generated business description","Q&A"],"description":"Free Google listing — the #1 driver of local discovery; manage reviews, hours, photos and posts.","price_monthly_min":0,"price_monthly_typical":0,"free_tier":true,"setup_hours":1,"tech_comfort_min":1,"integrates_with":["google-calendar","square","toast"],"pros":["Free","Huge visibility impact"],"cons":["Needs consistent attention"]},
-
-  {"id":"canva-pro","name":"Canva Pro (Magic Studio)","url":"https://canva.com","category":"marketing_content","verticals":["all"],"solves":["social_media","marketing_content"],"ai_features":["Magic Write copy","Magic Design templates","background remover","content planner scheduling"],"description":"Design flyers, menus and social posts in minutes with AI templates and scheduling.","price_monthly_min":15,"price_monthly_typical":15,"free_tier":true,"setup_hours":1,"tech_comfort_min":1,"integrates_with":["instagram","facebook","meta-business-suite"],"pros":["Easiest design tool","Free tier is strong"],"cons":["Scheduling is basic"]},
-  {"id":"buffer","name":"Buffer","url":"https://buffer.com","category":"marketing_content","verticals":["all"],"solves":["social_media"],"ai_features":["AI Assistant for post ideas and rewrites","scheduling","engagement inbox"],"description":"Simple social scheduler with an AI assistant that writes and repurposes posts.","price_monthly_min":0,"price_monthly_typical":18,"free_tier":true,"setup_hours":1,"tech_comfort_min":1,"integrates_with":["instagram","facebook","google-business-profile","canva-pro"],"pros":["Free for 3 channels","Very simple"],"cons":["Analytics limited on low tiers"]},
-  {"id":"meta-business-suite","name":"Meta Business Suite","url":"https://business.facebook.com","category":"marketing_content","verticals":["all"],"solves":["social_media","customer_chat"],"ai_features":["AI-generated ad text","AI inbox auto-replies","post scheduling"],"description":"Free hub to schedule Facebook/Instagram posts and auto-answer DMs with AI.","price_monthly_min":0,"price_monthly_typical":0,"free_tier":true,"setup_hours":1,"tech_comfort_min":1,"integrates_with":["instagram","facebook"],"pros":["Free","Where customers already are"],"cons":["Only Meta channels"]},
-  {"id":"mailchimp","name":"Mailchimp","url":"https://mailchimp.com","category":"email_marketing","verticals":["all"],"solves":["email_sms_marketing","customer_followup"],"ai_features":["Intuit Assist email writer","send-time optimization","automated journeys"],"description":"Email and SMS marketing with AI-written campaigns and automations.","price_monthly_min":13,"price_monthly_typical":20,"free_tier":true,"setup_hours":2,"tech_comfort_min":2,"integrates_with":["square","shopify","quickbooks","wix"],"pros":["Industry standard","Good free tier"],"cons":["Price climbs with list size"]},
-  {"id":"square-marketing","name":"Square Marketing & Loyalty","url":"https://squareup.com/us/en/software/marketing","category":"email_marketing","verticals":["cafe","restaurant","retail","salon"],"solves":["email_sms_marketing","customer_followup"],"ai_features":["AI-generated campaigns","auto win-back messages","loyalty program"],"description":"Email/text campaigns and loyalty built into Square POS — uses your real customer list.","price_monthly_min":15,"price_monthly_typical":45,"free_tier":false,"setup_hours":1,"tech_comfort_min":1,"integrates_with":["square-pos"],"pros":["Uses POS data automatically"],"cons":["Only for Square sellers"]},
-
-  {"id":"chatgpt-business","name":"ChatGPT (Plus/Business)","url":"https://chatgpt.com","category":"general_assistant","verticals":["all"],"solves":["admin_writing","marketing_content","menu_costing"],"ai_features":["writing and rewriting","data analysis of spreadsheets","image generation"],"description":"General AI assistant for emails, job posts, menu descriptions, policies and spreadsheet analysis.","price_monthly_min":20,"price_monthly_typical":25,"free_tier":true,"setup_hours":0.5,"tech_comfort_min":1,"integrates_with":["google-drive","microsoft-365"],"pros":["Versatile","Free tier"],"cons":["Not connected to your business systems by default"]},
-  {"id":"claude-pro","name":"Claude (Pro/Team)","url":"https://claude.ai","category":"general_assistant","verticals":["all"],"solves":["admin_writing","marketing_content","menu_costing"],"ai_features":["long-document analysis","writing","spreadsheet and PDF reading"],"description":"AI assistant strong at reading contracts, invoices and long documents and drafting clear writing.","price_monthly_min":20,"price_monthly_typical":25,"free_tier":true,"setup_hours":0.5,"tech_comfort_min":1,"integrates_with":["google-drive"],"pros":["Excellent writing quality","Handles long documents"],"cons":["Not connected to POS/field tools by default"]},
-  {"id":"gemini-workspace","name":"Google Workspace with Gemini","url":"https://workspace.google.com","category":"general_assistant","verticals":["all"],"solves":["admin_writing","customer_followup"],"ai_features":["Gemini in Gmail/Docs/Sheets","meeting notes","email drafting"],"description":"Business email plus Gemini AI inside Gmail, Docs and Sheets.","price_monthly_min":7,"price_monthly_typical":14,"free_tier":false,"setup_hours":2,"tech_comfort_min":2,"integrates_with":["google-calendar","google-sheets"],"pros":["Professional email + AI in one"],"cons":["Per-user cost"]},
-
-  {"id":"square-appointments","name":"Square Appointments","url":"https://squareup.com/us/en/appointments","category":"booking","verticals":["salon","retail","home_services"],"solves":["appointment_booking","no_shows","invoicing_payments"],"ai_features":["automated reminders","no-show protection","AI marketing assist"],"description":"Online booking with reminders, deposits and payments built in.","price_monthly_min":0,"price_monthly_typical":49,"free_tier":true,"setup_hours":2,"tech_comfort_min":1,"integrates_with":["square-pos","google-calendar","instagram"],"pros":["Free for one location","Deposits reduce no-shows"],"cons":["Best if you use Square payments"]},
-  {"id":"vagaro","name":"Vagaro","url":"https://vagaro.com","category":"booking","verticals":["salon"],"solves":["appointment_booking","no_shows","email_sms_marketing"],"ai_features":["AI-written marketing","automated reminders","marketplace listing"],"description":"Salon and spa booking, POS and marketing with a customer marketplace.","price_monthly_min":30,"price_monthly_typical":50,"free_tier":false,"setup_hours":4,"tech_comfort_min":2,"integrates_with":["instagram","facebook","quickbooks"],"pros":["Built for salons"],"cons":["Add-ons increase cost"]},
-  {"id":"calendly","name":"Calendly","url":"https://calendly.com","category":"booking","verticals":["all"],"solves":["appointment_booking"],"ai_features":["smart scheduling links","routing forms","automated reminders"],"description":"Shareable booking links for estimates and consultations.","price_monthly_min":0,"price_monthly_typical":12,"free_tier":true,"setup_hours":0.5,"tech_comfort_min":1,"integrates_with":["google-calendar","zapier","hubspot"],"pros":["Dead simple"],"cons":["Not a full job management tool"]},
-
-  {"id":"7shifts","name":"7shifts","url":"https://7shifts.com","category":"staff_scheduling","verticals":["cafe","restaurant"],"solves":["staff_scheduling"],"ai_features":["auto-scheduling from sales forecasts","labor cost alerts","shift trade app"],"description":"Restaurant staff scheduling that builds schedules from sales forecasts and lets staff swap shifts.","price_monthly_min":0,"price_monthly_typical":35,"free_tier":true,"setup_hours":2,"tech_comfort_min":1,"integrates_with":["square-pos","toast","clover"],"pros":["Built for food service","Free plan for one location"],"cons":["Advanced forecasting on higher tiers"]},
-  {"id":"homebase","name":"Homebase","url":"https://joinhomebase.com","category":"staff_scheduling","verticals":["cafe","restaurant","retail","salon","landscaping"],"solves":["staff_scheduling","admin_writing"],"ai_features":["auto-scheduling","time clock","AI job posts and hiring"],"description":"Scheduling, time clock, team chat and hiring for hourly teams.","price_monthly_min":0,"price_monthly_typical":30,"free_tier":true,"setup_hours":1.5,"tech_comfort_min":1,"integrates_with":["square-pos","clover","quickbooks","toast"],"pros":["Generous free plan","Easy for staff"],"cons":["Payroll costs extra"]},
-
-  {"id":"jobber","name":"Jobber","url":"https://getjobber.com","category":"field_service","verticals":["hvac","landscaping","home_services"],"solves":["quoting","invoicing_payments","dispatch_routing","appointment_booking","customer_followup","missed_calls"],"ai_features":["Copilot AI assistant","AI-written quotes and messages","AI Receptionist add-on","route optimization"],"description":"Quote, schedule, dispatch, invoice and get paid — with Jobber Copilot drafting quotes and replies.","price_monthly_min":39,"price_monthly_typical":119,"free_tier":false,"setup_hours":5,"tech_comfort_min":2,"integrates_with":["quickbooks","google-calendar","mailchimp","nicejob"],"pros":["Best-in-class for small crews","Online booking + payments"],"cons":["Route optimization only on higher tiers"]},
-  {"id":"housecall-pro","name":"Housecall Pro","url":"https://housecallpro.com","category":"field_service","verticals":["hvac","home_services","landscaping"],"solves":["quoting","invoicing_payments","dispatch_routing","appointment_booking","missed_calls","customer_followup"],"ai_features":["AI CSR / voice agent add-on","AI-generated estimates","automated review requests"],"description":"Field service platform for home services with AI team members for calls and estimates.","price_monthly_min":59,"price_monthly_typical":149,"free_tier":false,"setup_hours":5,"tech_comfort_min":2,"integrates_with":["quickbooks","google-calendar","nicejob"],"pros":["Strong HVAC features (maintenance plans)"],"cons":["AI add-ons cost extra"]},
-  {"id":"workiz","name":"Workiz","url":"https://workiz.com","category":"field_service","verticals":["hvac","home_services"],"solves":["dispatch_routing","missed_calls","invoicing_payments","quoting"],"ai_features":["Jessica AI phone answering","call tracking","smart dispatch"],"description":"Field service software with built-in AI phone answering for service calls.","price_monthly_min":225,"price_monthly_typical":225,"free_tier":false,"setup_hours":6,"tech_comfort_min":2,"integrates_with":["quickbooks","google-calendar"],"pros":["Phone + dispatch in one"],"cons":["Higher starting price"]},
-  {"id":"lmn","name":"LMN","url":"https://golmn.com","category":"field_service","verticals":["landscaping"],"solves":["quoting","dispatch_routing","staff_scheduling"],"ai_features":["estimating with job costing","crew time tracking","scheduling"],"description":"Landscape-specific estimating, budgeting and crew management.","price_monthly_min":0,"price_monthly_typical":97,"free_tier":true,"setup_hours":6,"tech_comfort_min":3,"integrates_with":["quickbooks"],"pros":["Built for landscapers","Accurate job costing"],"cons":["Learning curve"]},
-  {"id":"yardbook","name":"Yardbook","url":"https://yardbook.com","category":"field_service","verticals":["landscaping"],"solves":["quoting","invoicing_payments","dispatch_routing"],"ai_features":["route planning","recurring job scheduling","online invoicing"],"description":"Free landscaping business software for estimates, scheduling, routing and invoices.","price_monthly_min":0,"price_monthly_typical":0,"free_tier":true,"setup_hours":3,"tech_comfort_min":1,"integrates_with":["quickbooks"],"pros":["Free core features"],"cons":["Dated interface","Light AI features"]},
-
-  {"id":"quickbooks","name":"QuickBooks Online (Intuit Assist)","url":"https://quickbooks.intuit.com","category":"bookkeeping","verticals":["all"],"solves":["bookkeeping","invoicing_payments"],"ai_features":["Intuit Assist AI","auto-categorized transactions","invoice reminders"],"description":"Accounting with AI that categorizes expenses, chases unpaid invoices and summarizes cash flow.","price_monthly_min":35,"price_monthly_typical":65,"free_tier":false,"setup_hours":4,"tech_comfort_min":2,"integrates_with":["square-pos","jobber","housecall-pro","toast","shopify"],"pros":["Accountants know it","Integrates with everything"],"cons":["Price increases yearly"]},
-  {"id":"wave","name":"Wave","url":"https://waveapps.com","category":"bookkeeping","verticals":["all"],"solves":["bookkeeping","invoicing_payments"],"ai_features":["auto-merged transactions","receipt scanning","invoice automation"],"description":"Free invoicing and accounting for very small businesses.","price_monthly_min":0,"price_monthly_typical":16,"free_tier":true,"setup_hours":2,"tech_comfort_min":1,"integrates_with":["paypal","stripe"],"pros":["Free core accounting"],"cons":["Fewer integrations"]},
-
-  {"id":"square-pos","name":"Square POS (Restaurants & Retail)","url":"https://squareup.com","category":"pos","verticals":["cafe","restaurant","retail"],"solves":["online_ordering","inventory","invoicing_payments","customer_followup"],"ai_features":["Square AI sales insights","auto-generated online store","inventory alerts"],"description":"POS with free online ordering site, inventory and Square AI answering 'how did we do this week?'.","price_monthly_min":0,"price_monthly_typical":49,"free_tier":true,"setup_hours":3,"tech_comfort_min":1,"integrates_with":["7shifts","homebase","quickbooks","doordash"],"pros":["Free to start","Ecosystem of add-ons"],"cons":["Processing fees"]},
-  {"id":"toast","name":"Toast","url":"https://pos.toasttab.com","category":"pos","verticals":["restaurant","cafe"],"solves":["online_ordering","menu_costing","inventory","staff_scheduling"],"ai_features":["ToastIQ AI insights","menu upsell suggestions","xtraCHEF invoice scanning"],"description":"Restaurant POS with online ordering, AI insights and recipe/menu costing add-ons.","price_monthly_min":0,"price_monthly_typical":110,"free_tier":true,"setup_hours":8,"tech_comfort_min":2,"integrates_with":["7shifts","quickbooks","opentable"],"pros":["Restaurant-specific depth"],"cons":["Hardware lock-in","Contract terms"]},
-  {"id":"owner-com","name":"Owner.com","url":"https://owner.com","category":"online_ordering","verticals":["restaurant","cafe"],"solves":["online_ordering","website","email_sms_marketing"],"ai_features":["AI-built restaurant website","automated marketing","commission-free ordering"],"description":"AI-built website + commission-free online ordering and automated marketing for restaurants.","price_monthly_min":499,"price_monthly_typical":499,"free_tier":false,"setup_hours":3,"tech_comfort_min":1,"integrates_with":["toast","square-pos","clover"],"pros":["Cuts delivery-app commissions"],"cons":["High flat fee"]},
-  {"id":"marginedge","name":"MarginEdge","url":"https://marginedge.com","category":"restaurant_ops","verticals":["restaurant","cafe"],"solves":["menu_costing","bookkeeping","inventory"],"ai_features":["invoice photo scanning","real-time food cost","recipe costing"],"description":"Snap invoices; get daily food cost and recipe costing automatically.","price_monthly_min":350,"price_monthly_typical":350,"free_tier":false,"setup_hours":5,"tech_comfort_min":2,"integrates_with":["toast","square-pos","quickbooks"],"pros":["Big food-cost savings"],"cons":["Pricey for small cafés"]},
-  {"id":"meez","name":"meez","url":"https://getmeez.com","category":"restaurant_ops","verticals":["restaurant","cafe"],"solves":["menu_costing"],"ai_features":["recipe import from photos/docs","automatic recipe costing","prep scaling"],"description":"Recipe management that imports recipes and calculates plate cost automatically.","price_monthly_min":0,"price_monthly_typical":49,"free_tier":true,"setup_hours":3,"tech_comfort_min":2,"integrates_with":["marginedge"],"pros":["Affordable menu costing"],"cons":["Needs recipe entry upfront"]},
-
-  {"id":"tidio","name":"Tidio (Lyro AI)","url":"https://tidio.com","category":"customer_chat","verticals":["all"],"solves":["customer_chat","website"],"ai_features":["Lyro AI chatbot trained on your FAQs","live chat","Instagram/Messenger inbox"],"description":"Website chat where Lyro AI answers customer questions 24/7 from your own FAQ.","price_monthly_min":0,"price_monthly_typical":39,"free_tier":true,"setup_hours":1.5,"tech_comfort_min":2,"integrates_with":["wix","shopify","squarespace","instagram"],"pros":["Free tier","Quick FAQ training"],"cons":["Conversation caps"]},
-  {"id":"wix","name":"Wix (AI Website Builder)","url":"https://wix.com","category":"website","verticals":["all"],"solves":["website","appointment_booking","online_ordering"],"ai_features":["AI site generator","AI text creator","bookings and ordering apps"],"description":"Answer a few questions and AI builds your website, with booking and ordering apps.","price_monthly_min":17,"price_monthly_typical":29,"free_tier":true,"setup_hours":3,"tech_comfort_min":1,"integrates_with":["google-business-profile","mailchimp","instagram"],"pros":["Fast professional site"],"cons":["Hard to migrate away"]},
-  {"id":"durable","name":"Durable","url":"https://durable.co","category":"website","verticals":["hvac","landscaping","home_services","salon"],"solves":["website","customer_followup"],"ai_features":["30-second AI website","AI blog/SEO","simple CRM"],"description":"AI website builder for service businesses with built-in CRM and invoicing.","price_monthly_min":12,"price_monthly_typical":20,"free_tier":true,"setup_hours":1,"tech_comfort_min":1,"integrates_with":["google-business-profile"],"pros":["Fastest setup"],"cons":["Less design control"]},
-
-  {"id":"lightspeed-retail","name":"Lightspeed Retail","url":"https://lightspeedhq.com","category":"pos","verticals":["retail"],"solves":["inventory","customer_followup","invoicing_payments"],"ai_features":["inventory forecasting","work orders","customer notifications"],"description":"Retail POS with deep inventory and work orders — popular with bike shops.","price_monthly_min":89,"price_monthly_typical":149,"free_tier":false,"setup_hours":6,"tech_comfort_min":3,"integrates_with":["quickbooks","shopify"],"pros":["Repair work orders"],"cons":["Steeper learning curve"]},
-  {"id":"zapier","name":"Zapier (with AI)","url":"https://zapier.com","category":"automation","verticals":["all"],"solves":["admin_writing","customer_followup"],"ai_features":["AI-built automations from plain English","AI steps in workflows","chatbots"],"description":"Connect your apps and automate busywork — describe the workflow in plain English.","price_monthly_min":0,"price_monthly_typical":30,"free_tier":true,"setup_hours":2,"tech_comfort_min":3,"integrates_with":["google-sheets","quickbooks","mailchimp","jobber"],"pros":["Connects 7,000+ apps"],"cons":["Needs some tech comfort"]}
+ {
+  "id": "smith-ai",
+  "name": "Smith.ai AI Receptionist",
+  "url": "https://smith.ai",
+  "category": "ai_receptionist",
+  "verticals": [
+   "hvac",
+   "landscaping",
+   "home_services",
+   "salon",
+   "retail"
+  ],
+  "solves": [
+   "missed_calls",
+   "customer_followup"
+  ],
+  "ai_features": [
+   "24/7 AI voice receptionist",
+   "lead qualification",
+   "appointment booking on calls",
+   "call summaries by text/email"
+  ],
+  "description": "AI voice agent answers every call, qualifies leads, books jobs, with optional live-human backup.",
+  "price_monthly_min": 98,
+  "price_monthly_typical": 195,
+  "free_tier": false,
+  "setup_hours": 2,
+  "tech_comfort_min": 1,
+  "integrates_with": [
+   "jobber",
+   "housecall-pro",
+   "google-calendar",
+   "hubspot"
+  ],
+  "pros": [
+   "Human backup tier available",
+   "Strong for service businesses"
+  ],
+  "cons": [
+   "Per-call pricing adds up in peak season"
+  ],
+  "capability": "automation_agent",
+  "modalities_in": [
+   "audio",
+   "text"
+  ],
+  "modalities_out": [
+   "audio",
+   "text"
+  ],
+  "workflows": [
+   "answer inbound calls",
+   "qualify leads",
+   "book appointments",
+   "send call summaries"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "usage",
+  "unit": "call",
+  "unit_price": 2.1,
+  "seats_included": 1,
+  "units_included": 90,
+  "trust": {
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   },
+   "soc2": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   }
+  }
+ },
+ {
+  "id": "goodcall",
+  "name": "Goodcall",
+  "url": "https://goodcall.com",
+  "category": "ai_receptionist",
+  "verticals": [
+   "hvac",
+   "landscaping",
+   "home_services",
+   "restaurant",
+   "cafe",
+   "salon",
+   "retail"
+  ],
+  "solves": [
+   "missed_calls",
+   "phone_orders"
+  ],
+  "ai_features": [
+   "AI phone agent",
+   "answers FAQs",
+   "captures leads",
+   "texts summaries"
+  ],
+  "description": "Low-cost AI phone agent that answers FAQs, takes messages and captures leads around the clock.",
+  "price_monthly_min": 59,
+  "price_monthly_typical": 99,
+  "free_tier": false,
+  "setup_hours": 1,
+  "tech_comfort_min": 1,
+  "integrates_with": [
+   "google-calendar",
+   "google-sheets",
+   "zapier"
+  ],
+  "pros": [
+   "Very fast setup",
+   "Flat monthly pricing"
+  ],
+  "cons": [
+   "Less customizable than premium options"
+  ],
+  "capability": "automation_agent",
+  "modalities_in": [
+   "audio",
+   "text"
+  ],
+  "modalities_out": [
+   "audio",
+   "text"
+  ],
+  "workflows": [
+   "answer inbound calls",
+   "take messages",
+   "capture leads",
+   "send call summaries"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null,
+  "trust": {
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   },
+   "soc2": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   }
+  }
+ },
+ {
+  "id": "rosie",
+  "name": "Rosie AI Answering",
+  "url": "https://heyrosie.com",
+  "category": "ai_receptionist",
+  "verticals": [
+   "hvac",
+   "landscaping",
+   "home_services",
+   "salon"
+  ],
+  "solves": [
+   "missed_calls"
+  ],
+  "ai_features": [
+   "AI answering service",
+   "learns from your website",
+   "call transcripts"
+  ],
+  "description": "AI answering service trained on your website that answers calls and texts you summaries.",
+  "price_monthly_min": 49,
+  "price_monthly_typical": 49,
+  "free_tier": false,
+  "setup_hours": 0.5,
+  "tech_comfort_min": 1,
+  "integrates_with": [
+   "google-calendar"
+  ],
+  "pros": [
+   "Cheapest credible option",
+   "Setup in minutes"
+  ],
+  "cons": [
+   "Minute caps on starter plan"
+  ],
+  "capability": "automation_agent",
+  "modalities_in": [
+   "audio",
+   "text"
+  ],
+  "modalities_out": [
+   "audio",
+   "text"
+  ],
+  "workflows": [
+   "answer inbound calls",
+   "text call summaries",
+   "handle common customer questions",
+   "capture caller information"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null,
+  "trust": {
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   },
+   "soc2": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   }
+  }
+ },
+ {
+  "id": "slang-ai",
+  "name": "Slang.ai",
+  "url": "https://slang.ai",
+  "category": "ai_receptionist",
+  "verticals": [
+   "restaurant"
+  ],
+  "solves": [
+   "phone_orders",
+   "missed_calls"
+  ],
+  "ai_features": [
+   "restaurant-specific voice AI",
+   "reservation handling",
+   "answers hours/menu questions"
+  ],
+  "description": "Voice AI built for restaurants: answers calls, handles reservations and common questions.",
+  "price_monthly_min": 399,
+  "price_monthly_typical": 399,
+  "free_tier": false,
+  "setup_hours": 3,
+  "tech_comfort_min": 2,
+  "integrates_with": [
+   "opentable",
+   "resy",
+   "toast"
+  ],
+  "pros": [
+   "Restaurant-tuned"
+  ],
+  "cons": [
+   "Expensive for a single small location"
+  ],
+  "capability": "automation_agent",
+  "modalities_in": [
+   "audio"
+  ],
+  "modalities_out": [
+   "audio"
+  ],
+  "workflows": [
+   "answer inbound calls",
+   "handle reservations",
+   "answer hours and menu questions"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null,
+  "trust": {
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   },
+   "soc2": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   }
+  }
+ },
+ {
+  "id": "quo-openphone",
+  "name": "Quo (formerly OpenPhone)",
+  "url": "https://quo.com",
+  "category": "business_phone",
+  "verticals": [
+   "all"
+  ],
+  "solves": [
+   "missed_calls",
+   "customer_followup"
+  ],
+  "ai_features": [
+   "AI call summaries",
+   "AI-drafted text replies",
+   "shared team inbox"
+  ],
+  "description": "Business phone app with shared numbers, AI call summaries and suggested replies.",
+  "price_monthly_min": 15,
+  "price_monthly_typical": 46,
+  "free_tier": false,
+  "setup_hours": 1,
+  "tech_comfort_min": 2,
+  "integrates_with": [
+   "hubspot",
+   "google-contacts",
+   "zapier"
+  ],
+  "pros": [
+   "Cheap per user",
+   "Great team texting"
+  ],
+  "cons": [
+   "Does not answer calls for you by itself"
+  ],
+  "capability": "assistant",
+  "modalities_in": [
+   "audio",
+   "text"
+  ],
+  "modalities_out": [
+   "text"
+  ],
+  "workflows": [
+   "summarize phone calls",
+   "draft text replies",
+   "manage shared team inbox",
+   "handle business calls and texts"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "per_seat",
+  "unit": "seat",
+  "unit_price": 23,
+  "seats_included": 2,
+  "units_included": null,
+  "trust": {
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   },
+   "soc2": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   }
+  }
+ },
+ {
+  "id": "nicejob",
+  "name": "NiceJob",
+  "url": "https://get.nicejob.com",
+  "category": "reviews",
+  "verticals": [
+   "hvac",
+   "landscaping",
+   "home_services",
+   "salon",
+   "cafe",
+   "restaurant",
+   "retail"
+  ],
+  "solves": [
+   "reviews",
+   "customer_followup"
+  ],
+  "ai_features": [
+   "automated review requests",
+   "AI review replies",
+   "review widgets for site"
+  ],
+  "description": "Automatically asks every customer for a review and posts the best ones to your site.",
+  "price_monthly_min": 75,
+  "price_monthly_typical": 75,
+  "free_tier": false,
+  "setup_hours": 1,
+  "tech_comfort_min": 1,
+  "integrates_with": [
+   "jobber",
+   "housecall-pro",
+   "quickbooks",
+   "square"
+  ],
+  "pros": [
+   "Set and forget",
+   "Affordable"
+  ],
+  "cons": [
+   "Fewer analytics than enterprise tools"
+  ],
+  "capability": "automation_agent",
+  "modalities_in": [
+   "text"
+  ],
+  "modalities_out": [
+   "text"
+  ],
+  "workflows": [
+   "send automated review requests",
+   "draft replies to reviews",
+   "display reviews on website"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null,
+  "trust": {
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   },
+   "soc2": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   }
+  }
+ },
+ {
+  "id": "birdeye",
+  "name": "Birdeye",
+  "url": "https://birdeye.com",
+  "category": "reviews",
+  "verticals": [
+   "all"
+  ],
+  "solves": [
+   "reviews",
+   "customer_chat",
+   "customer_followup"
+  ],
+  "ai_features": [
+   "AI review responses",
+   "sentiment insights",
+   "webchat"
+  ],
+  "description": "Reputation platform that collects reviews, drafts AI replies and analyzes sentiment.",
+  "price_monthly_min": 299,
+  "price_monthly_typical": 349,
+  "free_tier": false,
+  "setup_hours": 4,
+  "tech_comfort_min": 2,
+  "integrates_with": [
+   "square",
+   "quickbooks",
+   "google-business-profile"
+  ],
+  "pros": [
+   "All-in-one reputation suite"
+  ],
+  "cons": [
+   "Pricey for very small shops",
+   "Annual contracts"
+  ],
+  "capability": "platform",
+  "modalities_in": [
+   "text"
+  ],
+  "modalities_out": [
+   "text"
+  ],
+  "workflows": [
+   "collect customer reviews",
+   "draft review responses",
+   "analyze review sentiment",
+   "engage visitors via webchat"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null,
+  "trust": {
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   },
+   "soc2": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   }
+  }
+ },
+ {
+  "id": "podium",
+  "name": "Podium",
+  "url": "https://podium.com",
+  "category": "reviews",
+  "verticals": [
+   "hvac",
+   "home_services",
+   "retail",
+   "salon"
+  ],
+  "solves": [
+   "reviews",
+   "customer_chat",
+   "invoicing_payments",
+   "customer_followup"
+  ],
+  "ai_features": [
+   "AI employee for lead replies",
+   "review requests via text",
+   "text-to-pay"
+  ],
+  "description": "Text-first platform for reviews, lead replies and payments with an AI lead agent.",
+  "price_monthly_min": 399,
+  "price_monthly_typical": 399,
+  "free_tier": false,
+  "setup_hours": 4,
+  "tech_comfort_min": 2,
+  "integrates_with": [
+   "quickbooks",
+   "housecall-pro",
+   "servicetitan"
+  ],
+  "pros": [
+   "Strong texting workflows"
+  ],
+  "cons": [
+   "Expensive",
+   "Sales-led onboarding"
+  ],
+  "capability": "platform",
+  "modalities_in": [
+   "text"
+  ],
+  "modalities_out": [
+   "text"
+  ],
+  "workflows": [
+   "request customer reviews",
+   "reply to inbound leads",
+   "collect payments by text"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null,
+  "trust": {
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   },
+   "soc2": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   }
+  }
+ },
+ {
+  "id": "google-business-profile",
+  "name": "Google Business Profile",
+  "url": "https://business.google.com",
+  "category": "local_listing",
+  "verticals": [
+   "all"
+  ],
+  "solves": [
+   "reviews",
+   "website",
+   "customer_chat"
+  ],
+  "ai_features": [
+   "AI-suggested review replies",
+   "auto-generated business description",
+   "Q&A"
+  ],
+  "description": "Free Google listing — the #1 driver of local discovery; manage reviews, hours, photos and posts.",
+  "price_monthly_min": 0,
+  "price_monthly_typical": 0,
+  "free_tier": true,
+  "setup_hours": 1,
+  "tech_comfort_min": 1,
+  "integrates_with": [
+   "google-calendar",
+   "square",
+   "toast"
+  ],
+  "pros": [
+   "Free",
+   "Huge visibility impact"
+  ],
+  "cons": [
+   "Needs consistent attention"
+  ],
+  "capability": "platform",
+  "modalities_in": [
+   "text",
+   "image"
+  ],
+  "modalities_out": [
+   "text",
+   "image"
+  ],
+  "workflows": [
+   "manage business listing",
+   "respond to reviews",
+   "publish posts and photos",
+   "answer customer questions"
+  ],
+  "deployment": "saas",
+  "api_available": true,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null,
+  "trust": {
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   },
+   "soc2": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   }
+  }
+ },
+ {
+  "id": "canva-pro",
+  "name": "Canva Pro (Magic Studio)",
+  "url": "https://canva.com",
+  "category": "marketing_content",
+  "verticals": [
+   "all"
+  ],
+  "solves": [
+   "social_media",
+   "marketing_content"
+  ],
+  "ai_features": [
+   "Magic Write copy",
+   "Magic Design templates",
+   "background remover",
+   "content planner scheduling"
+  ],
+  "description": "Design flyers, menus and social posts in minutes with AI templates and scheduling.",
+  "price_monthly_min": 15,
+  "price_monthly_typical": 15,
+  "free_tier": true,
+  "setup_hours": 1,
+  "tech_comfort_min": 1,
+  "integrates_with": [
+   "instagram",
+   "facebook",
+   "meta-business-suite"
+  ],
+  "pros": [
+   "Easiest design tool",
+   "Free tier is strong"
+  ],
+  "cons": [
+   "Scheduling is basic"
+  ],
+  "capability": "generative",
+  "modalities_in": [
+   "text",
+   "image"
+  ],
+  "modalities_out": [
+   "text",
+   "image"
+  ],
+  "workflows": [
+   "design flyers and menus",
+   "create social media posts",
+   "write marketing copy",
+   "schedule content"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "per_seat",
+  "unit": "seat",
+  "unit_price": 15,
+  "seats_included": 1,
+  "units_included": null,
+  "trust": {
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   },
+   "soc2": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   }
+  }
+ },
+ {
+  "id": "buffer",
+  "name": "Buffer",
+  "url": "https://buffer.com",
+  "category": "marketing_content",
+  "verticals": [
+   "all"
+  ],
+  "solves": [
+   "social_media"
+  ],
+  "ai_features": [
+   "AI Assistant for post ideas and rewrites",
+   "scheduling",
+   "engagement inbox"
+  ],
+  "description": "Simple social scheduler with an AI assistant that writes and repurposes posts.",
+  "price_monthly_min": 0,
+  "price_monthly_typical": 18,
+  "free_tier": true,
+  "setup_hours": 1,
+  "tech_comfort_min": 1,
+  "integrates_with": [
+   "instagram",
+   "facebook",
+   "google-business-profile",
+   "canva-pro"
+  ],
+  "pros": [
+   "Free for 3 channels",
+   "Very simple"
+  ],
+  "cons": [
+   "Analytics limited on low tiers"
+  ],
+  "capability": "assistant",
+  "modalities_in": [
+   "text"
+  ],
+  "modalities_out": [
+   "text"
+  ],
+  "workflows": [
+   "draft social media posts",
+   "repurpose content across channels",
+   "schedule posts",
+   "manage engagement inbox"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null,
+  "trust": {
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   },
+   "soc2": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   }
+  }
+ },
+ {
+  "id": "meta-business-suite",
+  "name": "Meta Business Suite",
+  "url": "https://business.facebook.com",
+  "category": "marketing_content",
+  "verticals": [
+   "all"
+  ],
+  "solves": [
+   "social_media",
+   "customer_chat"
+  ],
+  "ai_features": [
+   "AI-generated ad text",
+   "AI inbox auto-replies",
+   "post scheduling"
+  ],
+  "description": "Free hub to schedule Facebook/Instagram posts and auto-answer DMs with AI.",
+  "price_monthly_min": 0,
+  "price_monthly_typical": 0,
+  "free_tier": true,
+  "setup_hours": 1,
+  "tech_comfort_min": 1,
+  "integrates_with": [
+   "instagram",
+   "facebook"
+  ],
+  "pros": [
+   "Free",
+   "Where customers already are"
+  ],
+  "cons": [
+   "Only Meta channels"
+  ],
+  "capability": "assistant",
+  "modalities_in": [
+   "text",
+   "image"
+  ],
+  "modalities_out": [
+   "text"
+  ],
+  "workflows": [
+   "schedule social media posts",
+   "auto-reply to direct messages",
+   "generate ad copy"
+  ],
+  "deployment": "saas",
+  "api_available": true,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null,
+  "trust": {
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   },
+   "soc2": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   }
+  }
+ },
+ {
+  "id": "mailchimp",
+  "name": "Mailchimp",
+  "url": "https://mailchimp.com",
+  "category": "email_marketing",
+  "verticals": [
+   "all"
+  ],
+  "solves": [
+   "email_sms_marketing",
+   "customer_followup"
+  ],
+  "ai_features": [
+   "Intuit Assist email writer",
+   "send-time optimization",
+   "automated journeys"
+  ],
+  "description": "Email and SMS marketing with AI-written campaigns and automations.",
+  "price_monthly_min": 13,
+  "price_monthly_typical": 20,
+  "free_tier": true,
+  "setup_hours": 2,
+  "tech_comfort_min": 2,
+  "integrates_with": [
+   "square",
+   "shopify",
+   "quickbooks",
+   "wix"
+  ],
+  "pros": [
+   "Industry standard",
+   "Good free tier"
+  ],
+  "cons": [
+   "Price climbs with list size"
+  ],
+  "capability": "platform",
+  "modalities_in": [
+   "text",
+   "tabular"
+  ],
+  "modalities_out": [
+   "text"
+  ],
+  "workflows": [
+   "write email campaigns",
+   "optimize send times",
+   "run automated customer journeys",
+   "manage email lists"
+  ],
+  "deployment": "saas",
+  "api_available": true,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null,
+  "trust": {
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   },
+   "soc2": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   }
+  }
+ },
+ {
+  "id": "square-marketing",
+  "name": "Square Marketing & Loyalty",
+  "url": "https://squareup.com/us/en/software/marketing",
+  "category": "email_marketing",
+  "verticals": [
+   "cafe",
+   "restaurant",
+   "retail",
+   "salon"
+  ],
+  "solves": [
+   "email_sms_marketing",
+   "customer_followup"
+  ],
+  "ai_features": [
+   "AI-generated campaigns",
+   "auto win-back messages",
+   "loyalty program"
+  ],
+  "description": "Email/text campaigns and loyalty built into Square POS — uses your real customer list.",
+  "price_monthly_min": 15,
+  "price_monthly_typical": 45,
+  "free_tier": false,
+  "setup_hours": 1,
+  "tech_comfort_min": 1,
+  "integrates_with": [
+   "square-pos"
+  ],
+  "pros": [
+   "Uses POS data automatically"
+  ],
+  "cons": [
+   "Only for Square sellers"
+  ],
+  "capability": "automation_agent",
+  "modalities_in": [
+   "text"
+  ],
+  "modalities_out": [
+   "text"
+  ],
+  "workflows": [
+   "send email and text campaigns",
+   "run loyalty programs",
+   "send win-back messages to lapsed customers"
+  ],
+  "deployment": "saas",
+  "api_available": true,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null,
+  "trust": {
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   },
+   "soc2": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   }
+  }
+ },
+ {
+  "id": "chatgpt-business",
+  "name": "ChatGPT (Plus/Business)",
+  "url": "https://chatgpt.com",
+  "category": "general_assistant",
+  "verticals": [
+   "all"
+  ],
+  "solves": [
+   "admin_writing",
+   "marketing_content",
+   "menu_costing"
+  ],
+  "ai_features": [
+   "writing and rewriting",
+   "data analysis of spreadsheets",
+   "image generation"
+  ],
+  "description": "General AI assistant for emails, job posts, menu descriptions, policies and spreadsheet analysis.",
+  "price_monthly_min": 20,
+  "price_monthly_typical": 25,
+  "free_tier": true,
+  "setup_hours": 0.5,
+  "tech_comfort_min": 1,
+  "integrates_with": [
+   "google-drive",
+   "microsoft-365"
+  ],
+  "pros": [
+   "Versatile",
+   "Free tier"
+  ],
+  "cons": [
+   "Not connected to your business systems by default"
+  ],
+  "capability": "assistant",
+  "modalities_in": [
+   "text",
+   "image",
+   "tabular"
+  ],
+  "modalities_out": [
+   "text",
+   "image",
+   "tabular"
+  ],
+  "workflows": [
+   "draft emails and job posts",
+   "rewrite menu descriptions and policies",
+   "analyze spreadsheet data"
+  ],
+  "deployment": "saas",
+  "api_available": true,
+  "pricing_model": "per_seat",
+  "unit": "seat",
+  "unit_price": 25,
+  "seats_included": 1,
+  "units_included": null,
+  "trust": {
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   },
+   "soc2": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   }
+  }
+ },
+ {
+  "id": "claude-pro",
+  "name": "Claude (Pro/Team)",
+  "url": "https://claude.ai",
+  "category": "general_assistant",
+  "verticals": [
+   "all"
+  ],
+  "solves": [
+   "admin_writing",
+   "marketing_content",
+   "menu_costing"
+  ],
+  "ai_features": [
+   "long-document analysis",
+   "writing",
+   "spreadsheet and PDF reading"
+  ],
+  "description": "AI assistant strong at reading contracts, invoices and long documents and drafting clear writing.",
+  "price_monthly_min": 20,
+  "price_monthly_typical": 25,
+  "free_tier": true,
+  "setup_hours": 0.5,
+  "tech_comfort_min": 1,
+  "integrates_with": [
+   "google-drive"
+  ],
+  "pros": [
+   "Excellent writing quality",
+   "Handles long documents"
+  ],
+  "cons": [
+   "Not connected to POS/field tools by default"
+  ],
+  "capability": "assistant",
+  "modalities_in": [
+   "text"
+  ],
+  "modalities_out": [
+   "text"
+  ],
+  "workflows": [
+   "analyze contracts and invoices",
+   "draft and edit business writing",
+   "summarize long documents",
+   "read spreadsheets and PDFs"
+  ],
+  "deployment": "saas",
+  "api_available": true,
+  "pricing_model": "per_seat",
+  "unit": "seat",
+  "unit_price": 25,
+  "seats_included": 1,
+  "units_included": null,
+  "trust": {
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   },
+   "soc2": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   }
+  }
+ },
+ {
+  "id": "gemini-workspace",
+  "name": "Google Workspace with Gemini",
+  "url": "https://workspace.google.com",
+  "category": "general_assistant",
+  "verticals": [
+   "all"
+  ],
+  "solves": [
+   "admin_writing",
+   "customer_followup"
+  ],
+  "ai_features": [
+   "Gemini in Gmail/Docs/Sheets",
+   "meeting notes",
+   "email drafting"
+  ],
+  "description": "Business email plus Gemini AI inside Gmail, Docs and Sheets.",
+  "price_monthly_min": 7,
+  "price_monthly_typical": 14,
+  "free_tier": false,
+  "setup_hours": 2,
+  "tech_comfort_min": 2,
+  "integrates_with": [
+   "google-calendar",
+   "google-sheets"
+  ],
+  "pros": [
+   "Professional email + AI in one"
+  ],
+  "cons": [
+   "Per-user cost"
+  ],
+  "capability": "assistant",
+  "modalities_in": [
+   "text"
+  ],
+  "modalities_out": [
+   "text"
+  ],
+  "workflows": [
+   "draft emails",
+   "summarize meetings",
+   "assist document writing",
+   "analyze spreadsheet data"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "per_seat",
+  "unit": "seat",
+  "unit_price": 14,
+  "seats_included": 1,
+  "units_included": null,
+  "trust": {
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   },
+   "soc2": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   }
+  }
+ },
+ {
+  "id": "square-appointments",
+  "name": "Square Appointments",
+  "url": "https://squareup.com/us/en/appointments",
+  "category": "booking",
+  "verticals": [
+   "salon",
+   "retail",
+   "home_services"
+  ],
+  "solves": [
+   "appointment_booking",
+   "no_shows",
+   "invoicing_payments"
+  ],
+  "ai_features": [
+   "automated reminders",
+   "no-show protection",
+   "AI marketing assist"
+  ],
+  "description": "Online booking with reminders, deposits and payments built in.",
+  "price_monthly_min": 0,
+  "price_monthly_typical": 49,
+  "free_tier": true,
+  "setup_hours": 2,
+  "tech_comfort_min": 1,
+  "integrates_with": [
+   "square-pos",
+   "google-calendar",
+   "instagram"
+  ],
+  "pros": [
+   "Free for one location",
+   "Deposits reduce no-shows"
+  ],
+  "cons": [
+   "Best if you use Square payments"
+  ],
+  "capability": "platform",
+  "modalities_in": [
+   "text"
+  ],
+  "modalities_out": [
+   "text"
+  ],
+  "workflows": [
+   "send appointment reminders",
+   "book client appointments online",
+   "collect deposits for bookings",
+   "protect against no-shows"
+  ],
+  "deployment": "saas",
+  "api_available": true,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null,
+  "trust": {
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   },
+   "soc2": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   }
+  }
+ },
+ {
+  "id": "vagaro",
+  "name": "Vagaro",
+  "url": "https://vagaro.com",
+  "category": "booking",
+  "verticals": [
+   "salon"
+  ],
+  "solves": [
+   "appointment_booking",
+   "no_shows",
+   "email_sms_marketing"
+  ],
+  "ai_features": [
+   "AI-written marketing",
+   "automated reminders",
+   "marketplace listing"
+  ],
+  "description": "Salon and spa booking, POS and marketing with a customer marketplace.",
+  "price_monthly_min": 30,
+  "price_monthly_typical": 50,
+  "free_tier": false,
+  "setup_hours": 4,
+  "tech_comfort_min": 2,
+  "integrates_with": [
+   "instagram",
+   "facebook",
+   "quickbooks"
+  ],
+  "pros": [
+   "Built for salons"
+  ],
+  "cons": [
+   "Add-ons increase cost"
+  ],
+  "capability": "platform",
+  "modalities_in": [
+   "text",
+   "tabular"
+  ],
+  "modalities_out": [
+   "text",
+   "tabular"
+  ],
+  "workflows": [
+   "book salon and spa appointments",
+   "send automated client reminders",
+   "write marketing content",
+   "list business on customer marketplace"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null,
+  "trust": {
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   },
+   "soc2": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   }
+  }
+ },
+ {
+  "id": "calendly",
+  "name": "Calendly",
+  "url": "https://calendly.com",
+  "category": "booking",
+  "verticals": [
+   "all"
+  ],
+  "solves": [
+   "appointment_booking"
+  ],
+  "ai_features": [
+   "smart scheduling links",
+   "routing forms",
+   "automated reminders"
+  ],
+  "description": "Shareable booking links for estimates and consultations.",
+  "price_monthly_min": 0,
+  "price_monthly_typical": 12,
+  "free_tier": true,
+  "setup_hours": 0.5,
+  "tech_comfort_min": 1,
+  "integrates_with": [
+   "google-calendar",
+   "zapier",
+   "hubspot"
+  ],
+  "pros": [
+   "Dead simple"
+  ],
+  "cons": [
+   "Not a full job management tool"
+  ],
+  "capability": "automation_agent",
+  "modalities_in": [
+   "text"
+  ],
+  "modalities_out": [
+   "text"
+  ],
+  "workflows": [
+   "schedule estimate appointments",
+   "route inbound booking requests",
+   "send automated reminders"
+  ],
+  "deployment": "saas",
+  "api_available": true,
+  "pricing_model": "per_seat",
+  "unit": "seat",
+  "unit_price": 12,
+  "seats_included": 1,
+  "units_included": null,
+  "trust": {
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   },
+   "soc2": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   }
+  }
+ },
+ {
+  "id": "7shifts",
+  "name": "7shifts",
+  "url": "https://7shifts.com",
+  "category": "staff_scheduling",
+  "verticals": [
+   "cafe",
+   "restaurant"
+  ],
+  "solves": [
+   "staff_scheduling"
+  ],
+  "ai_features": [
+   "auto-scheduling from sales forecasts",
+   "labor cost alerts",
+   "shift trade app"
+  ],
+  "description": "Restaurant staff scheduling that builds schedules from sales forecasts and lets staff swap shifts.",
+  "price_monthly_min": 0,
+  "price_monthly_typical": 35,
+  "free_tier": true,
+  "setup_hours": 2,
+  "tech_comfort_min": 1,
+  "integrates_with": [
+   "square-pos",
+   "toast",
+   "clover"
+  ],
+  "pros": [
+   "Built for food service",
+   "Free plan for one location"
+  ],
+  "cons": [
+   "Advanced forecasting on higher tiers"
+  ],
+  "capability": "predictive",
+  "modalities_in": [
+   "tabular"
+  ],
+  "modalities_out": [
+   "tabular"
+  ],
+  "workflows": [
+   "build staff schedules from sales forecasts",
+   "alert on labor cost overruns",
+   "manage shift swaps"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null,
+  "trust": {
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   },
+   "soc2": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   }
+  }
+ },
+ {
+  "id": "homebase",
+  "name": "Homebase",
+  "url": "https://joinhomebase.com",
+  "category": "staff_scheduling",
+  "verticals": [
+   "cafe",
+   "restaurant",
+   "retail",
+   "salon",
+   "landscaping"
+  ],
+  "solves": [
+   "staff_scheduling",
+   "admin_writing"
+  ],
+  "ai_features": [
+   "auto-scheduling",
+   "time clock",
+   "AI job posts and hiring"
+  ],
+  "description": "Scheduling, time clock, team chat and hiring for hourly teams.",
+  "price_monthly_min": 0,
+  "price_monthly_typical": 30,
+  "free_tier": true,
+  "setup_hours": 1.5,
+  "tech_comfort_min": 1,
+  "integrates_with": [
+   "square-pos",
+   "clover",
+   "quickbooks",
+   "toast"
+  ],
+  "pros": [
+   "Generous free plan",
+   "Easy for staff"
+  ],
+  "cons": [
+   "Payroll costs extra"
+  ],
+  "capability": "automation_agent",
+  "modalities_in": [
+   "text",
+   "tabular"
+  ],
+  "modalities_out": [
+   "text",
+   "tabular"
+  ],
+  "workflows": [
+   "build employee schedules",
+   "track hourly time clock entries",
+   "post job openings",
+   "manage team communication"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null,
+  "trust": {
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   },
+   "soc2": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   }
+  }
+ },
+ {
+  "id": "jobber",
+  "name": "Jobber",
+  "url": "https://getjobber.com",
+  "category": "field_service",
+  "verticals": [
+   "hvac",
+   "landscaping",
+   "home_services"
+  ],
+  "solves": [
+   "quoting",
+   "invoicing_payments",
+   "dispatch_routing",
+   "appointment_booking",
+   "customer_followup",
+   "missed_calls"
+  ],
+  "ai_features": [
+   "Copilot AI assistant",
+   "AI-written quotes and messages",
+   "AI Receptionist add-on",
+   "route optimization"
+  ],
+  "description": "Quote, schedule, dispatch, invoice and get paid — with Jobber Copilot drafting quotes and replies.",
+  "price_monthly_min": 39,
+  "price_monthly_typical": 119,
+  "free_tier": false,
+  "setup_hours": 5,
+  "tech_comfort_min": 2,
+  "integrates_with": [
+   "quickbooks",
+   "google-calendar",
+   "mailchimp",
+   "nicejob"
+  ],
+  "pros": [
+   "Best-in-class for small crews",
+   "Online booking + payments"
+  ],
+  "cons": [
+   "Route optimization only on higher tiers"
+  ],
+  "capability": "platform",
+  "modalities_in": [
+   "text",
+   "tabular"
+  ],
+  "modalities_out": [
+   "text",
+   "tabular"
+  ],
+  "workflows": [
+   "send quotes",
+   "schedule and dispatch jobs",
+   "invoice and collect payment",
+   "answer inbound calls"
+  ],
+  "deployment": "saas",
+  "api_available": true,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null,
+  "trust": {
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   },
+   "soc2": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   }
+  }
+ },
+ {
+  "id": "housecall-pro",
+  "name": "Housecall Pro",
+  "url": "https://housecallpro.com",
+  "category": "field_service",
+  "verticals": [
+   "hvac",
+   "home_services",
+   "landscaping"
+  ],
+  "solves": [
+   "quoting",
+   "invoicing_payments",
+   "dispatch_routing",
+   "appointment_booking",
+   "missed_calls",
+   "customer_followup"
+  ],
+  "ai_features": [
+   "AI CSR / voice agent add-on",
+   "AI-generated estimates",
+   "automated review requests"
+  ],
+  "description": "Field service platform for home services with AI team members for calls and estimates.",
+  "price_monthly_min": 59,
+  "price_monthly_typical": 149,
+  "free_tier": false,
+  "setup_hours": 5,
+  "tech_comfort_min": 2,
+  "integrates_with": [
+   "quickbooks",
+   "google-calendar",
+   "nicejob"
+  ],
+  "pros": [
+   "Strong HVAC features (maintenance plans)"
+  ],
+  "cons": [
+   "AI add-ons cost extra"
+  ],
+  "capability": "platform",
+  "modalities_in": [
+   "audio",
+   "text"
+  ],
+  "modalities_out": [
+   "audio",
+   "text"
+  ],
+  "workflows": [
+   "answer inbound calls",
+   "generate estimates",
+   "send review requests",
+   "schedule jobs"
+  ],
+  "deployment": "saas",
+  "api_available": true,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null,
+  "trust": {
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   },
+   "soc2": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   }
+  }
+ },
+ {
+  "id": "workiz",
+  "name": "Workiz",
+  "url": "https://workiz.com",
+  "category": "field_service",
+  "verticals": [
+   "hvac",
+   "home_services"
+  ],
+  "solves": [
+   "dispatch_routing",
+   "missed_calls",
+   "invoicing_payments",
+   "quoting"
+  ],
+  "ai_features": [
+   "Jessica AI phone answering",
+   "call tracking",
+   "smart dispatch"
+  ],
+  "description": "Field service software with built-in AI phone answering for service calls.",
+  "price_monthly_min": 225,
+  "price_monthly_typical": 225,
+  "free_tier": false,
+  "setup_hours": 6,
+  "tech_comfort_min": 2,
+  "integrates_with": [
+   "quickbooks",
+   "google-calendar"
+  ],
+  "pros": [
+   "Phone + dispatch in one"
+  ],
+  "cons": [
+   "Higher starting price"
+  ],
+  "capability": "platform",
+  "modalities_in": [
+   "audio",
+   "text"
+  ],
+  "modalities_out": [
+   "audio",
+   "text"
+  ],
+  "workflows": [
+   "answer inbound service calls",
+   "track calls",
+   "dispatch field technicians",
+   "schedule service jobs"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null,
+  "trust": {
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   },
+   "soc2": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   }
+  }
+ },
+ {
+  "id": "lmn",
+  "name": "LMN",
+  "url": "https://golmn.com",
+  "category": "field_service",
+  "verticals": [
+   "landscaping"
+  ],
+  "solves": [
+   "quoting",
+   "dispatch_routing",
+   "staff_scheduling"
+  ],
+  "ai_features": [
+   "estimating with job costing",
+   "crew time tracking",
+   "scheduling"
+  ],
+  "description": "Landscape-specific estimating, budgeting and crew management.",
+  "price_monthly_min": 0,
+  "price_monthly_typical": 97,
+  "free_tier": true,
+  "setup_hours": 6,
+  "tech_comfort_min": 3,
+  "integrates_with": [
+   "quickbooks"
+  ],
+  "pros": [
+   "Built for landscapers",
+   "Accurate job costing"
+  ],
+  "cons": [
+   "Learning curve"
+  ],
+  "capability": "platform",
+  "modalities_in": [
+   "text",
+   "tabular"
+  ],
+  "modalities_out": [
+   "text",
+   "tabular"
+  ],
+  "workflows": [
+   "generate landscaping estimates",
+   "track crew time",
+   "schedule landscaping jobs"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null,
+  "trust": {
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   },
+   "soc2": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   }
+  }
+ },
+ {
+  "id": "yardbook",
+  "name": "Yardbook",
+  "url": "https://yardbook.com",
+  "category": "field_service",
+  "verticals": [
+   "landscaping"
+  ],
+  "solves": [
+   "quoting",
+   "invoicing_payments",
+   "dispatch_routing"
+  ],
+  "ai_features": [
+   "route planning",
+   "recurring job scheduling",
+   "online invoicing"
+  ],
+  "description": "Free landscaping business software for estimates, scheduling, routing and invoices.",
+  "price_monthly_min": 0,
+  "price_monthly_typical": 0,
+  "free_tier": true,
+  "setup_hours": 3,
+  "tech_comfort_min": 1,
+  "integrates_with": [
+   "quickbooks"
+  ],
+  "pros": [
+   "Free core features"
+  ],
+  "cons": [
+   "Dated interface",
+   "Light AI features"
+  ],
+  "capability": "platform",
+  "modalities_in": [
+   "text",
+   "tabular"
+  ],
+  "modalities_out": [
+   "text",
+   "tabular"
+  ],
+  "workflows": [
+   "create estimates",
+   "schedule recurring jobs",
+   "plan crew routes",
+   "send invoices"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null,
+  "trust": {
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   },
+   "soc2": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   }
+  }
+ },
+ {
+  "id": "quickbooks",
+  "name": "QuickBooks Online (Intuit Assist)",
+  "url": "https://quickbooks.intuit.com",
+  "category": "bookkeeping",
+  "verticals": [
+   "all"
+  ],
+  "solves": [
+   "bookkeeping",
+   "invoicing_payments"
+  ],
+  "ai_features": [
+   "Intuit Assist AI",
+   "auto-categorized transactions",
+   "invoice reminders"
+  ],
+  "description": "Accounting with AI that categorizes expenses, chases unpaid invoices and summarizes cash flow.",
+  "price_monthly_min": 35,
+  "price_monthly_typical": 65,
+  "free_tier": false,
+  "setup_hours": 4,
+  "tech_comfort_min": 2,
+  "integrates_with": [
+   "square-pos",
+   "jobber",
+   "housecall-pro",
+   "toast",
+   "shopify"
+  ],
+  "pros": [
+   "Accountants know it",
+   "Integrates with everything"
+  ],
+  "cons": [
+   "Price increases yearly"
+  ],
+  "capability": "platform",
+  "modalities_in": [
+   "text",
+   "tabular"
+  ],
+  "modalities_out": [
+   "text",
+   "tabular"
+  ],
+  "workflows": [
+   "categorize expenses",
+   "send invoice reminders",
+   "summarize cash flow"
+  ],
+  "deployment": "saas",
+  "api_available": true,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null,
+  "trust": {
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   },
+   "soc2": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   }
+  }
+ },
+ {
+  "id": "wave",
+  "name": "Wave",
+  "url": "https://waveapps.com",
+  "category": "bookkeeping",
+  "verticals": [
+   "all"
+  ],
+  "solves": [
+   "bookkeeping",
+   "invoicing_payments"
+  ],
+  "ai_features": [
+   "auto-merged transactions",
+   "receipt scanning",
+   "invoice automation"
+  ],
+  "description": "Free invoicing and accounting for very small businesses.",
+  "price_monthly_min": 0,
+  "price_monthly_typical": 16,
+  "free_tier": true,
+  "setup_hours": 2,
+  "tech_comfort_min": 1,
+  "integrates_with": [
+   "paypal",
+   "stripe"
+  ],
+  "pros": [
+   "Free core accounting"
+  ],
+  "cons": [
+   "Fewer integrations"
+  ],
+  "capability": "platform",
+  "modalities_in": [
+   "text",
+   "image",
+   "tabular"
+  ],
+  "modalities_out": [
+   "text",
+   "tabular"
+  ],
+  "workflows": [
+   "track business expenses",
+   "send invoices to clients",
+   "categorize bank transactions",
+   "reconcile receipts"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null,
+  "trust": {
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   },
+   "soc2": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   }
+  }
+ },
+ {
+  "id": "square-pos",
+  "name": "Square POS (Restaurants & Retail)",
+  "url": "https://squareup.com",
+  "category": "pos",
+  "verticals": [
+   "cafe",
+   "restaurant",
+   "retail"
+  ],
+  "solves": [
+   "online_ordering",
+   "inventory",
+   "invoicing_payments",
+   "customer_followup"
+  ],
+  "ai_features": [
+   "Square AI sales insights",
+   "auto-generated online store",
+   "inventory alerts"
+  ],
+  "description": "POS with free online ordering site, inventory and Square AI answering 'how did we do this week?'.",
+  "price_monthly_min": 0,
+  "price_monthly_typical": 49,
+  "free_tier": true,
+  "setup_hours": 3,
+  "tech_comfort_min": 1,
+  "integrates_with": [
+   "7shifts",
+   "homebase",
+   "quickbooks",
+   "doordash"
+  ],
+  "pros": [
+   "Free to start",
+   "Ecosystem of add-ons"
+  ],
+  "cons": [
+   "Processing fees"
+  ],
+  "capability": "platform",
+  "modalities_in": [
+   "text",
+   "tabular"
+  ],
+  "modalities_out": [
+   "text",
+   "tabular"
+  ],
+  "workflows": [
+   "process point-of-sale payments",
+   "manage inventory levels",
+   "take online orders",
+   "review weekly sales performance"
+  ],
+  "deployment": "saas",
+  "api_available": true,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null,
+  "trust": {
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   },
+   "soc2": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   }
+  }
+ },
+ {
+  "id": "toast",
+  "name": "Toast",
+  "url": "https://pos.toasttab.com",
+  "category": "pos",
+  "verticals": [
+   "restaurant",
+   "cafe"
+  ],
+  "solves": [
+   "online_ordering",
+   "menu_costing",
+   "inventory",
+   "staff_scheduling"
+  ],
+  "ai_features": [
+   "ToastIQ AI insights",
+   "menu upsell suggestions",
+   "xtraCHEF invoice scanning"
+  ],
+  "description": "Restaurant POS with online ordering, AI insights and recipe/menu costing add-ons.",
+  "price_monthly_min": 0,
+  "price_monthly_typical": 110,
+  "free_tier": true,
+  "setup_hours": 8,
+  "tech_comfort_min": 2,
+  "integrates_with": [
+   "7shifts",
+   "quickbooks",
+   "opentable"
+  ],
+  "pros": [
+   "Restaurant-specific depth"
+  ],
+  "cons": [
+   "Hardware lock-in",
+   "Contract terms"
+  ],
+  "capability": "platform",
+  "modalities_in": [
+   "text",
+   "tabular"
+  ],
+  "modalities_out": [
+   "text",
+   "tabular"
+  ],
+  "workflows": [
+   "process restaurant orders and payments",
+   "analyze sales and menu performance",
+   "suggest menu upsells",
+   "scan supplier invoices"
+  ],
+  "deployment": "saas",
+  "api_available": true,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null,
+  "trust": {
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   },
+   "soc2": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   }
+  }
+ },
+ {
+  "id": "owner-com",
+  "name": "Owner.com",
+  "url": "https://owner.com",
+  "category": "online_ordering",
+  "verticals": [
+   "restaurant",
+   "cafe"
+  ],
+  "solves": [
+   "online_ordering",
+   "website",
+   "email_sms_marketing"
+  ],
+  "ai_features": [
+   "AI-built restaurant website",
+   "automated marketing",
+   "commission-free ordering"
+  ],
+  "description": "AI-built website + commission-free online ordering and automated marketing for restaurants.",
+  "price_monthly_min": 499,
+  "price_monthly_typical": 499,
+  "free_tier": false,
+  "setup_hours": 3,
+  "tech_comfort_min": 1,
+  "integrates_with": [
+   "toast",
+   "square-pos",
+   "clover"
+  ],
+  "pros": [
+   "Cuts delivery-app commissions"
+  ],
+  "cons": [
+   "High flat fee"
+  ],
+  "capability": "platform",
+  "modalities_in": [
+   "text",
+   "image"
+  ],
+  "modalities_out": [
+   "text",
+   "image"
+  ],
+  "workflows": [
+   "build restaurant website",
+   "accept commission-free online orders",
+   "automate restaurant marketing"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null,
+  "trust": {
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   },
+   "soc2": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   }
+  }
+ },
+ {
+  "id": "marginedge",
+  "name": "MarginEdge",
+  "url": "https://marginedge.com",
+  "category": "restaurant_ops",
+  "verticals": [
+   "restaurant",
+   "cafe"
+  ],
+  "solves": [
+   "menu_costing",
+   "bookkeeping",
+   "inventory"
+  ],
+  "ai_features": [
+   "invoice photo scanning",
+   "real-time food cost",
+   "recipe costing"
+  ],
+  "description": "Snap invoices; get daily food cost and recipe costing automatically.",
+  "price_monthly_min": 350,
+  "price_monthly_typical": 350,
+  "free_tier": false,
+  "setup_hours": 5,
+  "tech_comfort_min": 2,
+  "integrates_with": [
+   "toast",
+   "square-pos",
+   "quickbooks"
+  ],
+  "pros": [
+   "Big food-cost savings"
+  ],
+  "cons": [
+   "Pricey for small cafés"
+  ],
+  "capability": "predictive",
+  "modalities_in": [
+   "image",
+   "text"
+  ],
+  "modalities_out": [
+   "tabular",
+   "text"
+  ],
+  "workflows": [
+   "scan supplier invoices",
+   "calculate daily food cost",
+   "cost out recipes"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null,
+  "trust": {
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   },
+   "soc2": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   }
+  }
+ },
+ {
+  "id": "meez",
+  "name": "meez",
+  "url": "https://getmeez.com",
+  "category": "restaurant_ops",
+  "verticals": [
+   "restaurant",
+   "cafe"
+  ],
+  "solves": [
+   "menu_costing"
+  ],
+  "ai_features": [
+   "recipe import from photos/docs",
+   "automatic recipe costing",
+   "prep scaling"
+  ],
+  "description": "Recipe management that imports recipes and calculates plate cost automatically.",
+  "price_monthly_min": 0,
+  "price_monthly_typical": 49,
+  "free_tier": true,
+  "setup_hours": 3,
+  "tech_comfort_min": 2,
+  "integrates_with": [
+   "marginedge"
+  ],
+  "pros": [
+   "Affordable menu costing"
+  ],
+  "cons": [
+   "Needs recipe entry upfront"
+  ],
+  "capability": "assistant",
+  "modalities_in": [
+   "text",
+   "image"
+  ],
+  "modalities_out": [
+   "text",
+   "tabular"
+  ],
+  "workflows": [
+   "import recipes from photos or documents",
+   "calculate plate cost automatically",
+   "scale prep quantities"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null,
+  "trust": {
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   },
+   "soc2": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   }
+  }
+ },
+ {
+  "id": "tidio",
+  "name": "Tidio (Lyro AI)",
+  "url": "https://tidio.com",
+  "category": "customer_chat",
+  "verticals": [
+   "all"
+  ],
+  "solves": [
+   "customer_chat",
+   "website"
+  ],
+  "ai_features": [
+   "Lyro AI chatbot trained on your FAQs",
+   "live chat",
+   "Instagram/Messenger inbox"
+  ],
+  "description": "Website chat where Lyro AI answers customer questions 24/7 from your own FAQ.",
+  "price_monthly_min": 0,
+  "price_monthly_typical": 39,
+  "free_tier": true,
+  "setup_hours": 1.5,
+  "tech_comfort_min": 2,
+  "integrates_with": [
+   "wix",
+   "shopify",
+   "squarespace",
+   "instagram"
+  ],
+  "pros": [
+   "Free tier",
+   "Quick FAQ training"
+  ],
+  "cons": [
+   "Conversation caps"
+  ],
+  "capability": "assistant",
+  "modalities_in": [
+   "text"
+  ],
+  "modalities_out": [
+   "text"
+  ],
+  "workflows": [
+   "answer customer questions on website chat",
+   "handle messenger and instagram inquiries",
+   "hand off conversations to live agents"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null,
+  "trust": {
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   },
+   "soc2": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   }
+  }
+ },
+ {
+  "id": "wix",
+  "name": "Wix (AI Website Builder)",
+  "url": "https://wix.com",
+  "category": "website",
+  "verticals": [
+   "all"
+  ],
+  "solves": [
+   "website",
+   "appointment_booking",
+   "online_ordering"
+  ],
+  "ai_features": [
+   "AI site generator",
+   "AI text creator",
+   "bookings and ordering apps"
+  ],
+  "description": "Answer a few questions and AI builds your website, with booking and ordering apps.",
+  "price_monthly_min": 17,
+  "price_monthly_typical": 29,
+  "free_tier": true,
+  "setup_hours": 3,
+  "tech_comfort_min": 1,
+  "integrates_with": [
+   "google-business-profile",
+   "mailchimp",
+   "instagram"
+  ],
+  "pros": [
+   "Fast professional site"
+  ],
+  "cons": [
+   "Hard to migrate away"
+  ],
+  "capability": "platform",
+  "modalities_in": [
+   "text"
+  ],
+  "modalities_out": [
+   "text",
+   "image"
+  ],
+  "workflows": [
+   "build a website from questions",
+   "generate site copy",
+   "take bookings",
+   "take orders"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null,
+  "trust": {
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   },
+   "soc2": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   }
+  }
+ },
+ {
+  "id": "durable",
+  "name": "Durable",
+  "url": "https://durable.co",
+  "category": "website",
+  "verticals": [
+   "hvac",
+   "landscaping",
+   "home_services",
+   "salon"
+  ],
+  "solves": [
+   "website",
+   "customer_followup"
+  ],
+  "ai_features": [
+   "30-second AI website",
+   "AI blog/SEO",
+   "simple CRM"
+  ],
+  "description": "AI website builder for service businesses with built-in CRM and invoicing.",
+  "price_monthly_min": 12,
+  "price_monthly_typical": 20,
+  "free_tier": true,
+  "setup_hours": 1,
+  "tech_comfort_min": 1,
+  "integrates_with": [
+   "google-business-profile"
+  ],
+  "pros": [
+   "Fastest setup"
+  ],
+  "cons": [
+   "Less design control"
+  ],
+  "capability": "platform",
+  "modalities_in": [
+   "text",
+   "image"
+  ],
+  "modalities_out": [
+   "text",
+   "image"
+  ],
+  "workflows": [
+   "generate a website for a service business",
+   "write blog posts for SEO",
+   "manage customer contacts",
+   "send invoices"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null,
+  "trust": {
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   },
+   "soc2": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   }
+  }
+ },
+ {
+  "id": "lightspeed-retail",
+  "name": "Lightspeed Retail",
+  "url": "https://lightspeedhq.com",
+  "category": "pos",
+  "verticals": [
+   "retail"
+  ],
+  "solves": [
+   "inventory",
+   "customer_followup",
+   "invoicing_payments"
+  ],
+  "ai_features": [
+   "inventory forecasting",
+   "work orders",
+   "customer notifications"
+  ],
+  "description": "Retail POS with deep inventory and work orders — popular with bike shops.",
+  "price_monthly_min": 89,
+  "price_monthly_typical": 149,
+  "free_tier": false,
+  "setup_hours": 6,
+  "tech_comfort_min": 3,
+  "integrates_with": [
+   "quickbooks",
+   "shopify"
+  ],
+  "pros": [
+   "Repair work orders"
+  ],
+  "cons": [
+   "Steeper learning curve"
+  ],
+  "capability": "platform",
+  "modalities_in": [
+   "text",
+   "tabular"
+  ],
+  "modalities_out": [
+   "text",
+   "tabular"
+  ],
+  "workflows": [
+   "track retail inventory",
+   "manage work orders",
+   "send customer notifications",
+   "forecast inventory needs"
+  ],
+  "deployment": "saas",
+  "api_available": true,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null,
+  "trust": {
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   },
+   "soc2": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   }
+  }
+ },
+ {
+  "id": "zapier",
+  "name": "Zapier (with AI)",
+  "url": "https://zapier.com",
+  "category": "automation",
+  "verticals": [
+   "all"
+  ],
+  "solves": [
+   "admin_writing",
+   "customer_followup"
+  ],
+  "ai_features": [
+   "AI-built automations from plain English",
+   "AI steps in workflows",
+   "chatbots"
+  ],
+  "description": "Connect your apps and automate busywork — describe the workflow in plain English.",
+  "price_monthly_min": 0,
+  "price_monthly_typical": 30,
+  "free_tier": true,
+  "setup_hours": 2,
+  "tech_comfort_min": 3,
+  "integrates_with": [
+   "google-sheets",
+   "quickbooks",
+   "mailchimp",
+   "jobber"
+  ],
+  "pros": [
+   "Connects 7,000+ apps"
+  ],
+  "cons": [
+   "Needs some tech comfort"
+  ],
+  "capability": "automation_agent",
+  "modalities_in": [
+   "text"
+  ],
+  "modalities_out": [
+   "text"
+  ],
+  "workflows": [
+   "connect apps and automate tasks",
+   "build automations from plain English",
+   "run AI steps within workflows",
+   "deploy chatbots"
+  ],
+  "deployment": "saas",
+  "api_available": true,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null,
+  "trust": {
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   },
+   "soc2": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null
+   }
+  }
+ }
 ]

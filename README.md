@@ -11,7 +11,7 @@ An owner describes their business in plain words. A team of agents then:
 6. **You approve** (human-in-the-loop interrupt).
 7. **Adoption Coach** writes a 30-day rollout plan; outcomes are written back to memory.
 
-Everything streams live into the **War Room** UI.
+Everything streams live into the **War Room** UI. Owners can also **Discover** tools with semantic search and reviews, **Compare** them side by side (weighted scorecard, TCO, integration checks), and watch the agents and their tools work together on the **Agents** page.
 
 ## Try it
 Open the app and click a **sample business** (Joe's Corner Coffee, CoolAir HVAC, GreenLeaf Landscaping); no password needed. Or create an account and describe your own business for a live AI run.

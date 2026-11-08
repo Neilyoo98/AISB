@@ -1,18 +1,22 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { ArrowRight, BrainCircuit, CheckCircle2, Zap } from "lucide-react";
+import { ArrowRight, BrainCircuit, CheckCircle2, Network, RotateCcw, Zap } from "lucide-react";
 import { api, money } from "@/lib/api";
 import type { Business, Tool, User } from "@/lib/types";
 import { useRunStream } from "@/hooks/useRunStream";
-import { AppHeader, Spinner } from "@/components/ui";
+import { AppHeader, FlowStepper, Spinner, useTitle } from "@/components/ui";
 import { StackFlow } from "@/components/stack-flow";
 import { MeshPanel, PainCards, Pipeline, PlanView, ProfileCard, ScoutGrid, Section, StackPanel } from "@/components/war-room";
 
 export default function WarRoom() {
+  useTitle("War Room");
+  const router = useRouter();
   const { runId } = useParams<{ runId: string }>();
+  const [retrying, setRetrying] = useState(false);
+  const [retryErr, setRetryErr] = useState<string | null>(null);
   const { view, approve } = useRunStream(runId);
   const [catalog, setCatalog] = useState<Record<string, Tool>>({});
   const [me, setMe] = useState<{ user: User; business: Business | null } | null>(null);
@@ -75,6 +79,20 @@ export default function WarRoom() {
   };
 
   const awaiting = view.status === "awaiting_approval";
+  const step: 0 | 1 | 2 | 3 | 4 =
+    view.status === "complete" || view.plan ? 4 : view.agents.planner === "working" ? 3 : awaiting ? 2 : 1;
+
+  const retry = async () => {
+    setRetrying(true);
+    setRetryErr(null);
+    try {
+      const r = await api<{ run_id: string }>("/runs", { method: "POST", json: { mode: me?.user.is_demo ? "auto" : "live" } });
+      router.push(`/war-room/${r.run_id}`);
+    } catch (e) {
+      setRetryErr((e as Error).message);
+      setRetrying(false);
+    }
+  };
 
   return (
     <div className="min-h-dvh pb-24">
@@ -102,6 +120,8 @@ export default function WarRoom() {
         </aside>
 
         <main className="min-w-0 space-y-10">
+          <div className="space-y-4">
+          <FlowStepper step={step} />
           <div className="card flex items-center gap-3 p-4" aria-live="polite">
             {view.status === "complete" ? (
               <CheckCircle2 className="text-emerald-700" size={20} />
@@ -114,6 +134,21 @@ export default function WarRoom() {
             )}
             <span className="text-sm font-medium">{view.status === "error" ? view.error : view.label}</span>
           </div>
+          {view.status === "error" && (
+            <div role="alert" className="card flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
+              <div className="text-sm">
+                <div className="font-semibold">This analysis didn&apos;t finish.</div>
+                <div className="text-stone-600">{retryErr || "Nothing was lost. You can start it again."}</div>
+              </div>
+              <div className="flex shrink-0 gap-2">
+                <Link href="/dashboard" className="btn-secondary">Back to dashboard</Link>
+                <button onClick={retry} disabled={retrying} className="btn-primary">
+                  {retrying ? <Spinner /> : <RotateCcw size={16} />} Try again
+                </button>
+              </div>
+            </div>
+          )}
+          </div>
 
           {view.profile && (
             <Section id="s-profile" eyebrow="Intake Analyst · Memory" title="What we heard">
@@ -125,7 +160,7 @@ export default function WarRoom() {
             <Section id="s-pains" eyebrow="Pain Diagnostician · Tool Scouts" title="What it's costing you, and what could fix it">
               <PainCards pains={view.pains} />
               <div className="mt-4">
-                <ScoutGrid pains={view.pains} scouts={view.scouts} dropped={view.dropped} catalog={catalog} />
+                <ScoutGrid pains={view.pains} scouts={view.scouts} dropped={view.dropped} security={view.security} catalog={catalog} />
               </div>
             </Section>
           )}
@@ -137,7 +172,12 @@ export default function WarRoom() {
           )}
 
           {view.stack && (
-            <Section id="s-stack" eyebrow="ROI Calculator" title="Recommended stack">
+            <Section
+              id="s-stack"
+              eyebrow="ROI Calculator"
+              title="Recommended stack"
+              help="Tools are compared per problem. Value = hours saved x hourly cost + revenue recovered. Net = value minus the tool's monthly price. Expand a tool to see how we estimated it."
+            >
               <StackPanel
                 pains={view.pains}
                 scored={view.scored}
@@ -181,10 +221,12 @@ export default function WarRoom() {
           )}
 
           {view.plan && (view.plan.scenarios?.length ?? 0) > 0 && (
-            <Section id="s-flow" eyebrow="Stack in action" title="Your AI tools, working together">
-              <p className="-mt-2 mb-4 text-sm text-stone-600">
-                A typical day after adoption: watch the new AI tools hand work to each other and to the tools you already use.
-              </p>
+            <Section
+              id="s-flow"
+              eyebrow="Stack in action"
+              title="Your AI tools, working together"
+              help="A typical day after adoption: watch the new AI tools hand work to each other and to the tools you already use."
+            >
               <StackFlow scenarios={view.plan.scenarios!} catalog={catalog} approved={view.approved || []} />
             </Section>
           )}
@@ -201,9 +243,14 @@ export default function WarRoom() {
                       {view.memorySaved.episodes === 1 ? "" : "s"}. Next time, your advisors start from here.
                     </span>
                   </div>
-                  <Link href="/dashboard" className="btn shrink-0 bg-white text-stone-900 hover:bg-stone-100">
-                    Go to dashboard <ArrowRight size={16} />
-                  </Link>
+                  <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
+                    <Link href="/agents" className="btn border border-white/30 text-white hover:bg-white/10">
+                      <Network size={16} /> See agents working together
+                    </Link>
+                    <Link href="/dashboard" className="btn bg-white text-stone-900 hover:bg-stone-100">
+                      Go to dashboard <ArrowRight size={16} />
+                    </Link>
+                  </div>
                 </div>
               )}
             </Section>

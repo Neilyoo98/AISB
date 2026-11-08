@@ -1,0 +1,15 @@
+{
+  "_note": "DEMO DATA. Written for the sample businesses; shown in the UI as 'Sample review (demo data)'. Not real customer reviews.",
+  "coolair-hvac": [
+    {"tool_id": "rosie", "role": "Owner", "output_quality": 4, "reliability": 5, "support": 4, "text": "Catches the calls we used to miss while on roofs. Summaries land as texts within a minute. Had to tune the emergency questions in week one."},
+    {"tool_id": "jobber", "role": "Owner", "output_quality": 4, "reliability": 4, "support": 5, "text": "Quotes from saved line items on my phone instead of at night on paper. The QuickBooks sync took one afternoon to set up."}
+  ],
+  "joes-coffee": [
+    {"tool_id": "7shifts", "role": "Owner", "output_quality": 4, "reliability": 4, "support": 4, "text": "Students swap shifts in the app and I approve with one tap. Rebuilding the semester schedule went from hours to about 30 minutes."},
+    {"tool_id": "square-marketing", "role": "Owner", "output_quality": 3, "reliability": 4, "support": 3, "text": "The 2-5pm student offer brought people in, but writing a good message still takes me a few tries."},
+    {"tool_id": "meta-business-suite", "role": "Manager", "output_quality": 3, "reliability": 4, "support": 2, "text": "Free and does the job for scheduling Instagram posts. Support is basically help articles."}
+  ],
+  "greenleaf": [
+    {"tool_id": "jobber", "role": "Owner", "output_quality": 4, "reliability": 4, "support": 4, "text": "Customers request quotes online and approve with one tap. I answer spring requests same day now instead of next week."}
+  ]
+}

@@ -1,5 +1,6 @@
 """Seed the tool catalog and the sample-business accounts (lived-in: profile, memory, a past run, plan progress)."""
 import json
+from datetime import datetime, timedelta, timezone
 import logging
 import secrets
 
@@ -11,6 +12,10 @@ from memory import store
 from replay import load_recording
 
 log = logging.getLogger("seed")
+
+DEMO_HISTORY_DAYS = 45
+SAMPLE_REVIEWS = {k: v for k, v in json.loads((DATA_DIR / "sample_reviews.json").read_text(encoding="utf-8")).items()
+                  if not k.startswith("_")}
 
 
 def load_personas() -> list[dict]:
@@ -34,9 +39,14 @@ def seed_demos():
             log.warning("no recording for %s - run scripts/precompute_demos.py", p["id"])
             continue
         res = rec["result"]
-        rid = db.create_run(bid, uid, "replay", p["raw_input"])
+        # Demo history: the sample stack was adopted 45 days ago, so its reviews count as verified use.
+        adopted_at = datetime.now(timezone.utc) - timedelta(days=DEMO_HISTORY_DAYS)
+        rid = db.create_run(bid, uid, "replay", p["raw_input"], created_at=adopted_at)
         db.update_run(rid, status="complete", result=res, events=rec["events"], cost_usd=0)
         save_plan_tasks(rid, res.get("plan") or {}, done_weeks=1)
+        for r in SAMPLE_REVIEWS.get(p["id"], []):
+            db.add_review(r["tool_id"], bid, uid, r["role"], r["output_quality"], r["reliability"], r["support"],
+                          r["text"], is_demo=True, created_at=adopted_at + timedelta(days=30))
         store.delete_business_memory(bid)
         store.upsert_facts(bid, res.get("facts", []))
         for t in res.get("approved_tool_ids", []):
@@ -60,7 +70,7 @@ def reset_demos():
 
 def seed_all():
     db.init_db()
-    n = store.seed_catalog()
+    n = store.seed_catalog(force=True)  # cheap (~40 docs); keeps payloads in sync with catalog.json
     if n:
         log.info("embedded %d catalog tools", n)
     seed_demos()

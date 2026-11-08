@@ -21,6 +21,9 @@ from memory import store
 
 log = logging.getLogger("graph")
 
+SECURITY_FIELDS = {"no_training": "no_training_on_customer_data", "soc2": "soc2"}
+SECURITY_LABELS = {"no_training": "No training on our data", "soc2": "SOC 2"}
+
 
 def _j(x) -> str:
     return json.dumps(x, ensure_ascii=False)
@@ -37,6 +40,14 @@ async def intake_parser(state: AdvisorState):
     profile = out.profile.model_dump()
     if state.get("business_name") and not profile.get("business_name"):
         profile["business_name"] = state["business_name"]
+    # structured answers win over LLM inference (deterministic)
+    det = state.get("details") or {}
+    profile["security_must_haves"] = [m for m in det.get("security_must_haves", []) if m in SECURITY_FIELDS]
+    profile["goals"] = list(det.get("goals", []))[:4]
+    for t in det.get("current_tools", []):
+        n = t.strip().lower().replace(" ", "-")
+        if n and n not in profile["current_tools"]:
+            profile["current_tools"].append(n)
     facts = [f.model_dump() for f in out.facts]
     await emit(rid, "intake.done", {"profile": profile, "raw_pains": [p.model_dump() for p in out.raw_pains],
                                     "facts": facts}, agent="intake")
@@ -96,6 +107,18 @@ async def tool_scout(payload: dict):
                                     pain_tag=pain["tag"], vertical=profile["vertical"], limit=8)
     owned = {t.lower() for t in profile.get("current_tools", [])}
     cands = [c for c in cands if c["id"] not in owned] or cands
+    # Security must-haves: hard filter on SOURCED trust facts only (verified / vendor_claimed).
+    must = profile.get("security_must_haves") or []
+    security_unverified = False
+    if must:
+        ok = [c for c in cands if all((c.get("trust") or {}).get(SECURITY_FIELDS[m], {}).get("status")
+                                      in ("verified", "vendor_claimed") for m in must)]
+        security_unverified = not ok
+        await emit(rid, "guard.security", {"pain_id": pain["id"], "required": [SECURITY_LABELS[m] for m in must],
+                                           "confirmed": [c["id"] for c in ok], "unverified": security_unverified},
+                   agent=agent)
+        if ok:
+            cands = ok
     cand_ids = {c["id"] for c in cands}
     slim = [{k: c[k] for k in ("id", "name", "category", "verticals", "solves", "ai_features", "description",
                                "price_monthly_typical", "free_tier", "setup_hours", "tech_comfort_min",
@@ -117,6 +140,8 @@ async def tool_scout(payload: dict):
                   "pct_revenue_recovered": 0.2, "estimate_reasoning": "conservative default"} for c in cands[:3]]
     for pk in picks:
         pk["pain_id"] = pain["id"]
+        if security_unverified:
+            pk["security_note"] = " / ".join(SECURITY_LABELS[m] for m in must) + ": unknown — verify with the vendor"
     await emit(rid, "scout.result", {"pain_id": pain["id"], "searched": [c["id"] for c in cands],
                                      "picks": picks}, agent=agent)
     return {"candidates": picks}
@@ -169,6 +194,7 @@ async def roi_comparator(state: AdvisorState):
     budget = float(state["profile"].get("monthly_budget") or 0)
     tool_ids, summary = roi.pick_stack(scored, budget)
     scored_d = [s.to_dict() | {"why_fit": c["why_fit"], "estimate_reasoning": c["estimate_reasoning"],
+                               "security_note": c.get("security_note"),
                                "pct_time_saved": c["pct_time_saved"], "pct_revenue_recovered": c["pct_revenue_recovered"]}
                 for s, c in zip(scored, state["candidates"])]
     stack = {"tool_ids": tool_ids, **summary}
@@ -287,12 +313,12 @@ def _friendly(e: Exception) -> str:
     return "An advisor hit a snag. Please try again in a moment."
 
 
-async def start_live(run_id: str, business_id: str, business_name: str, raw_input: str):
+async def start_live(run_id: str, business_id: str, business_name: str, raw_input: str, details: dict | None = None):
     ch = channel(run_id)
     await ch.emit("run.start", {"mode": "live"})
     try:
         await GRAPH.ainvoke({"run_id": run_id, "business_id": business_id, "business_name": business_name,
-                             "raw_input": raw_input}, _cfg(run_id))
+                             "raw_input": raw_input, "details": details or {}}, _cfg(run_id))
         snap = await GRAPH.aget_state(_cfg(run_id))
         result = _result(snap.values)
         db.update_run(run_id, status="awaiting_approval", result=result, events=ch.events,

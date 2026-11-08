@@ -1,18 +1,19 @@
 import Link from "next/link";
-import { ArrowRight, BadgeDollarSign, BrainCircuit, CheckCircle2, MessageSquareText, ShieldCheck, Users } from "lucide-react";
-import { Logo } from "@/components/ui";
+import { ArrowRight, BadgeDollarSign, BrainCircuit, CheckCircle2, MessageSquareText, Scale, ShieldCheck, Users } from "lucide-react";
+import { HelpTip, Logo } from "@/components/ui";
 
 const steps = [
-  { icon: MessageSquareText, title: "Tell us in your own words", body: "No forms full of jargon. Describe your week, what slips through the cracks, and your budget." },
-  { icon: BadgeDollarSign, title: "See what each problem costs", body: "A diagnostician turns “we miss calls” into “~$4,500/month in lost jobs”, with the math shown." },
-  { icon: Users, title: "Advisors debate the options", body: "A Budget Hawk, an Ease-of-Use Coach and an Integration Checker challenge every tool before you see it." },
-  { icon: CheckCircle2, title: "Approve, then adopt in 30 days", body: "You stay in control. Approve the stack you like and get a week-by-week rollout plan." },
+  { icon: MessageSquareText, title: "Tell us in your own words", body: "Describe your week, or start from a template." },
+  { icon: BadgeDollarSign, title: "See what each problem costs", body: "Every pain gets a monthly dollar figure." },
+  { icon: Users, title: "Advisors debate the options", body: "Three AI advisors challenge every tool." },
+  { icon: CheckCircle2, title: "Approve, then adopt in 30 days", body: "You approve; we write the rollout plan." },
 ];
 
 const trust = [
-  { icon: ShieldCheck, title: "No made-up tools", body: "Advisors can only recommend from a verified catalog of real tools. Anything else is blocked." },
-  { icon: BadgeDollarSign, title: "ROI you can audit", body: "AI estimates the impact; a plain calculator does the math. Every number is traceable." },
-  { icon: BrainCircuit, title: "It remembers your business", body: "Your Business Constitution grows with each visit, so advice gets sharper over time." },
+  { icon: ShieldCheck, title: "No made-up tools", body: "Only real tools from a verified catalog." },
+  { icon: Scale, title: "Discover & compare", body: "Search in plain words; compare cost, fit and reviews side by side." },
+  { icon: BadgeDollarSign, title: "ROI you can audit", body: "A plain calculator does the math, not the AI." },
+  { icon: BrainCircuit, title: "It remembers you", body: "Advice gets sharper with every visit." },
 ];
 
 export default function Home() {
@@ -32,9 +33,12 @@ export default function Home() {
           <h1 className="max-w-3xl font-display text-4xl font-bold leading-[1.05] tracking-tight text-stone-900 sm:text-6xl">
             The right AI tools for your business, picked, priced and planned.
           </h1>
-          <p className="mt-5 max-w-2xl text-lg leading-relaxed text-stone-600">
-            StackSmith is a team of AI advisors that listens to how your business actually runs, puts a dollar figure on what&apos;s
-            slowing you down, and recommends a small stack of proven tools that pays for itself, with a 30-day plan to adopt it.
+          <p className="mt-5 flex max-w-2xl items-center gap-2 text-lg leading-relaxed text-stone-600">
+            A team of AI advisors that finds the few tools that pay for themselves.
+            <HelpTip label="What is StackSmith?">
+              StackSmith listens to how your business actually runs, puts a dollar figure on what&apos;s slowing you down, compares real tools, and recommends a small stack that pays
+              for itself, with a 30-day plan to adopt it. You approve everything.
+            </HelpTip>
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link href="/login" className="btn-primary px-5 py-3 text-base">
@@ -72,7 +76,7 @@ export default function Home() {
 
         <section className="mx-auto max-w-6xl px-4 py-14">
           <h2 className="max-w-xl font-display text-2xl font-bold sm:text-3xl">Not another directory of 5,000 AI tools.</h2>
-          <div className="mt-8 grid gap-4 sm:grid-cols-3">
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {trust.map((t) => (
               <div key={t.title} className="card p-5">
                 <t.icon size={20} className="text-emerald-700" />

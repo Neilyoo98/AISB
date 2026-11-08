@@ -1,0 +1,897 @@
+{
+ "smith-ai": {
+  "capability": "automation_agent",
+  "modalities_in": [
+   "audio",
+   "text"
+  ],
+  "modalities_out": [
+   "audio",
+   "text"
+  ],
+  "workflows": [
+   "answer inbound calls",
+   "qualify leads",
+   "book appointments",
+   "send call summaries"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "usage",
+  "unit": "call",
+  "unit_price": 2.1,
+  "seats_included": 1,
+  "units_included": 90
+ },
+ "goodcall": {
+  "capability": "automation_agent",
+  "modalities_in": [
+   "audio",
+   "text"
+  ],
+  "modalities_out": [
+   "audio",
+   "text"
+  ],
+  "workflows": [
+   "answer inbound calls",
+   "take messages",
+   "capture leads",
+   "send call summaries"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null
+ },
+ "rosie": {
+  "capability": "automation_agent",
+  "modalities_in": [
+   "audio",
+   "text"
+  ],
+  "modalities_out": [
+   "audio",
+   "text"
+  ],
+  "workflows": [
+   "answer inbound calls",
+   "text call summaries",
+   "handle common customer questions",
+   "capture caller information"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null
+ },
+ "slang-ai": {
+  "capability": "automation_agent",
+  "modalities_in": [
+   "audio"
+  ],
+  "modalities_out": [
+   "audio"
+  ],
+  "workflows": [
+   "answer inbound calls",
+   "handle reservations",
+   "answer hours and menu questions"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null
+ },
+ "quo-openphone": {
+  "capability": "assistant",
+  "modalities_in": [
+   "audio",
+   "text"
+  ],
+  "modalities_out": [
+   "text"
+  ],
+  "workflows": [
+   "summarize phone calls",
+   "draft text replies",
+   "manage shared team inbox",
+   "handle business calls and texts"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "per_seat",
+  "unit": "seat",
+  "unit_price": 23,
+  "seats_included": 2,
+  "units_included": null
+ },
+ "nicejob": {
+  "capability": "automation_agent",
+  "modalities_in": [
+   "text"
+  ],
+  "modalities_out": [
+   "text"
+  ],
+  "workflows": [
+   "send automated review requests",
+   "draft replies to reviews",
+   "display reviews on website"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null
+ },
+ "birdeye": {
+  "capability": "platform",
+  "modalities_in": [
+   "text"
+  ],
+  "modalities_out": [
+   "text"
+  ],
+  "workflows": [
+   "collect customer reviews",
+   "draft review responses",
+   "analyze review sentiment",
+   "engage visitors via webchat"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null
+ },
+ "podium": {
+  "capability": "platform",
+  "modalities_in": [
+   "text"
+  ],
+  "modalities_out": [
+   "text"
+  ],
+  "workflows": [
+   "request customer reviews",
+   "reply to inbound leads",
+   "collect payments by text"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null
+ },
+ "google-business-profile": {
+  "capability": "platform",
+  "modalities_in": [
+   "text",
+   "image"
+  ],
+  "modalities_out": [
+   "text",
+   "image"
+  ],
+  "workflows": [
+   "manage business listing",
+   "respond to reviews",
+   "publish posts and photos",
+   "answer customer questions"
+  ],
+  "deployment": "saas",
+  "api_available": true,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null
+ },
+ "canva-pro": {
+  "capability": "generative",
+  "modalities_in": [
+   "text",
+   "image"
+  ],
+  "modalities_out": [
+   "text",
+   "image"
+  ],
+  "workflows": [
+   "design flyers and menus",
+   "create social media posts",
+   "write marketing copy",
+   "schedule content"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "per_seat",
+  "unit": "seat",
+  "unit_price": 15,
+  "seats_included": 1,
+  "units_included": null
+ },
+ "buffer": {
+  "capability": "assistant",
+  "modalities_in": [
+   "text"
+  ],
+  "modalities_out": [
+   "text"
+  ],
+  "workflows": [
+   "draft social media posts",
+   "repurpose content across channels",
+   "schedule posts",
+   "manage engagement inbox"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null
+ },
+ "meta-business-suite": {
+  "capability": "assistant",
+  "modalities_in": [
+   "text",
+   "image"
+  ],
+  "modalities_out": [
+   "text"
+  ],
+  "workflows": [
+   "schedule social media posts",
+   "auto-reply to direct messages",
+   "generate ad copy"
+  ],
+  "deployment": "saas",
+  "api_available": true,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null
+ },
+ "mailchimp": {
+  "capability": "platform",
+  "modalities_in": [
+   "text",
+   "tabular"
+  ],
+  "modalities_out": [
+   "text"
+  ],
+  "workflows": [
+   "write email campaigns",
+   "optimize send times",
+   "run automated customer journeys",
+   "manage email lists"
+  ],
+  "deployment": "saas",
+  "api_available": true,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null
+ },
+ "square-marketing": {
+  "capability": "automation_agent",
+  "modalities_in": [
+   "text"
+  ],
+  "modalities_out": [
+   "text"
+  ],
+  "workflows": [
+   "send email and text campaigns",
+   "run loyalty programs",
+   "send win-back messages to lapsed customers"
+  ],
+  "deployment": "saas",
+  "api_available": true,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null
+ },
+ "chatgpt-business": {
+  "capability": "assistant",
+  "modalities_in": [
+   "text",
+   "image",
+   "tabular"
+  ],
+  "modalities_out": [
+   "text",
+   "image",
+   "tabular"
+  ],
+  "workflows": [
+   "draft emails and job posts",
+   "rewrite menu descriptions and policies",
+   "analyze spreadsheet data"
+  ],
+  "deployment": "saas",
+  "api_available": true,
+  "pricing_model": "per_seat",
+  "unit": "seat",
+  "unit_price": 25,
+  "seats_included": 1,
+  "units_included": null
+ },
+ "claude-pro": {
+  "capability": "assistant",
+  "modalities_in": [
+   "text"
+  ],
+  "modalities_out": [
+   "text"
+  ],
+  "workflows": [
+   "analyze contracts and invoices",
+   "draft and edit business writing",
+   "summarize long documents",
+   "read spreadsheets and PDFs"
+  ],
+  "deployment": "saas",
+  "api_available": true,
+  "pricing_model": "per_seat",
+  "unit": "seat",
+  "unit_price": 25,
+  "seats_included": 1,
+  "units_included": null
+ },
+ "gemini-workspace": {
+  "capability": "assistant",
+  "modalities_in": [
+   "text"
+  ],
+  "modalities_out": [
+   "text"
+  ],
+  "workflows": [
+   "draft emails",
+   "summarize meetings",
+   "assist document writing",
+   "analyze spreadsheet data"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "per_seat",
+  "unit": "seat",
+  "unit_price": 14,
+  "seats_included": 1,
+  "units_included": null
+ },
+ "square-appointments": {
+  "capability": "platform",
+  "modalities_in": [
+   "text"
+  ],
+  "modalities_out": [
+   "text"
+  ],
+  "workflows": [
+   "send appointment reminders",
+   "book client appointments online",
+   "collect deposits for bookings",
+   "protect against no-shows"
+  ],
+  "deployment": "saas",
+  "api_available": true,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null
+ },
+ "vagaro": {
+  "capability": "platform",
+  "modalities_in": [
+   "text",
+   "tabular"
+  ],
+  "modalities_out": [
+   "text",
+   "tabular"
+  ],
+  "workflows": [
+   "book salon and spa appointments",
+   "send automated client reminders",
+   "write marketing content",
+   "list business on customer marketplace"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null
+ },
+ "calendly": {
+  "capability": "automation_agent",
+  "modalities_in": [
+   "text"
+  ],
+  "modalities_out": [
+   "text"
+  ],
+  "workflows": [
+   "schedule estimate appointments",
+   "route inbound booking requests",
+   "send automated reminders"
+  ],
+  "deployment": "saas",
+  "api_available": true,
+  "pricing_model": "per_seat",
+  "unit": "seat",
+  "unit_price": 12,
+  "seats_included": 1,
+  "units_included": null
+ },
+ "7shifts": {
+  "capability": "predictive",
+  "modalities_in": [
+   "tabular"
+  ],
+  "modalities_out": [
+   "tabular"
+  ],
+  "workflows": [
+   "build staff schedules from sales forecasts",
+   "alert on labor cost overruns",
+   "manage shift swaps"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null
+ },
+ "homebase": {
+  "capability": "automation_agent",
+  "modalities_in": [
+   "text",
+   "tabular"
+  ],
+  "modalities_out": [
+   "text",
+   "tabular"
+  ],
+  "workflows": [
+   "build employee schedules",
+   "track hourly time clock entries",
+   "post job openings",
+   "manage team communication"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null
+ },
+ "jobber": {
+  "capability": "platform",
+  "modalities_in": [
+   "text",
+   "tabular"
+  ],
+  "modalities_out": [
+   "text",
+   "tabular"
+  ],
+  "workflows": [
+   "send quotes",
+   "schedule and dispatch jobs",
+   "invoice and collect payment",
+   "answer inbound calls"
+  ],
+  "deployment": "saas",
+  "api_available": true,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null
+ },
+ "housecall-pro": {
+  "capability": "platform",
+  "modalities_in": [
+   "audio",
+   "text"
+  ],
+  "modalities_out": [
+   "audio",
+   "text"
+  ],
+  "workflows": [
+   "answer inbound calls",
+   "generate estimates",
+   "send review requests",
+   "schedule jobs"
+  ],
+  "deployment": "saas",
+  "api_available": true,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null
+ },
+ "workiz": {
+  "capability": "platform",
+  "modalities_in": [
+   "audio",
+   "text"
+  ],
+  "modalities_out": [
+   "audio",
+   "text"
+  ],
+  "workflows": [
+   "answer inbound service calls",
+   "track calls",
+   "dispatch field technicians",
+   "schedule service jobs"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null
+ },
+ "lmn": {
+  "capability": "platform",
+  "modalities_in": [
+   "text",
+   "tabular"
+  ],
+  "modalities_out": [
+   "text",
+   "tabular"
+  ],
+  "workflows": [
+   "generate landscaping estimates",
+   "track crew time",
+   "schedule landscaping jobs"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null
+ },
+ "yardbook": {
+  "capability": "platform",
+  "modalities_in": [
+   "text",
+   "tabular"
+  ],
+  "modalities_out": [
+   "text",
+   "tabular"
+  ],
+  "workflows": [
+   "create estimates",
+   "schedule recurring jobs",
+   "plan crew routes",
+   "send invoices"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null
+ },
+ "quickbooks": {
+  "capability": "platform",
+  "modalities_in": [
+   "text",
+   "tabular"
+  ],
+  "modalities_out": [
+   "text",
+   "tabular"
+  ],
+  "workflows": [
+   "categorize expenses",
+   "send invoice reminders",
+   "summarize cash flow"
+  ],
+  "deployment": "saas",
+  "api_available": true,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null
+ },
+ "wave": {
+  "capability": "platform",
+  "modalities_in": [
+   "text",
+   "image",
+   "tabular"
+  ],
+  "modalities_out": [
+   "text",
+   "tabular"
+  ],
+  "workflows": [
+   "track business expenses",
+   "send invoices to clients",
+   "categorize bank transactions",
+   "reconcile receipts"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null
+ },
+ "square-pos": {
+  "capability": "platform",
+  "modalities_in": [
+   "text",
+   "tabular"
+  ],
+  "modalities_out": [
+   "text",
+   "tabular"
+  ],
+  "workflows": [
+   "process point-of-sale payments",
+   "manage inventory levels",
+   "take online orders",
+   "review weekly sales performance"
+  ],
+  "deployment": "saas",
+  "api_available": true,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null
+ },
+ "toast": {
+  "capability": "platform",
+  "modalities_in": [
+   "text",
+   "tabular"
+  ],
+  "modalities_out": [
+   "text",
+   "tabular"
+  ],
+  "workflows": [
+   "process restaurant orders and payments",
+   "analyze sales and menu performance",
+   "suggest menu upsells",
+   "scan supplier invoices"
+  ],
+  "deployment": "saas",
+  "api_available": true,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null
+ },
+ "owner-com": {
+  "capability": "platform",
+  "modalities_in": [
+   "text",
+   "image"
+  ],
+  "modalities_out": [
+   "text",
+   "image"
+  ],
+  "workflows": [
+   "build restaurant website",
+   "accept commission-free online orders",
+   "automate restaurant marketing"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null
+ },
+ "marginedge": {
+  "capability": "predictive",
+  "modalities_in": [
+   "image",
+   "text"
+  ],
+  "modalities_out": [
+   "tabular",
+   "text"
+  ],
+  "workflows": [
+   "scan supplier invoices",
+   "calculate daily food cost",
+   "cost out recipes"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null
+ },
+ "meez": {
+  "capability": "assistant",
+  "modalities_in": [
+   "text",
+   "image"
+  ],
+  "modalities_out": [
+   "text",
+   "tabular"
+  ],
+  "workflows": [
+   "import recipes from photos or documents",
+   "calculate plate cost automatically",
+   "scale prep quantities"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null
+ },
+ "tidio": {
+  "capability": "assistant",
+  "modalities_in": [
+   "text"
+  ],
+  "modalities_out": [
+   "text"
+  ],
+  "workflows": [
+   "answer customer questions on website chat",
+   "handle messenger and instagram inquiries",
+   "hand off conversations to live agents"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null
+ },
+ "wix": {
+  "capability": "platform",
+  "modalities_in": [
+   "text"
+  ],
+  "modalities_out": [
+   "text",
+   "image"
+  ],
+  "workflows": [
+   "build a website from questions",
+   "generate site copy",
+   "take bookings",
+   "take orders"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null
+ },
+ "durable": {
+  "capability": "platform",
+  "modalities_in": [
+   "text",
+   "image"
+  ],
+  "modalities_out": [
+   "text",
+   "image"
+  ],
+  "workflows": [
+   "generate a website for a service business",
+   "write blog posts for SEO",
+   "manage customer contacts",
+   "send invoices"
+  ],
+  "deployment": "saas",
+  "api_available": false,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null
+ },
+ "lightspeed-retail": {
+  "capability": "platform",
+  "modalities_in": [
+   "text",
+   "tabular"
+  ],
+  "modalities_out": [
+   "text",
+   "tabular"
+  ],
+  "workflows": [
+   "track retail inventory",
+   "manage work orders",
+   "send customer notifications",
+   "forecast inventory needs"
+  ],
+  "deployment": "saas",
+  "api_available": true,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null
+ },
+ "zapier": {
+  "capability": "automation_agent",
+  "modalities_in": [
+   "text"
+  ],
+  "modalities_out": [
+   "text"
+  ],
+  "workflows": [
+   "connect apps and automate tasks",
+   "build automations from plain English",
+   "run AI steps within workflows",
+   "deploy chatbots"
+  ],
+  "deployment": "saas",
+  "api_available": true,
+  "pricing_model": "flat",
+  "unit": null,
+  "unit_price": null,
+  "seats_included": 1,
+  "units_included": null
+ }
+}

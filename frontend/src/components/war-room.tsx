@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   BadgeDollarSign, BookOpen, Calculator, Check, ChevronDown, ClipboardList, Hand, Search, ShieldAlert, ShieldCheck, UserCheck, Users,
@@ -7,7 +8,7 @@ import {
 import { cn, money } from "@/lib/api";
 import type { MeshMsg, Pain, Pick, Plan, Profile, Scored, Stack, Tool } from "@/lib/types";
 import type { AgentKey, AgentStatus, RunView } from "@/hooks/useRunStream";
-import { PAIN_LABEL, VERTICAL_LABEL } from "@/components/ui";
+import { HelpTip, PAIN_LABEL, VERTICAL_LABEL } from "@/components/ui";
 
 const EASE = [0.23, 1, 0.32, 1] as const;
 
@@ -54,7 +55,7 @@ export function Pipeline({ agents }: { agents: Record<AgentKey, AgentStatus> }) 
   );
 }
 
-export function Section({ title, eyebrow, children, id }: { title: string; eyebrow: string; children: React.ReactNode; id?: string }) {
+export function Section({ title, eyebrow, children, id, help }: { title: string; eyebrow: string; children: React.ReactNode; id?: string; help?: React.ReactNode }) {
   return (
     <motion.section
       id={id}
@@ -64,7 +65,10 @@ export function Section({ title, eyebrow, children, id }: { title: string; eyebr
       className="scroll-mt-24"
     >
       <p className="eyebrow">{eyebrow}</p>
-      <h2 className="mt-1 font-display text-xl font-bold tracking-tight sm:text-2xl">{title}</h2>
+      <h2 className="mt-1 flex items-center gap-2 font-display text-xl font-bold tracking-tight sm:text-2xl">
+        <span>{title}</span>
+        {help && <HelpTip label={`About: ${title}`}>{help}</HelpTip>}
+      </h2>
       <div className="mt-4">{children}</div>
     </motion.section>
   );
@@ -138,12 +142,15 @@ export function PainCards({ pains }: { pains: Pain[] }) {
   );
 }
 
-export function ScoutGrid({ pains, scouts, dropped, catalog }: { pains: Pain[]; scouts: RunView["scouts"]; dropped: RunView["dropped"]; catalog: Record<string, Tool> }) {
+export function ScoutGrid({
+  pains, scouts, dropped, security = [], catalog,
+}: { pains: Pain[]; scouts: RunView["scouts"]; dropped: RunView["dropped"]; security?: RunView["security"]; catalog: Record<string, Tool> }) {
   return (
     <div className="grid gap-3 md:grid-cols-3">
       {pains.map((p) => {
         const s = scouts[p.id];
         const drop = dropped.filter((d) => d.pain_id === p.id).flatMap((d) => d.tool_ids);
+        const sec = security.find((g) => g.pain_id === p.id);
         return (
           <div key={p.id} className="card p-4">
             <div className="text-xs font-semibold text-stone-500">For: {p.title}</div>
@@ -172,6 +179,18 @@ export function ScoutGrid({ pains, scouts, dropped, catalog }: { pains: Pain[]; 
                     <ShieldAlert size={14} className="mt-0.5 shrink-0" /> Blocked {drop.length} suggestion{drop.length > 1 ? "s" : ""} not in the verified catalog.
                   </div>
                 )}
+                {sec &&
+                  (sec.unverified ? (
+                    <div className="mt-3 flex items-start gap-2 rounded-lg bg-amber-50 p-2 text-xs text-amber-900">
+                      <ShieldAlert size={14} className="mt-0.5 shrink-0" />
+                      {sec.required.join(" / ")}: no confirmed tools in our catalog yet. Picks are flagged; verify with the vendor.
+                    </div>
+                  ) : (
+                    <div className="mt-3 flex items-start gap-2 rounded-lg bg-emerald-50 p-2 text-xs text-emerald-900">
+                      <ShieldCheck size={14} className="mt-0.5 shrink-0" />
+                      Kept {sec.confirmed.length} tool{sec.confirmed.length === 1 ? "" : "s"} that confirm {sec.required.join(" / ")}.
+                    </div>
+                  ))}
               </>
             )}
           </div>
@@ -260,11 +279,19 @@ export function StackPanel({
 
       {pains.map((p) => {
         const rows = scored.filter((s) => s.pain_id === p.id).sort((a, b) => b.fit_score - a.fit_score);
+        const compareIds = Array.from(new Set(rows.map((r) => r.tool_id))).slice(0, 4);
         return (
           <div key={p.id} className="card overflow-hidden">
             <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-stone-100 bg-stone-50/60 px-4 py-3">
               <h3 className="font-semibold">{p.title}</h3>
-              <span className="text-xs text-stone-500">costs you ~{money(p.monthly_cost_of_pain)}/mo</span>
+              <span className="flex items-center gap-3 text-xs text-stone-500">
+                costs you ~{money(p.monthly_cost_of_pain)}/mo
+                {compareIds.length >= 2 && (
+                  <Link href={`/compare?ids=${compareIds.join(",")}`} className="font-semibold text-emerald-700 hover:underline">
+                    Compare
+                  </Link>
+                )}
+              </span>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full min-w-[620px] text-sm">
@@ -304,6 +331,11 @@ export function StackPanel({
                               </button>
                               {rec && <span className="rounded-full bg-emerald-700 px-2 py-0.5 text-[11px] font-semibold text-white">Recommended</span>}
                             </div>
+                            {(s as Scored & { security_note?: string | null }).security_note && (
+                              <div className="mt-1 flex items-center gap-1 text-[11px] text-amber-800">
+                                <ShieldAlert size={11} /> {(s as Scored & { security_note?: string | null }).security_note}
+                              </div>
+                            )}
                           </td>
                           <td className="px-2 py-3 text-right tabular-nums">{s.monthly_cost === 0 ? "Free" : money(s.monthly_cost)}</td>
                           <td className="px-2 py-3 text-right tabular-nums">{money(s.monthly_value)}</td>
@@ -374,7 +406,10 @@ export function StackPanel({
         );
       })}
       <p className="flex items-center gap-1.5 text-xs text-stone-500">
-        <ShieldCheck size={14} /> Every number above comes from a deterministic calculator; the AI only estimates the impact share. Prices as of Nov 2026.
+        <ShieldCheck size={14} /> Numbers from a deterministic calculator
+        <HelpTip>
+          Every number above comes from a deterministic calculator; the AI only estimates what share of each problem a tool removes. Prices are typical list prices as of Nov 2026. Verify before buying.
+        </HelpTip>
       </p>
     </div>
   );

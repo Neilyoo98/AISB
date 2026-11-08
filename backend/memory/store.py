@@ -56,7 +56,7 @@ def _ensure(name: str):
                 c.create_payload_index(name, field_name=field, field_schema=qm.PayloadSchemaType.KEYWORD)
 
 
-INDEXED = {CATALOG: ["solves", "verticals"], FACTS: ["business_id"], EPISODES: ["business_id", "vertical"]}
+INDEXED = {CATALOG: ["solves", "verticals", "category", "deployment", "modalities_in", "modalities_out"], FACTS: ["business_id"], EPISODES: ["business_id", "vertical"]}
 
 
 # ---------------- catalog ----------------
@@ -69,6 +69,7 @@ def load_catalog() -> dict[str, dict]:
 
 def _tool_text(t: dict) -> str:
     return (f"{t['name']}. {t['description']} Solves: {', '.join(t['solves'])}. "
+            f"Does: {', '.join(t.get('workflows', []))}. "
             f"AI features: {', '.join(t['ai_features'])}. For: {', '.join(t['verticals'])}.")
 
 
@@ -78,6 +79,8 @@ def seed_catalog(force: bool = False) -> int:
     cat = load_catalog()
     if not force and c.count(CATALOG).count == len(cat):
         return 0
+    # payload-only changes (new catalog fields) must reach Qdrant too: drop stale points first
+    c.delete(CATALOG, points_selector=qm.FilterSelector(filter=qm.Filter(must=[])))
     tools = list(cat.values())
     vecs = embed([_tool_text(t) for t in tools])
     c.upsert(CATALOG, [qm.PointStruct(id=_pid("tool", t["id"]), vector=v, payload=t) for t, v in zip(tools, vecs)])
@@ -105,6 +108,27 @@ def search_tools(query: str, *, pain_tag: str | None, vertical: str | None, limi
     if vertical:
         results.sort(key=lambda t: (vertical in t["verticals"] or "all" in t["verticals"], t["_score"]), reverse=True)
     return results[:limit]
+
+
+def search_catalog(query: str, *, vertical: str | None = None, category: str | None = None,
+                   max_price: float | None = None, modality: str | None = None, deployment: str | None = None,
+                   limit: int = 20) -> list[dict]:
+    """Semantic search over the whole catalog with optional structured filters (used by Discover)."""
+    must = []
+    if vertical:
+        must.append(qm.FieldCondition(key="verticals", match=qm.MatchAny(any=[vertical, "all"])))
+    if category:
+        must.append(qm.FieldCondition(key="category", match=qm.MatchValue(value=category)))
+    if max_price is not None:
+        must.append(qm.FieldCondition(key="price_monthly_typical", range=qm.Range(lte=max_price)))
+    if deployment:
+        must.append(qm.FieldCondition(key="deployment", match=qm.MatchValue(value=deployment)))
+    if modality:
+        must.append(qm.Filter(should=[qm.FieldCondition(key="modalities_in", match=qm.MatchValue(value=modality)),
+                                      qm.FieldCondition(key="modalities_out", match=qm.MatchValue(value=modality))]))
+    hits = client().query_points(CATALOG, query=embed([query])[0], query_filter=qm.Filter(must=must) if must else None,
+                                 limit=limit, with_payload=True).points
+    return [{"id": h.payload["id"], "score": round(h.score, 3)} for h in hits]
 
 
 # ---------------- Business Constitution ----------------

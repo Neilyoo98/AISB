@@ -37,7 +37,22 @@ export type Tool = {
   integrates_with: string[];
   pros: string[];
   cons: string[];
+  capability?: string;
+  modalities_in?: string[];
+  modalities_out?: string[];
+  workflows?: string[];
+  deployment?: "saas" | "vpc" | "on_prem";
+  api_available?: boolean;
+  pricing_model?: "flat" | "per_seat" | "usage";
+  unit?: string | null;
+  unit_price?: number | null;
+  seats_included?: number;
+  units_included?: number | null;
+  trust?: Record<string, { status: "verified" | "vendor_claimed" | "unknown"; source_url: string | null; as_of: string | null }>;
+  reviews?: ReviewAgg | null;
 };
+
+export type ReviewAgg = { count: number; output_quality: number; reliability: number; support: number; overall: number; verified: number };
 
 export type Pain = {
   id: string;

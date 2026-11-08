@@ -3,11 +3,11 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { ArrowRight, Check, Clock, ExternalLink, Footprints, PlayCircle, RotateCcw, Sparkles, Zap } from "lucide-react";
+import { ArrowRight, Check, Clock, Compass, ExternalLink, Footprints, Network, PlayCircle, RotateCcw, Sparkles, Zap } from "lucide-react";
 import { api, cn, money } from "@/lib/api";
 import type { Business, Pain, Scenario, Stack, Tool, User } from "@/lib/types";
 import { StackFlow } from "@/components/stack-flow";
-import { AppHeader, Spinner, Stat, VERTICAL_LABEL } from "@/components/ui";
+import { AppHeader, HelpTip, PageHeader, PageState, Spinner, Stat, VERTICAL_LABEL, useTitle } from "@/components/ui";
 
 type Task = { id: number; week: number; tool_id: string | null; text: string; owner: string; minutes: number; done: boolean };
 type Dash = {
@@ -31,24 +31,28 @@ type Dash = {
 };
 
 export default function Dashboard() {
+  useTitle("Dashboard");
   const router = useRouter();
   const [d, setD] = useState<Dash | null>(null);
   const [starting, setStarting] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [catalog, setCatalog] = useState<Record<string, Tool>>({});
 
-  useEffect(() => {
-    api<Tool[]>("/catalog").then((ts) => setCatalog(Object.fromEntries(ts.map((t) => [t.id, t])))).catch(() => {});
-  }, []);
-
-  useEffect(() => {
+  const load = () => {
+    setErr(null);
     api<Dash>("/dashboard")
       .then((x) => {
         if (!x.business && !x.user.is_demo) router.replace("/onboard");
         else setD(x);
       })
       .catch((e) => setErr(e.message));
-  }, [router]);
+  };
+
+  useEffect(() => {
+    api<Tool[]>("/catalog").then((ts) => setCatalog(Object.fromEntries(ts.map((t) => [t.id, t])))).catch(() => {});
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const start = async (mode: "replay" | "live") => {
     setStarting(mode);
@@ -75,7 +79,7 @@ export default function Dashboard() {
     return (
       <div className="min-h-dvh">
         <AppHeader />
-        <div className="grid place-items-center py-32 text-stone-500">{err ? <p role="alert">{err}</p> : <Spinner />}</div>
+        <main className="mx-auto max-w-6xl px-4 pt-8">{err ? <PageState kind="error" message={err} onRetry={load} /> : <PageState kind="loading" />}</main>
       </div>
     );
 
@@ -85,23 +89,17 @@ export default function Dashboard() {
   const pct = d.tasks.length ? Math.round((done / d.tasks.length) * 100) : 0;
   const weeks = Array.from(new Set(d.tasks.map((t) => t.week))).sort();
   const firstName = user.name.split(" ")[0];
+  const cardLink = "card group flex flex-col items-start p-5 text-left transition-[border-color,box-shadow] hover:border-emerald-300 hover:shadow-md";
 
   return (
     <div className="min-h-dvh pb-16">
       <AppHeader businessName={b?.name} isDemo={user.is_demo} />
       <main className="mx-auto max-w-6xl px-4 pt-8">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-          <div className="min-w-0">
-            <p className="eyebrow">Welcome back, {firstName}</p>
-            <h1 className="mt-1 font-display text-3xl font-bold tracking-tight sm:text-4xl">{b?.name}</h1>
-            <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-stone-600">
-              {b?.vertical && <span className="chip">{VERTICAL_LABEL[b.vertical] || b.vertical}</span>}
-              {b?.location && <span>{b.location}</span>}
-              {profile && <span>· {profile.employees} people · budget {money(profile.monthly_budget)}/mo</span>}
-            </div>
-          </div>
-          <div className="flex flex-col gap-2 sm:flex-row">
-            {user.is_demo ? (
+        <PageHeader
+          eyebrow={`Welcome back, ${firstName}`}
+          title={b?.name}
+          actions={
+            user.is_demo ? (
               <>
                 <button onClick={() => start("replay")} disabled={!!starting} className="btn-primary">
                   {starting === "replay" ? <Spinner /> : <PlayCircle size={18} />} Watch the advisors work
@@ -125,8 +123,13 @@ export default function Dashboard() {
                   {starting ? <Spinner /> : <Sparkles size={18} />} New analysis
                 </button>
               </>
-            )}
-          </div>
+            )
+          }
+        />
+        <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-stone-600">
+          {b?.vertical && <span className="chip">{VERTICAL_LABEL[b.vertical] || b.vertical}</span>}
+          {b?.location && <span>{b.location}</span>}
+          {profile && <span>· {profile.employees} people · budget {money(profile.monthly_budget)}/mo</span>}
         </div>
         {err && (
           <p role="alert" className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-800">
@@ -135,15 +138,41 @@ export default function Dashboard() {
         )}
 
         {!latest ? (
-          <div className="card mt-8 p-10 text-center">
-            <h2 className="font-display text-xl font-bold">No recommendation yet</h2>
-            <p className="mt-2 text-stone-600">Run your first analysis to meet your advisors.</p>
-          </div>
+          <section className="mt-8">
+            <h2 className="font-display text-xl font-bold">Get started</h2>
+            <div className="mt-4 grid gap-4 sm:grid-cols-3">
+              <button onClick={() => (b && !user.is_demo ? start("live") : router.push("/onboard"))} disabled={!!starting} className={cardLink}>
+                <span className="grid h-10 w-10 place-items-center rounded-xl bg-emerald-50 text-emerald-700">{starting ? <Spinner /> : <Sparkles size={20} />}</span>
+                <span className="mt-3 font-semibold">Run your first analysis</span>
+                <span className="mt-1 text-sm text-stone-600">Advisors diagnose your business and pick tools.</span>
+              </button>
+              <Link href="/tools" className={cardLink}>
+                <span className="grid h-10 w-10 place-items-center rounded-xl bg-emerald-50 text-emerald-700">
+                  <Compass size={20} />
+                </span>
+                <span className="mt-3 font-semibold">Browse AI tools</span>
+                <span className="mt-1 text-sm text-stone-600">Search, filter and compare real tools.</span>
+              </Link>
+              <Link href="/agents" className={cardLink}>
+                <span className="grid h-10 w-10 place-items-center rounded-xl bg-emerald-50 text-emerald-700">
+                  <Network size={20} />
+                </span>
+                <span className="mt-3 font-semibold">See how agents work</span>
+                <span className="mt-1 text-sm text-stone-600">Watch AI agents hand work to each other.</span>
+              </Link>
+            </div>
+          </section>
         ) : (
           <>
-            <section className="card mt-8 grid grid-cols-2 gap-6 p-6 sm:grid-cols-4">
-              <Stat label="Net gain / month" value={money(latest.stack.net_monthly, { sign: true })} tone="good" sub="value minus tool costs" />
-              <Stat label="Hours saved / month" value={`${Math.round(latest.stack.hours_saved_per_month)}h`} sub="owner + staff time" />
+            <section className="card relative mt-8 grid grid-cols-2 gap-6 p-6 sm:grid-cols-4">
+              <div className="absolute right-3 top-3">
+                <HelpTip align="right">
+                  <b>Net gain</b> is estimated monthly value minus tool costs. <b>Hours saved</b> counts owner and staff time. Every number comes from a deterministic
+                  calculator; the AI only estimates how much of each problem a tool removes.
+                </HelpTip>
+              </div>
+              <Stat label="Net gain / month" value={money(latest.stack.net_monthly, { sign: true })} tone="good" />
+              <Stat label="Hours saved / month" value={`${Math.round(latest.stack.hours_saved_per_month)}h`} />
               <Stat
                 label="Tool cost / month"
                 value={money(latest.stack.monthly_cost)}
@@ -160,9 +189,14 @@ export default function Dashboard() {
                     <p className="eyebrow">Stack in action</p>
                     <h2 className="font-display text-xl font-bold">Your AI tools, working together</h2>
                   </div>
-                  <Link href={`/war-room/${latest.run_id}`} className="flex items-center gap-1 text-sm font-semibold text-emerald-700 hover:underline">
-                    Open the War Room <ArrowRight size={14} />
-                  </Link>
+                  <div className="flex flex-wrap items-center gap-4">
+                    <Link href="/agents" className="flex items-center gap-1 text-sm font-semibold text-emerald-700 hover:underline">
+                      Full view on Agents page <ArrowRight size={14} />
+                    </Link>
+                    <Link href={`/war-room/${latest.run_id}`} className="flex items-center gap-1 text-sm font-semibold text-stone-600 hover:underline">
+                      Open the War Room <ArrowRight size={14} />
+                    </Link>
+                  </div>
                 </div>
                 <StackFlow scenarios={latest.scenarios} catalog={catalog} approved={latest.approved.map((a) => a.id)} />
               </section>
@@ -172,18 +206,23 @@ export default function Dashboard() {
               <section className="space-y-6">
                 <div className="card p-6">
                   <div className="flex items-center justify-between gap-3">
-                    <h2 className="font-semibold">Your AI stack</h2>
+                    <h2 className="flex items-center gap-1 font-semibold">
+                      Your AI stack
+                      {latest.summary && <HelpTip>{latest.summary}</HelpTip>}
+                    </h2>
                     <Link href={`/war-room/${latest.run_id}`} className="flex items-center gap-1 text-sm font-semibold text-emerald-700 hover:underline">
                       Full analysis <ArrowRight size={14} />
                     </Link>
                   </div>
-                  {latest.summary && <p className="mt-2 text-sm leading-relaxed text-stone-600">{latest.summary}</p>}
                   <ul className="mt-4 divide-y divide-stone-100">
                     {latest.approved.map((t) => (
                       <li key={t.id} className="flex items-center justify-between gap-3 py-3">
                         <div className="min-w-0">
-                          <a href={t.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 font-medium text-stone-900 hover:underline">
-                            {t.name} <ExternalLink size={12} className="text-stone-400" />
+                          <Link href={`/tools/${t.id}`} className="font-medium text-stone-900 hover:underline">
+                            {t.name}
+                          </Link>
+                          <a href={t.url} target="_blank" rel="noopener noreferrer" className="ml-1.5 inline-flex text-stone-400 hover:text-stone-700" aria-label={`Visit ${t.name}`}>
+                            <ExternalLink size={12} />
                           </a>
                           <div className="text-xs text-stone-500">
                             Solves:{" "}
@@ -246,11 +285,7 @@ export default function Dashboard() {
                           .filter((t) => t.week === w)
                           .map((t) => (
                             <li key={t.id}>
-                              <button
-                                onClick={() => toggle(t)}
-                                className="flex w-full items-start gap-3 rounded-lg px-2 py-2 text-left hover:bg-stone-50"
-                                aria-pressed={t.done}
-                              >
+                              <button onClick={() => toggle(t)} className="flex w-full items-start gap-3 rounded-lg px-2 py-2 text-left hover:bg-stone-50" aria-pressed={t.done}>
                                 <span
                                   className={cn(
                                     "mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-md border transition-colors",

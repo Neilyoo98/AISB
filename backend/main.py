@@ -9,6 +9,7 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, EmailStr, Field
 
 import db
+import evaluate as ev
 import seed
 from auth import clear, client_ip, current_user, hash_password, issue, rate_limit, verify_password
 from config import (ADMIN_TOKEN, FRONTEND_ORIGIN, LIVE_RUNS_PER_IP_PER_DAY_DEMO, LIVE_RUNS_PER_USER_PER_DAY,
@@ -53,10 +54,41 @@ class LoginIn(BaseModel):
     password: str = Field(max_length=128)
 
 
+class DetailsIn(BaseModel):
+    business_type: str | None = Field(default=None, max_length=60)
+    team_size: int | None = Field(default=None, ge=1, le=10000)
+    budget: str | None = Field(default=None, max_length=40)
+    tech_comfort: int | None = Field(default=None, ge=1, le=5)
+    current_tools: list[str] = Field(default_factory=list, max_length=20)
+    security_must_haves: list[str] = Field(default_factory=list, max_length=4)
+    goals: list[str] = Field(default_factory=list, max_length=6)
+
+
 class BusinessIn(BaseModel):
     name: str = Field(min_length=1, max_length=120)
     location: str = Field(default="", max_length=120)
     description: str = Field(min_length=40, max_length=3000)
+    details: DetailsIn | None = None
+
+
+class ReviewIn(BaseModel):
+    role: str = Field(default="Owner", max_length=60)
+    output_quality: int = Field(ge=1, le=5)
+    reliability: int = Field(ge=1, le=5)
+    support: int = Field(ge=1, le=5)
+    text: str = Field(default="", max_length=1500)
+
+
+class EvaluateIn(BaseModel):
+    ids: list[str] = Field(min_length=1, max_length=4)
+    weights: dict[str, float] | None = None
+    seats: int = Field(default=1, ge=1, le=500)
+    months: int = Field(default=12, ge=1, le=60)
+    usage_per_month: float = Field(default=0, ge=0, le=1_000_000)
+
+
+class WeightsIn(BaseModel):
+    weights: dict[str, float]
 
 
 class RunIn(BaseModel):
@@ -81,7 +113,8 @@ def _biz_out(b):
     if not b:
         return None
     return {"id": b["id"], "name": b["name"], "vertical": b["vertical"], "location": b["location"],
-            "description": b["description"], "profile": json.loads(b["profile_json"]) if b["profile_json"] else None}
+            "description": b["description"], "profile": json.loads(b["profile_json"]) if b["profile_json"] else None,
+            "details": json.loads(b["details_json"]) if b.get("details_json") else None}
 
 
 # ---------------- health ----------------
@@ -158,10 +191,12 @@ def upsert_business(body: BusinessIn, user=Depends(current_user)):
     if user["is_demo"]:
         raise HTTPException(403, "Sample businesses can't be edited - create your own account")
     b = db.get_user_business(user["id"])
+    details = body.details.model_dump() if body.details else None
     if b:
-        db.update_business(b["id"], name=body.name, location=body.location, description=body.description)
+        db.update_business(b["id"], name=body.name, location=body.location, description=body.description,
+                           details=details)
         return _biz_out(db.get_business(b["id"]))
-    bid = db.create_business(user["id"], body.name, None, body.location, body.description)
+    bid = db.create_business(user["id"], body.name, None, body.location, body.description, details=details)
     return _biz_out(db.get_business(bid))
 
 
@@ -253,7 +288,7 @@ async def create_run(body: RunIn, request: Request, user=Depends(current_user)):
     if len(raw) < 40:
         raise HTTPException(400, "Tell us a bit more about your business (at least a couple of sentences).")
     rid = db.create_run(b["id"], user["id"], "live", raw, ip)
-    _bg(start_live(rid, b["id"], b["name"], raw))
+    _bg(start_live(rid, b["id"], b["name"], raw, json.loads(b["details_json"]) if b.get("details_json") else None))
     return {"run_id": rid, "mode": "live"}
 
 
@@ -283,12 +318,101 @@ def _run_tool_ids(r):
 @app.get("/catalog")
 def catalog(vertical: str | None = None, ids: str | None = None):
     cat = store.load_catalog()
+    agg = db.review_aggregates()
     if ids:
-        return {t: cat[t] for t in ids.split(",") if t in cat}
-    tools = list(cat.values())
+        return {t: cat[t] | {"reviews": agg.get(t)} for t in ids.split(",") if t in cat}
+    tools = [t | {"reviews": agg.get(t["id"])} for t in cat.values()]
     if vertical:
         tools = [t for t in tools if vertical in t["verticals"] or "all" in t["verticals"]]
     return tools
+
+
+@app.get("/catalog/search")
+async def catalog_search(request: Request, q: str, vertical: str | None = None, category: str | None = None,
+                         max_price: float | None = None, modality: str | None = None, deployment: str | None = None):
+    rate_limit(request, "search", 60)
+    q = q.strip()[:200]
+    if not q:
+        return []
+    return await asyncio.to_thread(store.search_catalog, q, vertical=vertical, category=category,
+                                   max_price=max_price, modality=modality, deployment=deployment)
+
+
+def _optional_user(request: Request):
+    try:
+        return current_user(request)
+    except HTTPException:
+        return None
+
+
+@app.get("/tools/{tool_id}")
+def tool_detail(tool_id: str, request: Request):
+    cat = store.load_catalog()
+    if tool_id not in cat:
+        raise HTTPException(404, "Unknown tool")
+    user = _optional_user(request)
+    b = db.get_user_business(user["id"]) if user else None
+    revs = db.list_reviews(tool_id)
+    mine = next((r for r in revs if b and r["business_id"] == b["id"]), None)
+    return {"tool": cat[tool_id], "aggregate": db.review_aggregates().get(tool_id),
+            "reviews": [{k: r[k] for k in ("id", "role", "output_quality", "reliability", "support", "text",
+                                           "verified_use", "is_demo", "business_name", "vertical")}
+                        | {"created_at": r["created_at"].isoformat() if r["created_at"] else None} for r in revs],
+            "can_review": bool(b), "my_review": bool(mine),
+            "verified_eligible": bool(b and db.has_verified_use(b["id"], tool_id))}
+
+
+@app.post("/tools/{tool_id}/reviews")
+def post_review(tool_id: str, body: ReviewIn, request: Request, user=Depends(current_user)):
+    rate_limit(request, "review", 5, window_s=24 * 3600)
+    if tool_id not in store.load_catalog():
+        raise HTTPException(404, "Unknown tool")
+    b = _my_business(user)
+    r = db.add_review(tool_id, b["id"], user["id"], body.role, body.output_quality, body.reliability, body.support,
+                      body.text.strip(), is_demo=bool(user["is_demo"]))
+    return {"ok": True, "verified_use": r["verified_use"]}
+
+
+@app.post("/evaluate")
+def evaluate_tools(body: EvaluateIn, request: Request):
+    cat = store.load_catalog()
+    user = _optional_user(request)
+    b = db.get_user_business(user["id"]) if user else None
+    profile = json.loads(b["profile_json"]) if b and b["profile_json"] else {}
+    if b and b.get("details_json"):
+        det = json.loads(b["details_json"])
+        profile["current_tools"] = list(dict.fromkeys(profile.get("current_tools", []) + det.get("current_tools", [])))
+        if det.get("tech_comfort") and not profile.get("tech_comfort"):
+            profile["tech_comfort"] = det["tech_comfort"]
+    hourly = 45.0 if profile else 25.0
+    agg = db.review_aggregates()
+    out = []
+    for tid in body.ids:
+        if tid not in cat:
+            continue
+        t = cat[tid]
+        out.append({"id": tid, "score": ev.score_tool(t, profile, body.weights, agg.get(tid)),
+                    "tco_12": ev.tco(t, body.seats, 12, body.usage_per_month, hourly),
+                    "tco_36": ev.tco(t, body.seats, 36, body.usage_per_month, hourly)})
+    return {"results": out, "weights": ev.normalize_weights(body.weights), "personalized": bool(profile),
+            "business_name": b["name"] if b else None, "current_tools": profile.get("current_tools", []),
+            "hourly_cost": hourly}
+
+
+@app.get("/businesses/me/weights")
+def get_weights(request: Request):
+    user = _optional_user(request)
+    b = db.get_user_business(user["id"]) if user else None
+    saved = json.loads(b["weights_json"]) if b and b.get("weights_json") else None
+    return {"saved": saved, "presets": ev.PRESETS, "criteria": ev.CRITERIA}
+
+
+@app.put("/businesses/me/weights")
+def put_weights(body: WeightsIn, user=Depends(current_user)):
+    b = _my_business(user)
+    w = ev.normalize_weights(body.weights)
+    db.update_business(b["id"], weights=w)
+    return {"saved": w}
 
 
 @app.get("/runs/{run_id}/stream")

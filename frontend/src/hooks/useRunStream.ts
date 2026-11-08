@@ -18,6 +18,7 @@ export type RunView = {
   pains: Pain[];
   scouts: Record<string, { status: "working" | "done"; picks: Pick[]; searched: string[] }>;
   dropped: { pain_id: string; tool_ids: string[] }[];
+  security: { pain_id: string; required: string[]; confirmed: string[]; unverified: boolean }[];
   mesh: MeshMsg[];
   meshStarted: boolean;
   scored: Scored[];
@@ -38,6 +39,7 @@ const initial: RunView = {
   pains: [],
   scouts: {},
   dropped: [],
+  security: [],
   mesh: [],
   meshStarted: false,
   scored: [],
@@ -89,6 +91,9 @@ function apply(s: RunView, e: RunEvent): RunView {
       break;
     case "guard.dropped":
       n.dropped = [...n.dropped, d as { pain_id: string; tool_ids: string[] }];
+      break;
+    case "guard.security":
+      n.security = [...n.security.filter((g) => g.pain_id !== d.pain_id), d as RunView["security"][number]];
       break;
     case "mesh.start":
       n.agents.scout = "done";

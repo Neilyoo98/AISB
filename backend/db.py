@@ -45,6 +45,8 @@ businesses = Table(
     Column("location", String(255)),
     Column("description", Text),
     Column("profile_json", Text),  # latest structured profile (Business Constitution summary)
+    Column("details_json", Text),  # structured onboarding answers (must-haves, goals, team, budget...)
+    Column("weights_json", Text),  # saved Compare scorecard weights
     Column("created_at", DateTime(timezone=True), default=_now),
 )
 
@@ -95,8 +97,40 @@ llm_calls = Table(
 )
 
 
+reviews = Table(
+    "reviews", meta,
+    Column("id", Integer, primary_key=True, autoincrement=True),
+    Column("tool_id", String(64), nullable=False, index=True),
+    Column("business_id", String(32), nullable=False),
+    Column("user_id", String(32), nullable=False),
+    Column("role", String(64)),
+    Column("output_quality", Integer, nullable=False),
+    Column("reliability", Integer, nullable=False),
+    Column("support", Integer, nullable=False),
+    Column("text", Text),
+    Column("verified_use", Boolean, default=False, nullable=False),
+    Column("is_demo", Boolean, default=False, nullable=False),
+    Column("created_at", DateTime(timezone=True), default=_now),
+)
+
+
 def init_db():
     meta.create_all(engine)
+    _add_missing_columns()
+
+
+def _add_missing_columns():
+    """create_all never alters existing tables; add new nullable columns to already-deployed databases."""
+    from sqlalchemy import inspect, text
+    insp = inspect(engine)
+    for table in meta.sorted_tables:
+        if not insp.has_table(table.name):
+            continue
+        have = {c["name"] for c in insp.get_columns(table.name)}
+        for col in table.columns:
+            if col.name not in have:
+                with engine.begin() as c:
+                    c.execute(text(f'ALTER TABLE {table.name} ADD COLUMN {col.name} {col.type.compile(engine.dialect)}'))
 
 
 # ---------- helpers ----------
@@ -123,12 +157,13 @@ def create_user(email, name, password_hash, is_demo=False, persona_id=None) -> s
     return uid
 
 
-def create_business(user_id, name, vertical, location, description, profile=None) -> str:
+def create_business(user_id, name, vertical, location, description, profile=None, details=None) -> str:
     bid = new_id()
     with engine.begin() as c:
         c.execute(insert(businesses).values(id=bid, user_id=user_id, name=name, vertical=vertical,
                                             location=location, description=description,
-                                            profile_json=json.dumps(profile) if profile else None))
+                                            profile_json=json.dumps(profile) if profile else None,
+                                            details_json=json.dumps(details) if details else None))
     return bid
 
 
@@ -144,17 +179,19 @@ def get_user_business(user_id):
 
 
 def update_business(bid, **vals):
-    if "profile" in vals:
-        vals["profile_json"] = json.dumps(vals.pop("profile"))
+    for k in ("profile", "details", "weights"):
+        if k in vals:
+            vals[f"{k}_json"] = json.dumps(vals.pop(k))
     with engine.begin() as c:
         c.execute(update(businesses).where(businesses.c.id == bid).values(**vals))
 
 
-def create_run(business_id, user_id, mode, raw_input, client_ip=None) -> str:
+def create_run(business_id, user_id, mode, raw_input, client_ip=None, created_at=None) -> str:
     rid = new_id()
     with engine.begin() as c:
         c.execute(insert(runs).values(id=rid, business_id=business_id, user_id=user_id, mode=mode,
-                                      status="running", input=raw_input, client_ip=client_ip))
+                                      status="running", input=raw_input, client_ip=client_ip,
+                                      created_at=created_at or _now()))
     return rid
 
 
@@ -253,6 +290,57 @@ def run_spend(run_id) -> float:
                                .where(llm_calls.c.run_id == run_id)).scalar() or 0.0)
 
 
+# ---------- reviews ----------
+
+VERIFIED_AFTER_DAYS = 14
+
+
+def has_verified_use(business_id: str, tool_id: str, now=None) -> bool:
+    """True when this business approved the tool in a completed stack at least 14 days ago."""
+    cutoff = (now or _now()) - timedelta(days=VERIFIED_AFTER_DAYS)
+    with engine.begin() as c:
+        rs = c.execute(select(runs.c.result_json, runs.c.created_at).where(
+            runs.c.business_id == business_id, runs.c.status == "complete")).all()
+    for r in rs:
+        created = r.created_at if r.created_at.tzinfo else r.created_at.replace(tzinfo=timezone.utc)
+        if created <= cutoff and tool_id in (json.loads(r.result_json or "{}").get("approved_tool_ids") or []):
+            return True
+    return False
+
+
+def add_review(tool_id, business_id, user_id, role, output_quality, reliability, support, text_, is_demo=False,
+               created_at=None) -> dict:
+    vals = dict(tool_id=tool_id, business_id=business_id, user_id=user_id, role=role, output_quality=output_quality,
+                reliability=reliability, support=support, text=text_, is_demo=is_demo,
+                verified_use=has_verified_use(business_id, tool_id), created_at=created_at or _now())
+    with engine.begin() as c:
+        c.execute(delete(reviews).where(reviews.c.tool_id == tool_id, reviews.c.business_id == business_id))
+        c.execute(insert(reviews).values(**vals))
+    return vals
+
+
+def list_reviews(tool_id, limit=50):
+    with engine.begin() as c:
+        rs = c.execute(select(reviews, businesses.c.name.label("business_name"), businesses.c.vertical)
+                       .select_from(reviews.join(businesses, reviews.c.business_id == businesses.c.id, isouter=True))
+                       .where(reviews.c.tool_id == tool_id).order_by(reviews.c.created_at.desc()).limit(limit)).all()
+    return [row(r) for r in rs]
+
+
+def review_aggregates() -> dict:
+    with engine.begin() as c:
+        rs = c.execute(select(reviews.c.tool_id, func.count(), func.avg(reviews.c.output_quality),
+                              func.avg(reviews.c.reliability), func.avg(reviews.c.support),
+                              func.sum(func.cast(reviews.c.verified_use, Integer)))
+                       .group_by(reviews.c.tool_id)).all()
+    out = {}
+    for tid, n, q, rel, sup, ver in rs:
+        out[tid] = {"count": n, "output_quality": round(float(q), 1), "reliability": round(float(rel), 1),
+                    "support": round(float(sup), 1), "overall": round((float(q) + float(rel) + float(sup)) / 3, 1),
+                    "verified": int(ver or 0)}
+    return out
+
+
 def delete_demo_data():
     """Remove all demo users (cascades to businesses/runs/tasks via explicit deletes for SQLite)."""
     with engine.begin() as c:
@@ -261,6 +349,7 @@ def delete_demo_data():
             return
         biz_ids = [r.id for r in c.execute(select(businesses.c.id).where(businesses.c.user_id.in_(demo_ids))).all()]
         run_ids = [r.id for r in c.execute(select(runs.c.id).where(runs.c.business_id.in_(biz_ids))).all()] if biz_ids else []
+        c.execute(delete(reviews).where(reviews.c.is_demo.is_(True)))
         if run_ids:
             c.execute(delete(plan_tasks).where(plan_tasks.c.run_id.in_(run_ids)))
             c.execute(delete(runs).where(runs.c.id.in_(run_ids)))

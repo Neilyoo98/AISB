@@ -1,23 +1,12 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, Pause, Play, RotateCcw, Sparkles, User, Wrench } from "lucide-react";
 import { cn } from "@/lib/api";
 import type { Scenario, Tool } from "@/lib/types";
+import { actorKind, actorLabel, castOf, norm } from "@/lib/stack";
 
-const PEOPLE = new Set(["customer", "owner", "staff", "manager", "crew", "tech", "technician"]);
 const EASE = [0.23, 1, 0.32, 1] as const;
-
-type Kind = "new" | "existing" | "person";
-
-function norm(a?: string | null) {
-  if (!a || a.toLowerCase() === "none" || a.toLowerCase() === "null") return null;
-  return a;
-}
-
-function pretty(a: string) {
-  return a.replace(/[-_]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
-}
 
 export function StackFlow({ scenarios, catalog, approved }: { scenarios: Scenario[]; catalog: Record<string, Tool>; approved: string[] }) {
   const [sIdx, setSIdx] = useState(0);
@@ -25,17 +14,9 @@ export function StackFlow({ scenarios, catalog, approved }: { scenarios: Scenari
   const [playing, setPlaying] = useState(true);
   const sc = scenarios[Math.min(sIdx, scenarios.length - 1)];
 
-  const kind = (a: string): Kind => (approved.includes(a) ? "new" : PEOPLE.has(a.toLowerCase()) ? "person" : "existing");
-  const label = (a: string) => catalog[a]?.name?.replace(/ \(.*\)$/, "") || pretty(a);
-
-  const cast = useMemo(() => {
-    if (!sc) return [];
-    const seen: string[] = [];
-    for (const st of sc.steps) for (const a of [st.actor, norm(st.handoff_to)]) if (a && !seen.includes(a)) seen.push(a);
-    const order: Record<Kind, number> = { person: 0, new: 1, existing: 2 };
-    return seen.sort((x, y) => order[kind(x)] - order[kind(y)]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sc, approved]);
+  const kind = (a: string) => actorKind(a, approved);
+  const label = (a: string) => actorLabel(a, catalog);
+  const cast = castOf(sc, approved);
 
   useEffect(() => {
     if (!playing || !sc) return;

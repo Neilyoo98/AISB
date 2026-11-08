@@ -30,6 +30,53 @@ Stack selection (`roi.pick_stack`): per pain, pick the highest-net tool within 1
 - Reset sample businesses after judges poke at them: `curl -X POST $API/admin/reset-demos -H "x-admin-token: $ADMIN_TOKEN"`.
 - Spend so far: `curl $API/ready` shows `spend_usd` against `spend_cap_usd`.
 
+## Phase 1 platform modules (Nov 8)
+
+Branch `feat/platform-modules`. This covers brief Modules 1 & 2 (discovery, comparison) plus the UX cleanup and the Agents page.
+
+**Frontend routes**
+- `/agents`: two tabs. "Advisor team" replays the latest run's events as an animated agent network (`lib/agents.ts`: `AGENT_NODES`, `hopsFromEvents`). "Your AI tools" draws the approved tools, existing tools and people as a graph built from the plan's `scenarios` (`lib/stack.ts`).
+- `/tools`: semantic search (debounced) plus filters.
+- `/tools/[id]`: Overview, Reviews and Trust tabs.
+- `/compare?ids=a,b,c`: 2–4 tools, with weight sliders, 12/36-month TCO and integration badges.
+- UI kit in `components/ui.tsx`: `HelpTip` (`?` popovers for long copy), `PageHeader`, `PageState`, `FlowStepper`, `Stars`, `Ease`, `useTitle`.
+
+**Backend routes**
+- `GET /catalog/search?q=&vertical=&category=&max_price=&modality=&deployment=`: Qdrant semantic search via `store.search_catalog`.
+- `GET /tools/{id}`: the tool, review aggregates, reviews, and `can_review` / `verified_eligible`.
+- `POST /tools/{id}/reviews`: auth required, 5/day, one review per tool per business.
+- `POST /evaluate`: `{ids, weights, seats, months, usage_per_month}` → score + `tco_12` / `tco_36` + integration. Public; personalized when logged in.
+- `GET` / `PUT /businesses/me/weights`: one saved preset per business, plus built-in presets.
+- `/catalog` responses now include `reviews` aggregates.
+
+**Data**
+- New `reviews` table (`verified_use` = the business approved the tool in a completed run ≥14 days ago, via `db.has_verified_use`).
+- New columns `businesses.details_json` (structured onboarding answers) and `businesses.weights_json`. `db._add_missing_columns()` ALTERs already-deployed databases on boot.
+
+**Catalog fields** (validated in `tests/test_catalog.py`)
+- `capability`, `modalities_in`, `modalities_out`, `workflows`, `deployment`, `api_available`;
+- `pricing_model` (flat | per_seat | usage) with `unit`, `unit_price`, `seats_included`, `units_included`;
+- `trust.{no_training_on_customer_data, soc2}`, each `{status: vendor_claimed|verified|unknown, source_url, as_of}`. A non-unknown status requires a source URL and date.
+- Suggestions come from `scripts/enrich_catalog.py` (fast model). A human reviews them, then `--apply` merges them. It never runs at runtime.
+
+**Math** (`backend/evaluate.py`, pure, tested in `tests/test_evaluate.py`)
+- `normalize_weights`, `score_tool` (cost, ease, fit, security, scalability, support; unknown data → neutral 5 flagged `no_data`), `tco`, `integration_status` (native / via_zapier_or_make / none).
+
+**Security must-haves**
+- The onboarding chips (`no_training`, `soc2`) are stored in `details`. `tool_scout` hard-filters on *sourced* trust facts only.
+- When no tool is confirmed, picks carry a `security_note` ("unknown, verify with the vendor") and a `guard.security` SSE event fires.
+
+**Demo history**
+- Seeded sample-business runs are backdated 45 days (`seed.DEMO_HISTORY_DAYS`).
+- Sample reviews come from `data/sample_reviews.json`, are flagged `is_demo`, and show in the UI as "Sample review (demo data)". `seed.reset_demos()` restores both.
+
+**What's real and what isn't** (list this in the PR)
+- Every `trust.*` field is `unknown` (Module 3 will source them).
+- Sample reviews are demo data.
+- Taxonomy fields are LLM-suggested and human-reviewed.
+- Per-seat and usage unit prices are approximate list prices.
+- Security and support scores show "no data" where facts are unknown.
+
 ## 1. The problem and the pitch
 
 Mom-and-pop restaurants, coffee shops, HVAC techs and landscapers know "AI could help" but not **which tool fixes which problem, what it costs, or how to start.** Today's directories (There's An AI For That, G2) list thousands of tools with no fit to the business.

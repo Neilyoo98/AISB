@@ -10,8 +10,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 RUN python -c "from fastembed import TextEmbedding; list(TextEmbedding('sentence-transformers/all-MiniLM-L6-v2').embed(['warmup']))"
 
 COPY . .
-RUN useradd -m app && mkdir -p /data && chown -R app /app /data
-USER app
+# Runs as root: Railway volumes mount root-owned at /data (SQLite + embedded Qdrant live there)
+RUN mkdir -p /data
 
 EXPOSE 8000
 # Single worker: paused approvals live in the in-process LangGraph checkpointer (same as AUBI).

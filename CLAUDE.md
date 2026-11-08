@@ -19,6 +19,17 @@ Built and verified end to end locally: sample-business login → dashboard → W
 
 Stack selection (`roi.pick_stack`): per pain, pick the highest-net tool within 10 fit points of the best fit. Then consolidate: drop a tool whenever moving its pains onto tools already in the stack doesn't lower total net. Owners hate juggling apps. Scouts never recommend tools the owner already uses.
 
+## Deployment (live)
+
+- **App (give this to judges):** https://stacksmith-tan.vercel.app (Vercel project `stacksmith`, root `frontend/`, env `BACKEND_URL`)
+- **API:** https://api-production-f081.up.railway.app (Railway project `stacksmith`, service `api`, Dockerfile in `backend/`)
+- Railway volume at `/data` holds SQLite (`DATABASE_URL=sqlite:////data/stacksmith.db`) and embedded Qdrant (`QDRANT_PATH=/data/qdrant`), so no separate DB or Qdrant service is needed. Demo accounts reseed on boot.
+- Deploy tokens live in `~/.stacksmith-deploy.env` (outside the repo). Redeploy:
+  - API: `cd backend && set -a && . ~/.stacksmith-deploy.env && set +a && unset RAILWAY_API_TOKEN && railway up --service $RAILWAY_SERVICE_ID --environment $RAILWAY_ENV_ID --ci`
+  - Web: `cd frontend && vercel deploy --prod --yes --token $VERCEL_TOKEN`
+- Reset sample businesses after judges poke at them: `curl -X POST $API/admin/reset-demos -H "x-admin-token: $ADMIN_TOKEN"`.
+- Spend so far: `curl $API/ready` shows `spend_usd` against `spend_cap_usd`.
+
 ## 1. The problem and the pitch
 
 Mom-and-pop restaurants, coffee shops, HVAC techs and landscapers know "AI could help" but not **which tool fixes which problem, what it costs, or how to start.** Today's directories (There's An AI For That, G2) list thousands of tools with no fit to the business.

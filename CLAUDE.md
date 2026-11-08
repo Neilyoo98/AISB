@@ -7,7 +7,8 @@
 
 - **Deadline: video and prototype link due Sun Nov 8, 2026.** Solo builder. Each feature has to earn its time. Follow the cut lines in §9.
 - **LLM budget: $25 OpenRouter credit total.** Every LLM call goes through `backend/llm.py` (§6). Never call OpenRouter from the browser.
-- **Judges must be able to test it with no friction.** A "Try a demo business" button skips signup. Login is only for saving your own business.
+- **Judges must be able to test it with no friction.** The login page has a **"Sample businesses"** panel with one-click login cards (§7a). Owners can also register with email + password to save their own business. Demo accounts open on a lived-in dashboard, not an empty state.
+- **Secrets:** the OpenRouter key lives only in `backend/.env` (git-ignored) and in Railway env vars. **This repo is public.** Never paste the key into code, docs, commits, logs or the frontend.
 - **No hallucinated tools.** Agents may recommend only tools that exist in `backend/data/catalog.json`. Validate IDs and drop anything unknown.
 - **IP:** UMD owns all hack-a-thon submissions. Code copied from AUBI becomes part of a UMD-owned submission. Copy patterns, not large verbatim chunks, if that matters to you.
 - Commits are authored as `Neilyoo98 <194648525+Neilyoo98@users.noreply.github.com>`. No AI co-author lines.
@@ -48,7 +49,7 @@ Business value line for the video: *"Show a plumber three tools that pay for the
 - **Vector memory:** **Qdrant Cloud** (free tier).
 - **Embeddings:** `fastembed` with `sentence-transformers/all-MiniLM-L6-v2` (384-d). This is the same model as AUBI, but ONNX instead of torch, so the Docker image stays small and Railway builds fast.
 - **Relational data:** **Railway Postgres** for users, businesses and saved plans. SQLAlchemy plus raw SQL migrations in `backend/db/schema.sql`. No Alembic, given the time.
-- **Auth:** email + password, `passlib[bcrypt]`, JWT in an httpOnly cookie set by the Next.js proxy. Demo mode issues a guest JWT bound to a seeded persona.
+- **Auth (keep it simple):** email + password, `passlib[bcrypt]` hashes, a JWT (7-day expiry) in an httpOnly `SameSite=Lax` cookie set by the Next.js proxy. No OAuth, email verification or password reset. A Next.js `middleware.ts` redirects unauthenticated users from app pages to `/login`. Demo logins are ordinary seeded users flagged `is_demo=true` (§7a).
 - **Streaming:** SSE from FastAPI → Next.js proxy → `useRunStream` hook.
 
 ## 4. Repo layout
@@ -136,13 +137,41 @@ Rules:
 Categories to cover: AI receptionist/phone, reviews and reputation, social and marketing content, email/SMS marketing, scheduling/booking, quoting and invoicing, field service management, POS/restaurant ops, bookkeeping, customer chat, general assistants (ChatGPT/Claude/Gemini), website builders, and staff scheduling.
 Drafting with an LLM is fine, **but check the price and URL of every tool in the demo personas' top recommendations by hand.** Show "prices as of Nov 2026, verify before buying" in the UI.
 
-**`personas.json`**: Joe's Corner Coffee (café, 6 staff), CoolAir HVAC (4 techs, missed calls), GreenLeaf Landscaping (seasonal crew, quoting), Mama Rosa's Trattoria (reviews, online orders).
+### 7a. Login and sample businesses (built for the demo)
+
+**Login page (`/login`)** has two columns:
+- Left: **"Sample businesses — log in instantly"**. Six cards, each with icon, name, vertical, a one-line pain and a **"Log in as Joe"** button. One click calls `POST /auth/demo/{persona_id}` → cookie → `/dashboard`.
+- Right: an ordinary email/password **Log in / Create account** form. A new user goes to `/onboard` and builds their own business.
+
+**`personas.json`** seeds a user, a business, its Constitution facts and **one completed past run** for each persona. Each is detailed enough that the agents produce meaningfully different stacks:
+
+| id | Business | Owner login | Vertical | Size / budget | Tech comfort | Headline pains |
+|---|---|---|---|---|---|---|
+| `joes-coffee` | Joe's Corner Coffee, College Park | joe@demo.stacksmith | café | 6 staff, $150/mo | 2 | staff scheduling chaos, slow Instagram, weekday-afternoon slump |
+| `coolair-hvac` | CoolAir HVAC, Silver Spring | maria@demo.stacksmith | HVAC | 4 techs, $300/mo | 3 | **missed calls on jobs (~$4k/mo lost)**, slow quotes, paper invoices |
+| `greenleaf` | GreenLeaf Landscaping, Hyattsville | dev@demo.stacksmith | landscaping | seasonal crew of 8, $200/mo | 2 | quoting from site photos, crew routing, spring rush |
+| `mama-rosas` | Mama Rosa's Trattoria, Bethesda | rosa@demo.stacksmith | restaurant | 15 staff, $250/mo | 1 | unanswered Google/Yelp reviews, phone takeout orders, menu costing |
+| `bright-smile-salon` | Bright Smile Salon, Laurel | kim@demo.stacksmith | salon | 5 chairs, $100/mo | 3 | no-shows, rebooking, social posts |
+| `route1-bikes` | Route 1 Bike Repair, College Park | sam@demo.stacksmith | retail/repair | 3 staff, $75/mo | 4 | inventory, repair status texts, website FAQs |
+
+Each persona has a `raw_input` paragraph written in the owner's voice (casual, specific, including a few numbers). This is the text the War Room run starts from.
+
+Demo account rules:
+- Passwords are random and not displayed. Demo login goes only through `/auth/demo/{id}`, so nobody needs credentials.
+- **Demo runs replay pre-computed results** (§6) and cost $0. A **"Run live with AI"** toggle on demo accounts allows 2 live runs per session so judges can see it isn't canned.
+- A `POST /admin/reset-demos` endpoint (protected by `ADMIN_TOKEN`) plus a nightly `on startup` reseed restores demo data that judges edited.
+- A banner reads "You're viewing a sample business. Create an account to analyze yours."
+
+**Dashboard (`/dashboard`)**, the first screen after login, shows the business card, a Constitution summary, the last recommended stack with total $/month saved, 30-day plan progress (checkboxes saved to Postgres), and buttons for **"New analysis"** and **"Edit business profile"**.
+
+**Postgres tables:** `users(id, email, password_hash, is_demo, created_at)`, `businesses(id, user_id, name, vertical, profile_json)`, `runs(id, business_id, status, input, result_json, cost_usd, created_at)`, `plan_tasks(id, run_id, week, text, done)`, `llm_cache(key, response, created_at)`.
 
 **Qdrant collections:** `tool_catalog` (embedding of name + solves + ai_features + description), `business_facts` (`subject/predicate/object/category/confidence`, payload `business_id`), `episodes`.
 
 ## 8. API
 
-`POST /auth/register` · `POST /auth/login` · `POST /auth/guest` · `GET /me`
+`POST /auth/register` · `POST /auth/login` · `POST /auth/logout` · `POST /auth/demo/{persona_id}` · `GET /me`
+`GET /dashboard` · `PATCH /plan-tasks/{id}` · `POST /admin/reset-demos`
 `GET /personas` · `POST /businesses` · `GET/PATCH /businesses/{id}/constitution`
 `POST /runs` (`{business_id, raw_input}` → `run_id`) · `GET /runs/{id}/stream` (SSE) · `POST /runs/{id}/approve` (`{tool_ids}`) · `GET /runs/{id}`
 `GET /catalog` (filters: vertical, category, max_price) · `GET /health`
@@ -155,7 +184,7 @@ Drafting with an LLM is fine, **but check the price and URL of every tool in the
 4. **War Room + SSE (90 min):** the centerpiece. Animated agent cards and mesh messages.
    — **CUT LINE A:** demo personas → War Room → stack matrix. Record the video if time is short.
 5. **Approval gate + planner + plan page (60 min).**
-6. **Auth + Postgres + saved Constitution (60 min).** Guest mode first, then register/login.
+6. **Auth + Postgres + sample businesses + dashboard (75 min).** Order: schema → seed personas → `/auth/demo` cards (judges need these) → register/login form → dashboard.
    — **CUT LINE B:** full flow.
 7. **Precompute demos, spend guard, polish, mobile check (45 min).**
 8. **Record the video (60 min, never skip; leave time for upload).**
@@ -165,7 +194,7 @@ If Railway or Qdrant breaks within an hour of the deadline, fall back to an in-m
 ## 10. Video outline (10 min)
 
 1. 0:00 The problem: one owner, one pain, many tools (1 min).
-2. 1:00 Live demo: CoolAir HVAC → War Room → mesh debate → stack + ROI → approve → 30-day plan → Constitution remembers (4 min).
+2. 1:00 Live demo: login page → click the CoolAir HVAC sample card → dashboard → New analysis → War Room → mesh debate → stack + ROI → approve → 30-day plan → Constitution remembers (4 min).
 3. 5:00 How we built it: architecture diagram, AUBI lineage, no-hallucination catalog guard, deterministic ROI, cost controls (2 min).
 4. 7:00 **16-week roadmap** (2 min):
    - Wk 1–3: interview 20+ local businesses (College Park / Route 1), validate the pain taxonomy.
@@ -190,7 +219,7 @@ cd frontend && npm install && npm run dev      # BACKEND_URL=http://localhost:80
 npm run build && npm run lint
 ```
 
-Env (`backend/.env.example`): `OPENROUTER_API_KEY, MODEL_FAST, MODEL_SMART, SPEND_CAP_USD, QDRANT_URL, QDRANT_API_KEY, DATABASE_URL, JWT_SECRET, APP_URL, FRONTEND_ORIGIN`.
+Env (`backend/.env.example`, with placeholder values only): `OPENROUTER_API_KEY, MODEL_FAST, MODEL_SMART, SPEND_CAP_USD, QDRANT_URL, QDRANT_API_KEY, DATABASE_URL, JWT_SECRET, ADMIN_TOKEN, APP_URL, FRONTEND_ORIGIN`. The real key is already in `backend/.env` (git-ignored).
 Env (`frontend/.env.example`): `BACKEND_URL`. **No secrets in `NEXT_PUBLIC_*`.**
 
 ## 12. Conventions for Claude

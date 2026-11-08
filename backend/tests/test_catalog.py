@@ -56,10 +56,15 @@ def test_taxonomy_and_pricing_fields():
         assert t["seats_included"] >= 1
 
 
+TRUST_KEYS = {"soc2", "hipaa", "gdpr", "iso27001", "no_training_on_customer_data", "retention", "data_residency", "opt_out"}
+
+
 def test_trust_fields_are_honest():
     for t in CATALOG:
-        assert set(t["trust"]) == {"no_training_on_customer_data", "soc2"}, t["id"]
+        assert set(t["trust"]) == TRUST_KEYS, t["id"]
         for k, v in t["trust"].items():
+            assert set(v) == {"status", "source_url", "as_of", "quote"}, (t["id"], k)
             assert v["status"] in TRUST_STATUS, (t["id"], k)
-            if v["status"] != "unknown":  # a claim must say where it came from and when
-                assert v["source_url"] and v["source_url"].startswith("https://") and v["as_of"], (t["id"], k)
+            if v["status"] != "unknown":  # a claim must say where it came from, when, and quote it
+                assert v["source_url"] and v["source_url"].startswith("https://"), (t["id"], k)
+                assert v["as_of"] and v["quote"] and len(v["quote"].split()) <= 25, (t["id"], k)

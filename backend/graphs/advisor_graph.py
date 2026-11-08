@@ -340,6 +340,8 @@ async def resume_live(run_id: str, approved_tool_ids: list[str]):
         result = _result(snap.values)
         save_plan_tasks(run_id, result.get("plan") or {})
         db.update_run(run_id, status="complete", result=result, events=ch.events, cost_usd=db.run_spend(run_id))
+        import adoptions  # local import avoids a module cycle at startup
+        adoptions.record_plan(snap.values["business_id"], run_id, result.get("approved_tool_ids") or [])
         await ch.emit("run.complete", {})
     except Exception as e:  # noqa: BLE001
         log.exception("resume %s failed", run_id)

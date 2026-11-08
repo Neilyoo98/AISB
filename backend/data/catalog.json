@@ -63,15 +63,53 @@
   "seats_included": 1,
   "units_included": 90,
   "trust": {
-   "no_training_on_customer_data": {
-    "status": "unknown",
-    "source_url": null,
-    "as_of": null
-   },
    "soc2": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
+   },
+   "hipaa": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "gdpr": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "iso27001": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "retention": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "data_residency": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "opt_out": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
    }
   }
  },
@@ -140,15 +178,53 @@
   "seats_included": 1,
   "units_included": null,
   "trust": {
-   "no_training_on_customer_data": {
-    "status": "unknown",
-    "source_url": null,
-    "as_of": null
-   },
    "soc2": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
+   },
+   "hipaa": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "gdpr": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "iso27001": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "retention": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "data_residency": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "opt_out": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
    }
   }
  },
@@ -210,15 +286,53 @@
   "seats_included": 1,
   "units_included": null,
   "trust": {
-   "no_training_on_customer_data": {
-    "status": "unknown",
-    "source_url": null,
-    "as_of": null
-   },
    "soc2": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
+   },
+   "hipaa": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "gdpr": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "iso27001": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "retention": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "data_residency": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "opt_out": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
    }
   }
  },
@@ -276,15 +390,53 @@
   "seats_included": 1,
   "units_included": null,
   "trust": {
-   "no_training_on_customer_data": {
-    "status": "unknown",
-    "source_url": null,
-    "as_of": null
-   },
    "soc2": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
+   },
+   "hipaa": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "gdpr": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "iso27001": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "retention": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "data_residency": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "opt_out": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
    }
   }
  },
@@ -345,15 +497,53 @@
   "seats_included": 2,
   "units_included": null,
   "trust": {
-   "no_training_on_customer_data": {
-    "status": "unknown",
-    "source_url": null,
-    "as_of": null
-   },
    "soc2": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
+   },
+   "hipaa": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "gdpr": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "iso27001": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "retention": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "data_residency": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "opt_out": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
    }
   }
  },
@@ -419,15 +609,53 @@
   "seats_included": 1,
   "units_included": null,
   "trust": {
-   "no_training_on_customer_data": {
-    "status": "unknown",
-    "source_url": null,
-    "as_of": null
-   },
    "soc2": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
+   },
+   "hipaa": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "gdpr": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "iso27001": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "retention": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "data_residency": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "opt_out": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
    }
   }
  },
@@ -488,15 +716,53 @@
   "seats_included": 1,
   "units_included": null,
   "trust": {
-   "no_training_on_customer_data": {
-    "status": "unknown",
-    "source_url": null,
-    "as_of": null
-   },
    "soc2": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
+   },
+   "hipaa": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "gdpr": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "iso27001": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "retention": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "data_residency": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "opt_out": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
    }
   }
  },
@@ -560,15 +826,53 @@
   "seats_included": 1,
   "units_included": null,
   "trust": {
-   "no_training_on_customer_data": {
-    "status": "unknown",
-    "source_url": null,
-    "as_of": null
-   },
    "soc2": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
+   },
+   "hipaa": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "gdpr": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "iso27001": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "retention": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "data_residency": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "opt_out": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
    }
   }
  },
@@ -631,15 +935,53 @@
   "seats_included": 1,
   "units_included": null,
   "trust": {
-   "no_training_on_customer_data": {
-    "status": "unknown",
-    "source_url": null,
-    "as_of": null
-   },
    "soc2": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
+   },
+   "hipaa": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "gdpr": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "iso27001": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "retention": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "data_residency": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "opt_out": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
    }
   }
  },
@@ -702,15 +1044,53 @@
   "seats_included": 1,
   "units_included": null,
   "trust": {
-   "no_training_on_customer_data": {
-    "status": "unknown",
-    "source_url": null,
-    "as_of": null
-   },
    "soc2": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
+   },
+   "hipaa": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "gdpr": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "iso27001": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "retention": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "data_residency": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "opt_out": {
+    "status": "vendor_claimed",
+    "source_url": "https://www.canva.com/policies/privacy-policy/",
+    "as_of": "2026-11-08",
+    "quote": "You can manage the use of your data for training AI to improve our Service in the privacy controls page under your privacy settings"
    }
   }
  },
@@ -770,15 +1150,53 @@
   "seats_included": 1,
   "units_included": null,
   "trust": {
-   "no_training_on_customer_data": {
-    "status": "unknown",
-    "source_url": null,
-    "as_of": null
-   },
    "soc2": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
+   },
+   "hipaa": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "gdpr": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "iso27001": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "retention": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "data_residency": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "opt_out": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
    }
   }
  },
@@ -837,15 +1255,53 @@
   "seats_included": 1,
   "units_included": null,
   "trust": {
-   "no_training_on_customer_data": {
-    "status": "unknown",
-    "source_url": null,
-    "as_of": null
-   },
    "soc2": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
+   },
+   "hipaa": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "gdpr": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "iso27001": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "retention": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "data_residency": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "opt_out": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
    }
   }
  },
@@ -907,15 +1363,53 @@
   "seats_included": 1,
   "units_included": null,
   "trust": {
+   "soc2": {
+    "status": "vendor_claimed",
+    "source_url": "https://mailchimp.com/about/security/",
+    "as_of": "2026-11-08",
+    "quote": "Our SOC 2 reports cover controls around security and availability of customer data."
+   },
+   "hipaa": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "gdpr": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "iso27001": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
    "no_training_on_customer_data": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
    },
-   "soc2": {
+   "retention": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
+   },
+   "data_residency": {
+    "status": "vendor_claimed",
+    "source_url": "https://mailchimp.com/about/security/",
+    "as_of": "2026-11-08",
+    "quote": "Mailchimp's owned and operated servers are located in world class data centers in the United States."
+   },
+   "opt_out": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
    }
   }
  },
@@ -974,15 +1468,53 @@
   "seats_included": 1,
   "units_included": null,
   "trust": {
-   "no_training_on_customer_data": {
-    "status": "unknown",
-    "source_url": null,
-    "as_of": null
-   },
    "soc2": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
+   },
+   "hipaa": {
+    "status": "vendor_claimed",
+    "source_url": "https://squareup.com/us/en/legal/general/hipaa",
+    "as_of": "2026-11-08",
+    "quote": "This HIPAA BAA applies only to the Services and configurations where Square is acting as your Business Associate"
+   },
+   "gdpr": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "iso27001": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "retention": {
+    "status": "vendor_claimed",
+    "source_url": "https://squareup.com/us/en/legal/general/privacy",
+    "as_of": "2026-11-08",
+    "quote": "We store your information for as long as is necessary for the purposes identified in this Privacy Notice"
+   },
+   "data_residency": {
+    "status": "vendor_claimed",
+    "source_url": "https://squareup.com/us/en/legal/general/privacy",
+    "as_of": "2026-11-08",
+    "quote": "We use third-party service providers to process and store your information in the United States, Japan, the UK, the EU, and other countries."
+   },
+   "opt_out": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
    }
   }
  },
@@ -1045,15 +1577,53 @@
   "seats_included": 1,
   "units_included": null,
   "trust": {
+   "soc2": {
+    "status": "vendor_claimed",
+    "source_url": "https://trust.openai.com/",
+    "as_of": "2026-11-08",
+    "quote": "Our products are covered in our SOC 2 Type 2 report"
+   },
+   "hipaa": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "gdpr": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "iso27001": {
+    "status": "vendor_claimed",
+    "source_url": "https://trust.openai.com/",
+    "as_of": "2026-11-08",
+    "quote": "Our products are also ISO 27001, 27017, 27018, and 27701 certified."
+   },
    "no_training_on_customer_data": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
    },
-   "soc2": {
+   "retention": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
+   },
+   "data_residency": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "opt_out": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
    }
   }
  },
@@ -1112,15 +1682,53 @@
   "seats_included": 1,
   "units_included": null,
   "trust": {
+   "soc2": {
+    "status": "vendor_claimed",
+    "source_url": "https://privacy.claude.com/en/articles/10015870-what-certifications-has-anthropic-obtained",
+    "as_of": "2026-11-08",
+    "quote": "SOC 2 Type I & Type II"
+   },
+   "hipaa": {
+    "status": "vendor_claimed",
+    "source_url": "https://privacy.claude.com/en/articles/10015870-what-certifications-has-anthropic-obtained",
+    "as_of": "2026-11-08",
+    "quote": "HIPAA-ready configuration (BAA available)"
+   },
+   "gdpr": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "iso27001": {
+    "status": "vendor_claimed",
+    "source_url": "https://privacy.claude.com/en/articles/10015870-what-certifications-has-anthropic-obtained",
+    "as_of": "2026-11-08",
+    "quote": "ISO 27001:2022 (Information Security Management)"
+   },
    "no_training_on_customer_data": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
    },
-   "soc2": {
+   "retention": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
+   },
+   "data_residency": {
+    "status": "vendor_claimed",
+    "source_url": "https://privacy.claude.com/en/articles/7996890-where-are-your-servers-located-do-you-host-your-models-on-eu-servers",
+    "as_of": "2026-11-08",
+    "quote": "Note that data is stored in the US."
+   },
+   "opt_out": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
    }
   }
  },
@@ -1178,15 +1786,53 @@
   "seats_included": 1,
   "units_included": null,
   "trust": {
-   "no_training_on_customer_data": {
-    "status": "unknown",
-    "source_url": null,
-    "as_of": null
-   },
    "soc2": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
+   },
+   "hipaa": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "gdpr": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "iso27001": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "retention": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "data_residency": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "opt_out": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
    }
   }
  },
@@ -1249,15 +1895,53 @@
   "seats_included": 1,
   "units_included": null,
   "trust": {
-   "no_training_on_customer_data": {
-    "status": "unknown",
-    "source_url": null,
-    "as_of": null
-   },
    "soc2": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
+   },
+   "hipaa": {
+    "status": "vendor_claimed",
+    "source_url": "https://squareup.com/us/en/legal/general/hipaa",
+    "as_of": "2026-11-08",
+    "quote": "This HIPAA BAA applies only to the Services and configurations where Square is acting as your Business Associate"
+   },
+   "gdpr": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "iso27001": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "retention": {
+    "status": "vendor_claimed",
+    "source_url": "https://squareup.com/us/en/legal/general/privacy",
+    "as_of": "2026-11-08",
+    "quote": "We store your information for as long as is necessary for the purposes identified in this Privacy Notice"
+   },
+   "data_residency": {
+    "status": "vendor_claimed",
+    "source_url": "https://squareup.com/us/en/legal/general/privacy",
+    "as_of": "2026-11-08",
+    "quote": "We use third-party service providers to process and store your information in the United States, Japan, the UK, the EU, and other countries."
+   },
+   "opt_out": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
    }
   }
  },
@@ -1319,15 +2003,53 @@
   "seats_included": 1,
   "units_included": null,
   "trust": {
-   "no_training_on_customer_data": {
-    "status": "unknown",
-    "source_url": null,
-    "as_of": null
-   },
    "soc2": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
+   },
+   "hipaa": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "gdpr": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "iso27001": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "retention": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "data_residency": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "opt_out": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
    }
   }
  },
@@ -1384,15 +2106,53 @@
   "seats_included": 1,
   "units_included": null,
   "trust": {
-   "no_training_on_customer_data": {
-    "status": "unknown",
-    "source_url": null,
-    "as_of": null
-   },
    "soc2": {
+    "status": "vendor_claimed",
+    "source_url": "https://calendly.com/security",
+    "as_of": "2026-11-08",
+    "quote": "SOC 2 (Type 2)"
+   },
+   "hipaa": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
+   },
+   "gdpr": {
+    "status": "vendor_claimed",
+    "source_url": "https://calendly.com/help/your-privacy-and-security",
+    "as_of": "2026-11-08",
+    "quote": "Calendly is fully committed to compliance with the General Data Protection Regulation (GDPR)."
+   },
+   "iso27001": {
+    "status": "vendor_claimed",
+    "source_url": "https://calendly.com/legal/privacy-notice",
+    "as_of": "2026-11-08",
+    "quote": "We have obtained industry recognized certifications and audits, such as the ISO/IEC 27001"
+   },
+   "no_training_on_customer_data": {
+    "status": "vendor_claimed",
+    "source_url": "https://calendly.com/security",
+    "as_of": "2026-11-08",
+    "quote": "Calendly does not sell customer data or use customer data to train AI models."
+   },
+   "retention": {
+    "status": "vendor_claimed",
+    "source_url": "https://calendly.com/legal/privacy-notice",
+    "as_of": "2026-11-08",
+    "quote": "We retain the Personal Data we collect for so long as is reasonably necessary to fulfill the purposes for which the data was collected"
+   },
+   "data_residency": {
+    "status": "vendor_claimed",
+    "source_url": "https://calendly.com/help/data-storage-and-international-data-transfers",
+    "as_of": "2026-11-08",
+    "quote": "Calendly stores user and invitee data in U.S.-based data centers managed by Google Cloud Services (GCS) and Amazon Web Services (AWS)."
+   },
+   "opt_out": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
    }
   }
  },
@@ -1451,15 +2211,53 @@
   "seats_included": 1,
   "units_included": null,
   "trust": {
-   "no_training_on_customer_data": {
-    "status": "unknown",
-    "source_url": null,
-    "as_of": null
-   },
    "soc2": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
+   },
+   "hipaa": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "gdpr": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "iso27001": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "retention": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "data_residency": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "opt_out": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
    }
   }
  },
@@ -1526,15 +2324,53 @@
   "seats_included": 1,
   "units_included": null,
   "trust": {
+   "soc2": {
+    "status": "vendor_claimed",
+    "source_url": "https://trust.joinhomebase.com/",
+    "as_of": "2026-11-08",
+    "quote": "SOC 2 Type 2"
+   },
+   "hipaa": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "gdpr": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "iso27001": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
    "no_training_on_customer_data": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
    },
-   "soc2": {
+   "retention": {
+    "status": "vendor_claimed",
+    "source_url": "https://joinhomebase.com/privacy-policy/",
+    "as_of": "2026-11-08",
+    "quote": "We will retain your Personal Information for as long as it is necessary to fulfill the purposes we collected it for"
+   },
+   "data_residency": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
+   },
+   "opt_out": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
    }
   }
  },
@@ -1604,15 +2440,53 @@
   "seats_included": 1,
   "units_included": null,
   "trust": {
-   "no_training_on_customer_data": {
-    "status": "unknown",
-    "source_url": null,
-    "as_of": null
-   },
    "soc2": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
+   },
+   "hipaa": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "gdpr": {
+    "status": "vendor_claimed",
+    "source_url": "https://www.getjobber.com/GDPR/",
+    "as_of": "2026-11-08",
+    "quote": "to comply with the General Data Protection Regulation"
+   },
+   "iso27001": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "retention": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "data_residency": {
+    "status": "vendor_claimed",
+    "source_url": "https://getjobber.com/privacy-policy/",
+    "as_of": "2026-11-08",
+    "quote": "your Personal Information may be processed in the country in which it was collected and in other countries, including the United States and Canada"
+   },
+   "opt_out": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
    }
   }
  },
@@ -1679,15 +2553,53 @@
   "seats_included": 1,
   "units_included": null,
   "trust": {
-   "no_training_on_customer_data": {
-    "status": "unknown",
-    "source_url": null,
-    "as_of": null
-   },
    "soc2": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
+   },
+   "hipaa": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "gdpr": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "iso27001": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "retention": {
+    "status": "vendor_claimed",
+    "source_url": "https://www.housecallpro.com/privacy/",
+    "as_of": "2026-11-08",
+    "quote": "Following termination or deactivation of your user account, Housecall Pro may retain your Personal Information for any purpose"
+   },
+   "data_residency": {
+    "status": "vendor_claimed",
+    "source_url": "https://www.housecallpro.com/privacy/",
+    "as_of": "2026-11-08",
+    "quote": "Housecall Pro and its subsidiaries do not maintain facilities outside the US but we currently use service providers in the US and Mexico."
+   },
+   "opt_out": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
    }
   }
  },
@@ -1750,15 +2662,53 @@
   "seats_included": 1,
   "units_included": null,
   "trust": {
-   "no_training_on_customer_data": {
-    "status": "unknown",
-    "source_url": null,
-    "as_of": null
-   },
    "soc2": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
+   },
+   "hipaa": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "gdpr": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "iso27001": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "retention": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "data_residency": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "opt_out": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
    }
   }
  },
@@ -1818,15 +2768,53 @@
   "seats_included": 1,
   "units_included": null,
   "trust": {
-   "no_training_on_customer_data": {
-    "status": "unknown",
-    "source_url": null,
-    "as_of": null
-   },
    "soc2": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
+   },
+   "hipaa": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "gdpr": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "iso27001": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "retention": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "data_residency": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "opt_out": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
    }
   }
  },
@@ -1887,15 +2875,53 @@
   "seats_included": 1,
   "units_included": null,
   "trust": {
-   "no_training_on_customer_data": {
-    "status": "unknown",
-    "source_url": null,
-    "as_of": null
-   },
    "soc2": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
+   },
+   "hipaa": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "gdpr": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "iso27001": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "retention": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "data_residency": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "opt_out": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
    }
   }
  },
@@ -1958,15 +2984,53 @@
   "seats_included": 1,
   "units_included": null,
   "trust": {
-   "no_training_on_customer_data": {
-    "status": "unknown",
-    "source_url": null,
-    "as_of": null
-   },
    "soc2": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
+   },
+   "hipaa": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "gdpr": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "iso27001": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "retention": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "data_residency": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "opt_out": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
    }
   }
  },
@@ -2027,15 +3091,53 @@
   "seats_included": 1,
   "units_included": null,
   "trust": {
-   "no_training_on_customer_data": {
-    "status": "unknown",
-    "source_url": null,
-    "as_of": null
-   },
    "soc2": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
+   },
+   "hipaa": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "gdpr": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "iso27001": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "retention": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "data_residency": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "opt_out": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
    }
   }
  },
@@ -2102,15 +3204,53 @@
   "seats_included": 1,
   "units_included": null,
   "trust": {
-   "no_training_on_customer_data": {
-    "status": "unknown",
-    "source_url": null,
-    "as_of": null
-   },
    "soc2": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
+   },
+   "hipaa": {
+    "status": "vendor_claimed",
+    "source_url": "https://squareup.com/us/en/legal/general/hipaa",
+    "as_of": "2026-11-08",
+    "quote": "This HIPAA BAA applies only to the Services and configurations where Square is acting as your Business Associate"
+   },
+   "gdpr": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "iso27001": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "retention": {
+    "status": "vendor_claimed",
+    "source_url": "https://squareup.com/us/en/legal/general/privacy",
+    "as_of": "2026-11-08",
+    "quote": "We store your information for as long as is necessary for the purposes identified in this Privacy Notice"
+   },
+   "data_residency": {
+    "status": "vendor_claimed",
+    "source_url": "https://squareup.com/us/en/legal/general/privacy",
+    "as_of": "2026-11-08",
+    "quote": "We use third-party service providers to process and store your information in the United States, Japan, the UK, the EU, and other countries."
+   },
+   "opt_out": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
    }
   }
  },
@@ -2175,15 +3315,53 @@
   "seats_included": 1,
   "units_included": null,
   "trust": {
-   "no_training_on_customer_data": {
-    "status": "unknown",
-    "source_url": null,
-    "as_of": null
-   },
    "soc2": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
+   },
+   "hipaa": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "gdpr": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "iso27001": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "retention": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "data_residency": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "opt_out": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
    }
   }
  },
@@ -2245,15 +3423,53 @@
   "seats_included": 1,
   "units_included": null,
   "trust": {
-   "no_training_on_customer_data": {
-    "status": "unknown",
-    "source_url": null,
-    "as_of": null
-   },
    "soc2": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
+   },
+   "hipaa": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "gdpr": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "iso27001": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "retention": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "data_residency": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "opt_out": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
    }
   }
  },
@@ -2315,15 +3531,53 @@
   "seats_included": 1,
   "units_included": null,
   "trust": {
-   "no_training_on_customer_data": {
-    "status": "unknown",
-    "source_url": null,
-    "as_of": null
-   },
    "soc2": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
+   },
+   "hipaa": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "gdpr": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "iso27001": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "retention": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "data_residency": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "opt_out": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
    }
   }
  },
@@ -2381,15 +3635,53 @@
   "seats_included": 1,
   "units_included": null,
   "trust": {
-   "no_training_on_customer_data": {
-    "status": "unknown",
-    "source_url": null,
-    "as_of": null
-   },
    "soc2": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
+   },
+   "hipaa": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "gdpr": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "iso27001": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "retention": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "data_residency": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "opt_out": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
    }
   }
  },
@@ -2449,15 +3741,53 @@
   "seats_included": 1,
   "units_included": null,
   "trust": {
+   "soc2": {
+    "status": "vendor_claimed",
+    "source_url": "https://www.tidio.com/security/",
+    "as_of": "2026-11-08",
+    "quote": "We have successfully completed our SOC 2® examination, reinforcing our focus on protecting customer data."
+   },
+   "hipaa": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "gdpr": {
+    "status": "vendor_claimed",
+    "source_url": "https://www.tidio.com/security/",
+    "as_of": "2026-11-08",
+    "quote": "Personal data is handled according to the latest GDPR and CCPA laws."
+   },
+   "iso27001": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
    "no_training_on_customer_data": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
    },
-   "soc2": {
+   "retention": {
+    "status": "vendor_claimed",
+    "source_url": "https://www.tidio.com/privacy-policy/",
+    "as_of": "2026-11-08",
+    "quote": "service and process your account in our Services, but no longer than until the account is deleted"
+   },
+   "data_residency": {
+    "status": "vendor_claimed",
+    "source_url": "https://www.tidio.com/privacy-policy/",
+    "as_of": "2026-11-08",
+    "quote": "We mainly process the data you submit within the EEA and the servers located there."
+   },
+   "opt_out": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
    }
   }
  },
@@ -2518,15 +3848,53 @@
   "seats_included": 1,
   "units_included": null,
   "trust": {
-   "no_training_on_customer_data": {
-    "status": "unknown",
-    "source_url": null,
-    "as_of": null
-   },
    "soc2": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
+   },
+   "hipaa": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "gdpr": {
+    "status": "vendor_claimed",
+    "source_url": "https://www.wix.com/manage/privacy-security-hub",
+    "as_of": "2026-11-08",
+    "quote": "We are fully compliant with global privacy regulations including GDPR, which gives you control over your personal data."
+   },
+   "iso27001": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "retention": {
+    "status": "vendor_claimed",
+    "source_url": "https://www.wix.com/about/privacy",
+    "as_of": "2026-11-08",
+    "quote": "We retain your Personal Information for the time period reasonably necessary to achieve the purposes described in this Privacy Policy"
+   },
+   "data_residency": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "opt_out": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
    }
   }
  },
@@ -2588,15 +3956,53 @@
   "seats_included": 1,
   "units_included": null,
   "trust": {
-   "no_training_on_customer_data": {
-    "status": "unknown",
-    "source_url": null,
-    "as_of": null
-   },
    "soc2": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
+   },
+   "hipaa": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "gdpr": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "iso27001": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "retention": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "data_residency": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "opt_out": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
    }
   }
  },
@@ -2657,15 +4063,53 @@
   "seats_included": 1,
   "units_included": null,
   "trust": {
-   "no_training_on_customer_data": {
-    "status": "unknown",
-    "source_url": null,
-    "as_of": null
-   },
    "soc2": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
+   },
+   "hipaa": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "gdpr": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "iso27001": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "retention": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "data_residency": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "opt_out": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
    }
   }
  },
@@ -2725,15 +4169,53 @@
   "seats_included": 1,
   "units_included": null,
   "trust": {
-   "no_training_on_customer_data": {
-    "status": "unknown",
-    "source_url": null,
-    "as_of": null
-   },
    "soc2": {
     "status": "unknown",
     "source_url": null,
-    "as_of": null
+    "as_of": null,
+    "quote": null
+   },
+   "hipaa": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "gdpr": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "iso27001": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "no_training_on_customer_data": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "retention": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "data_residency": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
+   },
+   "opt_out": {
+    "status": "unknown",
+    "source_url": null,
+    "as_of": null,
+    "quote": null
    }
   }
  }

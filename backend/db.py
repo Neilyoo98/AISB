@@ -47,6 +47,8 @@ businesses = Table(
     Column("profile_json", Text),  # latest structured profile (Business Constitution summary)
     Column("details_json", Text),  # structured onboarding answers (must-haves, goals, team, budget...)
     Column("weights_json", Text),  # saved Compare scorecard weights
+    Column("scenarios_json", Text),  # day-in-the-life scenarios for the adopted stack (refreshed on adopt)
+    Column("ai_spend_cap", Float),  # monthly AI spend cap (team mode)
     Column("created_at", DateTime(timezone=True), default=_now),
 )
 
@@ -75,6 +77,7 @@ plan_tasks = Table(
     Column("owner", String(64)),
     Column("minutes", Integer),
     Column("done", Boolean, default=False, nullable=False),
+    Column("business_id", String(32)),  # set for setup tasks created by a manual adoption
 )
 
 llm_cache = Table(
@@ -173,15 +176,24 @@ def get_business(bid):
 
 
 def get_user_business(user_id):
+    """The business a user owns, or (team mode) the business they are a member of."""
     with engine.begin() as c:
-        return row(c.execute(select(businesses).where(businesses.c.user_id == user_id)
-                             .order_by(businesses.c.created_at.desc())).first())
+        own = c.execute(select(businesses).where(businesses.c.user_id == user_id)
+                        .order_by(businesses.c.created_at.desc())).first()
+        if own:
+            return row(own)
+        members = meta.tables.get("org_members")  # defined in routers/team.py
+        if members is None:
+            return None
+        return row(c.execute(select(businesses).join(members, members.c.business_id == businesses.c.id)
+                             .where(members.c.user_id == user_id)).first())
 
 
 def update_business(bid, **vals):
-    for k in ("profile", "details", "weights"):
+    for k in ("profile", "details", "weights", "scenarios"):
         if k in vals:
-            vals[f"{k}_json"] = json.dumps(vals.pop(k))
+            v = vals.pop(k)
+            vals[f"{k}_json"] = None if v is None else json.dumps(v)
     with engine.begin() as c:
         c.execute(update(businesses).where(businesses.c.id == bid).values(**vals))
 
@@ -210,14 +222,16 @@ def get_run(rid):
 
 def latest_complete_run(business_id):
     with engine.begin() as c:
-        return row(c.execute(select(runs).where(runs.c.business_id == business_id, runs.c.status == "complete")
+        # "manual" runs only hold setup tasks for manually adopted tools; they are not analyses
+        return row(c.execute(select(runs).where(runs.c.business_id == business_id, runs.c.status == "complete",
+                                                runs.c.mode != "manual")
                              .order_by(runs.c.created_at.desc())).first())
 
 
 def list_runs(business_id, limit=10):
     with engine.begin() as c:
         rs = c.execute(select(runs.c.id, runs.c.status, runs.c.mode, runs.c.created_at, runs.c.cost_usd)
-                       .where(runs.c.business_id == business_id)
+                       .where(runs.c.business_id == business_id, runs.c.mode != "manual")
                        .order_by(runs.c.created_at.desc()).limit(limit)).all()
         return [row(r) for r in rs]
 
@@ -235,7 +249,8 @@ def count_live_runs_since(*, user_id=None, ip=None, hours=24) -> int:
 
 def replace_plan_tasks(run_id, tasks):
     with engine.begin() as c:
-        c.execute(delete(plan_tasks).where(plan_tasks.c.run_id == run_id))
+        # keep setup tasks that came from manual adoptions (business_id set)
+        c.execute(delete(plan_tasks).where(plan_tasks.c.run_id == run_id, plan_tasks.c.business_id.is_(None)))
         if tasks:
             c.execute(insert(plan_tasks), [{"run_id": run_id, **t} for t in tasks])
 
@@ -245,6 +260,23 @@ def get_plan_tasks(run_id):
         rs = c.execute(select(plan_tasks).where(plan_tasks.c.run_id == run_id)
                        .order_by(plan_tasks.c.week, plan_tasks.c.id)).all()
         return [row(r) for r in rs]
+
+
+def get_business_tasks(business_id, latest_run_id=None):
+    """Plan tasks of the latest analysis plus setup tasks from manual adoptions (no duplicates)."""
+    with engine.begin() as c:
+        cond = plan_tasks.c.business_id == business_id
+        if latest_run_id:
+            cond = cond | (plan_tasks.c.run_id == latest_run_id)
+        rs = c.execute(select(plan_tasks).where(cond).order_by(plan_tasks.c.week, plan_tasks.c.id)).all()
+        return [row(r) for r in rs]
+
+
+def add_business_tasks(business_id, run_id, tasks):
+    if tasks:
+        with engine.begin() as c:
+            c.execute(insert(plan_tasks), [{"run_id": run_id, "business_id": business_id, "done": False, **t}
+                                           for t in tasks])
 
 
 def set_task_done(task_id, done, user_id):

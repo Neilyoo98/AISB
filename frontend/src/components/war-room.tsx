@@ -9,6 +9,7 @@ import { cn, money } from "@/lib/api";
 import type { MeshMsg, Pain, Pick, Plan, Profile, Scored, Stack, Tool } from "@/lib/types";
 import type { AgentKey, AgentStatus, RunView } from "@/hooks/useRunStream";
 import { HelpTip, PAIN_LABEL, VERTICAL_LABEL } from "@/components/ui";
+import { AdoptButton } from "@/components/adopt-button";
 
 const EASE = [0.23, 1, 0.32, 1] as const;
 
@@ -253,7 +254,7 @@ export function MeshPanel({ mesh, catalog, waiting }: { mesh: MeshMsg[]; catalog
 }
 
 export function StackPanel({
-  pains, scored, stack, verdicts, catalog, mesh, selectable, selected, onToggle,
+  pains, scored, stack, verdicts, catalog, mesh, selectable, selected, onToggle, adopted,
 }: {
   pains: Pain[];
   scored: Scored[];
@@ -264,16 +265,18 @@ export function StackPanel({
   selectable: boolean;
   selected: Set<string>;
   onToggle: (id: string) => void;
+  /** tool ids currently adopted by the business (plan or manual); undefined while unknown */
+  adopted?: Set<string>;
 }) {
   const [open, setOpen] = useState<string | null>(null);
   const critiques = mesh.flatMap((m) => m.critiques);
   return (
     <div className="space-y-4">
       <div className="card grid grid-cols-2 gap-5 p-5 sm:grid-cols-4">
-        <Metric label="Net gain / month" value={money(stack.net_monthly, { sign: true })} good />
-        <Metric label="Value / month" value={money(stack.monthly_value)} />
-        <Metric label="Tool cost / month" value={money(stack.monthly_cost)} sub={stack.within_budget ? `budget ${money(stack.budget)}` : "over budget"} />
-        <Metric label="Hours saved / month" value={`${Math.round(stack.hours_saved_per_month)}h`} />
+        <Metric label="Net gain / month" value={money(stack.net_monthly, { sign: true })} good sub="value minus tool costs" />
+        <Metric label="Value / month" value={money(stack.monthly_value)} sub="time saved + revenue recovered" />
+        <Metric label="Tool cost / month" value={money(stack.monthly_cost)} sub={stack.within_budget ? `within your ${money(stack.budget)} budget` : `over your ${money(stack.budget)} budget`} />
+        <Metric label="Hours saved / month" value={`${Math.round(stack.hours_saved_per_month)} h`} sub="owner + staff time" />
         {verdicts?.summary && <p className="col-span-full border-t border-stone-100 pt-4 text-sm leading-relaxed text-stone-700">{verdicts.summary}</p>}
       </div>
 
@@ -285,7 +288,7 @@ export function StackPanel({
             <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-stone-100 bg-stone-50/60 px-4 py-3">
               <h3 className="font-semibold">{p.title}</h3>
               <span className="flex items-center gap-3 text-xs text-stone-500">
-                costs you ~{money(p.monthly_cost_of_pain)}/mo
+                this problem costs you ~{money(p.monthly_cost_of_pain)}/month
                 {compareIds.length >= 2 && (
                   <Link href={`/compare?ids=${compareIds.join(",")}`} className="font-semibold text-emerald-700 hover:underline">
                     Compare
@@ -298,11 +301,11 @@ export function StackPanel({
                 <thead>
                   <tr className="text-left text-xs text-stone-500">
                     <th className="px-4 py-2 font-medium">Tool</th>
-                    <th className="px-2 py-2 text-right font-medium">Price</th>
-                    <th className="px-2 py-2 text-right font-medium">Value/mo</th>
-                    <th className="px-2 py-2 text-right font-medium">Net/mo</th>
-                    <th className="px-2 py-2 text-right font-medium">Payback</th>
-                    <th className="px-4 py-2 font-medium">Fit</th>
+                    <th className="px-2 py-2 text-right font-medium">Price / month</th>
+                    <ColHead label="Value / month" tip="What this tool is worth to you each month: hours saved × your hourly cost, plus revenue it recovers." />
+                    <ColHead label="Net / month" tip="Value per month minus the tool's monthly price. Green means it pays for itself." />
+                    <ColHead label="Pays back in" tip="Days until the tool's value covers its first month's price plus your setup time." />
+                    <ColHead label="Fit score" tip="0–100. Combines value for money, budget fit, ease for your tech comfort, connection to tools you use, and advisor concerns. Expand a tool for the breakdown." left />
                   </tr>
                 </thead>
                 <tbody>
@@ -330,6 +333,13 @@ export function StackPanel({
                                 <ChevronDown size={14} className={cn("text-stone-400 transition-transform", open === key && "rotate-180")} />
                               </button>
                               {rec && <span className="rounded-full bg-emerald-700 px-2 py-0.5 text-[11px] font-semibold text-white">Recommended</span>}
+                              {adopted?.has(s.tool_id) ? (
+                                <span className="inline-flex items-center gap-1 rounded-full border border-emerald-300 bg-white px-2 py-0.5 text-[11px] font-semibold text-emerald-800">
+                                  <Check size={11} strokeWidth={3} /> Adopted
+                                </span>
+                              ) : (
+                                adopted && !selectable && <AdoptButton toolId={s.tool_id} compact />
+                              )}
                             </div>
                             {(s as Scored & { security_note?: string | null }).security_note && (
                               <div className="mt-1 flex items-center gap-1 text-[11px] text-amber-800">
@@ -346,7 +356,7 @@ export function StackPanel({
                               <div className="h-1.5 w-16 overflow-hidden rounded-full bg-stone-100">
                                 <div className={cn("h-full rounded-full", s.fit_score >= 80 ? "bg-emerald-600" : s.fit_score >= 60 ? "bg-amber-500" : "bg-stone-400")} style={{ width: `${s.fit_score}%` }} />
                               </div>
-                              <span className="tabular-nums text-stone-600">{s.fit_score}</span>
+                              <span className="tabular-nums text-stone-600">{s.fit_score}<span className="text-stone-400">/100</span></span>
                             </div>
                           </td>
                         </tr>
@@ -368,7 +378,7 @@ export function StackPanel({
                                   </p>
                                 </div>
                                 <div>
-                                  <div className="eyebrow">Fit score breakdown</div>
+                                  <div className="eyebrow">Fit score breakdown (points)</div>
                                   <ul className="mt-1 space-y-0.5 text-xs text-stone-600">
                                     {Object.entries(s.fit_breakdown).map(([k, v]) => (
                                       <li key={k} className="flex justify-between gap-2">
@@ -412,6 +422,17 @@ export function StackPanel({
         </HelpTip>
       </p>
     </div>
+  );
+}
+
+function ColHead({ label, tip, left }: { label: string; tip: string; left?: boolean }) {
+  return (
+    <th className={cn("px-2 py-2 font-medium", left ? "px-4 text-left" : "text-right")}>
+      <span className={cn("inline-flex items-center gap-0.5", !left && "justify-end")}>
+        {label}
+        <HelpTip align={left ? "left" : "right"} label={`About ${label}`}>{tip}</HelpTip>
+      </span>
+    </th>
   );
 }
 

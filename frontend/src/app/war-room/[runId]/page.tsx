@@ -8,7 +8,8 @@ import { api, money } from "@/lib/api";
 import type { Business, Tool, User } from "@/lib/types";
 import { useRunStream } from "@/hooks/useRunStream";
 import { AppHeader, FlowStepper, Spinner, useTitle } from "@/components/ui";
-import { StackFlow } from "@/components/stack-flow";
+import { ToolsGraph } from "@/components/agent-graph";
+import { useAdoptions } from "@/hooks/useAdoptions";
 import { MeshPanel, PainCards, Pipeline, PlanView, ProfileCard, ScoutGrid, Section, StackPanel } from "@/components/war-room";
 
 export default function WarRoom() {
@@ -24,6 +25,7 @@ export default function WarRoom() {
   const [approving, setApproving] = useState(false);
   const [approveErr, setApproveErr] = useState<string | null>(null);
   const [elapsed, setElapsed] = useState(0);
+  const { adopted } = useAdoptions();
 
   useEffect(() => {
     api<Tool[]>("/catalog").then((ts) => setCatalog(Object.fromEntries(ts.map((t) => [t.id, t]))));
@@ -110,7 +112,7 @@ export default function WarRoom() {
                 ) : view.mode === "replay" ? (
                   <span className="chip">Sample replay</span>
                 ) : null}
-                {(view.status === "running" || elapsed > 0) && <span className="tabular-nums text-stone-500">{elapsed}s</span>}
+                {(view.status === "running" || elapsed > 0) && <span className="tabular-nums text-stone-500">{elapsed}s elapsed</span>}
               </div>
             </div>
           </div>
@@ -188,6 +190,7 @@ export default function WarRoom() {
                 selectable={awaiting}
                 selected={awaiting ? selected : new Set(view.approved || view.stack.tool_ids)}
                 onToggle={toggle}
+                adopted={view.status === "complete" ? adopted : undefined}
               />
             </Section>
           )}
@@ -227,7 +230,7 @@ export default function WarRoom() {
               title="Your AI tools, working together"
               help="A typical day after adoption: watch the new AI tools hand work to each other and to the tools you already use."
             >
-              <StackFlow scenarios={view.plan.scenarios!} catalog={catalog} approved={view.approved || []} />
+              <ToolsGraph scenarios={view.plan.scenarios!} catalog={catalog} approved={view.approved || []} />
             </Section>
           )}
 

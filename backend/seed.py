@@ -4,18 +4,18 @@ from datetime import datetime, timedelta, timezone
 import logging
 import secrets
 
+import adoptions
 import db
 from auth import hash_password
 from config import DATA_DIR
 from graphs.advisor_graph import save_plan_tasks
 from memory import store
 from replay import load_recording
+from routers import team  # registers team tables on db.meta before init_db()
 
 log = logging.getLogger("seed")
 
-DEMO_HISTORY_DAYS = 45
-SAMPLE_REVIEWS = {k: v for k, v in json.loads((DATA_DIR / "sample_reviews.json").read_text(encoding="utf-8")).items()
-                  if not k.startswith("_")}
+DEMO_HISTORY_DAYS = 45  # sample businesses adopted their stack 45 days ago (lived-in dashboard)
 
 
 def load_personas() -> list[dict]:
@@ -39,14 +39,12 @@ def seed_demos():
             log.warning("no recording for %s - run scripts/precompute_demos.py", p["id"])
             continue
         res = rec["result"]
-        # Demo history: the sample stack was adopted 45 days ago, so its reviews count as verified use.
+        # Demo history: the sample stack was adopted 45 days ago.
         adopted_at = datetime.now(timezone.utc) - timedelta(days=DEMO_HISTORY_DAYS)
         rid = db.create_run(bid, uid, "replay", p["raw_input"], created_at=adopted_at)
         db.update_run(rid, status="complete", result=res, events=rec["events"], cost_usd=0)
         save_plan_tasks(rid, res.get("plan") or {}, done_weeks=1)
-        for r in SAMPLE_REVIEWS.get(p["id"], []):
-            db.add_review(r["tool_id"], bid, uid, r["role"], r["output_quality"], r["reliability"], r["support"],
-                          r["text"], is_demo=True, created_at=adopted_at + timedelta(days=30))
+        adoptions.record_plan(bid, rid, res.get("approved_tool_ids") or [])
         store.delete_business_memory(bid)
         store.upsert_facts(bid, res.get("facts", []))
         for t in res.get("approved_tool_ids", []):
@@ -54,17 +52,22 @@ def seed_demos():
             pains = [s["pain_id"] for s in res.get("scored", []) if s["tool_id"] == t]
             store.add_episode(bid, p["vertical"], f"{p['business_name']} adopted {name} for {', '.join(pains)}",
                               {"tool_id": t, "pains": pains, "run_id": rid})
+        team.seed_demo_team(bid, uid, p["id"], (res.get("profile") or {}).get("monthly_budget"))
         log.info("seeded demo %s", p["id"])
 
 
 def reset_demos():
+    demo_biz = []
     for p in load_personas():
         u = db.get_user_by_email(p["email"])
         if u:
             b = db.get_user_business(u["id"])
             if b:
                 store.delete_business_memory(b["id"])
-    db.delete_demo_data()
+                demo_biz.append(b["id"])
+    adoptions.delete_for_businesses(demo_biz)
+    team.delete_team_rows(demo_biz)
+    db.delete_demo_data()  # also removes any reviews written from sample accounts (is_demo)
     seed_demos()
 
 

@@ -68,11 +68,12 @@ Branch `feat/platform-modules`. This covers brief Modules 1 & 2 (discovery, comp
 
 **Demo history**
 - Seeded sample-business runs are backdated 45 days (`seed.DEMO_HISTORY_DAYS`).
-- Sample reviews come from `data/sample_reviews.json`, are flagged `is_demo`, and show in the UI as "Sample review (demo data)". `seed.reset_demos()` restores both.
+- No seeded reviews (removed in Phase 2 at the owner's request). Only real reviews written in the app appear.
 
 **What's real and what isn't** (list this in the PR)
-- Every `trust.*` field is `unknown` (Module 3 will source them).
-- Sample reviews are demo data.
+- Trust fields: 36 facts across 13 tools are `vendor_claimed` from vendors' own pages (see `data/trust_sources.md`); everything else is `unknown`.
+- Risk levels are derived from catalog facts by `risk.py`, not from benchmarks.
+- Sample-business team data (members, a request, a license, an unapproved tool) is demo data restored by `reset_demos()`.
 - Taxonomy fields are LLM-suggested and human-reviewed.
 - Per-seat and usage unit prices are approximate list prices.
 - Security and support scores show "no data" where facts are unknown.

@@ -8,9 +8,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, EmailStr, Field
 
+import adoptions
 import db
 import evaluate as ev
+import risk
 import seed
+from categories import with_categories
 from auth import clear, client_ip, current_user, hash_password, issue, rate_limit, verify_password
 from config import (ADMIN_TOKEN, FRONTEND_ORIGIN, LIVE_RUNS_PER_IP_PER_DAY_DEMO, LIVE_RUNS_PER_USER_PER_DAY,
                     SPEND_CAP_USD)
@@ -55,7 +58,8 @@ class LoginIn(BaseModel):
 
 
 class DetailsIn(BaseModel):
-    business_type: str | None = Field(default=None, max_length=60)
+    business_category: str | None = Field(default=None, max_length=40)  # general category id (categories.py)
+    business_type: str | None = Field(default=None, max_length=60)  # legacy free text
     team_size: int | None = Field(default=None, ge=1, le=10000)
     budget: str | None = Field(default=None, max_length=40)
     tech_comfort: int | None = Field(default=None, ge=1, le=5)
@@ -191,6 +195,8 @@ def upsert_business(body: BusinessIn, user=Depends(current_user)):
     if user["is_demo"]:
         raise HTTPException(403, "Sample businesses can't be edited - create your own account")
     b = db.get_user_business(user["id"])
+    if b and b["user_id"] != user["id"]:
+        raise HTTPException(403, "Only the business owner can edit the business profile")
     details = body.details.model_dump() if body.details else None
     if b:
         db.update_business(b["id"], name=body.name, location=body.location, description=body.description,
@@ -232,10 +238,18 @@ def dashboard(request: Request, user=Depends(current_user)):
            "budget_ok": db.total_spend() < SPEND_CAP_USD}
     if not b:
         return out
+    catalog = store.load_catalog()
+    out["adopted"] = [{"id": a["tool_id"], "name": catalog[a["tool_id"]]["name"], "url": catalog[a["tool_id"]]["url"],
+                       "category": catalog[a["tool_id"]]["category"],
+                       "price": catalog[a["tool_id"]]["price_monthly_typical"], "source": a["source"],
+                       "adopted_at": a["adopted_at"]}
+                      for a in adoptions.list_adopted(b["id"]) if a["tool_id"] in catalog]
+    out["scenarios_status"] = adoptions.scenarios_status(b["id"], b)
+    biz_scenarios = json.loads(b["scenarios_json"]) if b.get("scenarios_json") else None
     run = db.latest_complete_run(b["id"])
+    out["tasks"] = db.get_business_tasks(b["id"], run["id"] if run else None)
     if run:
         res = json.loads(run["result_json"] or "{}")
-        catalog = store.load_catalog()
         approved = res.get("approved_tool_ids") or []
         out["latest"] = {
             "run_id": run["id"], "created_at": run["created_at"].isoformat() if run["created_at"] else None,
@@ -245,10 +259,10 @@ def dashboard(request: Request, user=Depends(current_user)):
                           "category": catalog[t]["category"], "price": catalog[t]["price_monthly_typical"]}
                          for t in approved if t in catalog],
             "first_step_today": (res.get("plan") or {}).get("first_step_today"),
-            "scenarios": (res.get("plan") or {}).get("scenarios") or [],
+            # after a manual adoption, scenarios are regenerated for the whole adopted stack
+            "scenarios": biz_scenarios if biz_scenarios is not None else ((res.get("plan") or {}).get("scenarios") or []),
             "current_tools": (res.get("profile") or {}).get("current_tools") or [],
         }
-        out["tasks"] = db.get_plan_tasks(run["id"])
     out["runs"] = [r | {"created_at": r["created_at"].isoformat() if r["created_at"] else None}
                    for r in db.list_runs(b["id"])]
     return out
@@ -294,8 +308,12 @@ async def create_run(body: RunIn, request: Request, user=Depends(current_user)):
 
 def _own_run(run_id, user):
     r = db.get_run(run_id)
-    if not r or r["user_id"] != user["id"]:
+    if not r:
         raise HTTPException(404, "Run not found")
+    if r["user_id"] != user["id"]:  # team members may view their business's runs
+        b = db.get_user_business(user["id"])
+        if not b or b["id"] != r["business_id"]:
+            raise HTTPException(404, "Run not found")
     return r
 
 
@@ -320,8 +338,8 @@ def catalog(vertical: str | None = None, ids: str | None = None):
     cat = store.load_catalog()
     agg = db.review_aggregates()
     if ids:
-        return {t: cat[t] | {"reviews": agg.get(t)} for t in ids.split(",") if t in cat}
-    tools = [t | {"reviews": agg.get(t["id"])} for t in cat.values()]
+        return {t: with_categories(cat[t]) | {"reviews": agg.get(t)} for t in ids.split(",") if t in cat}
+    tools = [with_categories(t) | {"reviews": agg.get(t["id"])} for t in cat.values()]
     if vertical:
         tools = [t for t in tools if vertical in t["verticals"] or "all" in t["verticals"]]
     return tools
@@ -354,7 +372,9 @@ def tool_detail(tool_id: str, request: Request):
     b = db.get_user_business(user["id"]) if user else None
     revs = db.list_reviews(tool_id)
     mine = next((r for r in revs if b and r["business_id"] == b["id"]), None)
-    return {"tool": cat[tool_id], "aggregate": db.review_aggregates().get(tool_id),
+    return {"tool": with_categories(cat[tool_id]), "aggregate": db.review_aggregates().get(tool_id),
+            "adopted": bool(b and tool_id in adoptions.adopted_ids(b["id"])),
+            "risk": risk.assess(cat[tool_id]),
             "reviews": [{k: r[k] for k in ("id", "role", "output_quality", "reliability", "support", "text",
                                            "verified_use", "is_demo", "business_name", "vertical")}
                         | {"created_at": r["created_at"].isoformat() if r["created_at"] else None} for r in revs],
@@ -479,3 +499,11 @@ def reset_demos(x_admin_token: str = Header(default="")):
         raise HTTPException(403, "Forbidden")
     seed.reset_demos()
     return {"ok": True}
+
+
+from routers.team import router as team_router  # noqa: E402  (team mode / procurement)
+app.include_router(team_router)
+from routers.adoption import router as adoption_router  # noqa: E402  (adopt tools into the workflow)
+app.include_router(adoption_router)
+from routers.profile import router as profile_router  # noqa: E402  (edit business profile)
+app.include_router(profile_router)

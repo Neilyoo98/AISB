@@ -26,7 +26,7 @@ export const AGENT_EDGES: [string, string][] = [
   ["diagnoser", "scout0"], ["diagnoser", "scout1"], ["diagnoser", "scout2"],
   ...["scout0", "scout1", "scout2"].flatMap((s) => ["budget_hawk", "ease_coach", "integration_checker"].map((p) => [s, p] as [string, string])),
   ["budget_hawk", "roi"], ["ease_coach", "roi"], ["integration_checker", "roi"],
-  ["roi", "you"], ["you", "planner"], ["planner", "memory"],
+  ["roi", "you"], ["you", "planner"], ["planner", "memory"], ["you", "memory"],
 ];
 
 export type Hop = { from: string; to: string[]; text: string; tone?: "good" | "warn" };
@@ -85,4 +85,11 @@ export function hopsFromEvents(events: RunEvent[], names: Record<string, string>
     }
   }
   return hops;
+}
+
+/** Manual adoptions (adopted from Discover / War Room after the analysis) shown as extra hops in the replay. */
+export function adoptionHops(items: { tool_id: string; source: string }[], names: Record<string, string>): Hop[] {
+  return items
+    .filter((a) => a.source === "manual")
+    .map((a) => ({ from: "you", to: ["memory"], text: `You adopted ${names[a.tool_id] || a.tool_id}; saved to your Business Constitution`, tone: "good" as const }));
 }

@@ -51,3 +51,27 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Hero slideshow: opacity crossfade (on-screen morph -> strong ease-in-out) + slow linear drift.
+   Only opacity/transform animate. Reduced motion: no drift, no cycling (handled in JS). */
+.hero-slide {
+  opacity: 0;
+  transition: opacity 1400ms cubic-bezier(0.77, 0, 0.175, 1);
+}
+.hero-slide[data-active="true"] {
+  opacity: 1;
+}
+.hero-slide img {
+  transform: scale(1.04);
+}
+.hero-slide[data-active="true"] img {
+  animation: hero-drift 7400ms linear forwards;
+}
+@keyframes hero-drift {
+  from { transform: scale(1.04); }
+  to { transform: scale(1.1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-slide { transition: none; }
+  .hero-slide[data-active="true"] img { animation: none; }
+}

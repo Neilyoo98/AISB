@@ -53,9 +53,12 @@ def test_integration_status_native_via_none():
 
 def test_score_tool_flags_unknown_data_and_respects_weights():
     prof = {"monthly_budget": 200, "tech_comfort": 2, "current_tools": ["quickbooks"]}
-    s = ev.score_tool(CAT["jobber"], prof, ev.PRESETS["balanced"])
+    s = ev.score_tool(CAT["yardbook"], prof, ev.PRESETS["balanced"])  # nothing sourced yet
     assert s["criteria"]["security"]["no_data"] and s["criteria"]["security"]["score"] == 5.0
     assert s["criteria"]["support"]["no_data"]
+    cal = ev.score_tool(CAT["calendly"], prof, {"security": 100})  # SOC 2 + GDPR/ISO + no-training all sourced
+    assert not cal["criteria"]["security"]["no_data"] and cal["total"] == 7.0
+    s = ev.score_tool(CAT["jobber"], prof, ev.PRESETS["balanced"])
     assert 0 <= s["total"] <= 10
     cheap = ev.score_tool(CAT["yardbook"], prof, {"cost": 100})
     pricey = ev.score_tool(CAT["workiz"], prof, {"cost": 100})

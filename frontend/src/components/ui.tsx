@@ -2,12 +2,12 @@
 import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { AlertTriangle, BookUser, Check, CircleHelp, Compass, Hammer, LayoutDashboard, LogOut, Network, Radio, Star } from "lucide-react";
+import { AlertTriangle, Check, CircleHelp, Compass, Hammer, LayoutDashboard, LogOut, Network, Radio, Star, UserRound, Users2 } from "lucide-react";
 import { api, cn } from "@/lib/api";
 
-export function Logo({ className }: { className?: string }) {
+export function Logo({ className, light }: { className?: string; light?: boolean }) {
   return (
-    <Link href="/" className={cn("flex items-center gap-2 font-display text-lg font-bold tracking-tight text-stone-900", className)}>
+    <Link href="/" className={cn("flex items-center gap-2 font-display text-lg font-bold tracking-tight", light ? "text-white" : "text-stone-900", className)}>
       <span className="grid h-8 w-8 place-items-center rounded-lg bg-emerald-700 text-white">
         <Hammer size={16} strokeWidth={2.5} />
       </span>
@@ -30,7 +30,8 @@ export function AppHeader({ businessName, isDemo, loggedOut }: { businessName?: 
         { href: "/war-room", label: "War Room", icon: Radio },
         { href: "/agents", label: "Agents", icon: Network },
         { href: "/tools", label: "Discover", icon: Compass },
-        { href: "/profile", label: "Constitution", icon: BookUser },
+        { href: "/team", label: "Team", icon: Users2 },
+        { href: "/profile", label: "Profile", icon: UserRound },
       ];
   return (
     <header className="sticky top-0 z-30 border-b border-stone-200/80 bg-[#fafaf7]/90 backdrop-blur">
@@ -38,7 +39,7 @@ export function AppHeader({ businessName, isDemo, loggedOut }: { businessName?: 
         <div className="flex min-w-0 items-center gap-3">
           <Logo />
           {businessName && (
-            <span className="hidden min-w-0 truncate border-l border-stone-300 pl-3 text-sm text-stone-600 lg:block">{businessName}</span>
+            <span className="hidden min-w-0 max-w-[14rem] truncate border-l border-stone-300 pl-3 text-sm text-stone-600 xl:block">{businessName}</span>
           )}
         </div>
         <nav className="flex items-center gap-0.5">
@@ -46,7 +47,7 @@ export function AppHeader({ businessName, isDemo, loggedOut }: { businessName?: 
             const active = pathname === l.href || pathname.startsWith(`${l.href}/`);
             return (
               <Link key={l.href} href={l.href} className={cn("btn-ghost px-2.5 sm:px-3", active && "bg-stone-100 text-stone-900")} aria-label={l.label}>
-                <l.icon size={16} /> <span className="hidden md:inline">{l.label}</span>
+                <l.icon size={16} /> <span className="hidden lg:inline">{l.label}</span>
               </Link>
             );
           })}
@@ -56,7 +57,7 @@ export function AppHeader({ businessName, isDemo, loggedOut }: { businessName?: 
             </Link>
           ) : (
             <button onClick={logout} className="btn-ghost px-2.5 sm:px-3" aria-label="Log out">
-              <LogOut size={16} /> <span className="hidden md:inline">Log out</span>
+              <LogOut size={16} /> <span className="hidden xl:inline">Log out</span>
             </button>
           )}
         </nav>
@@ -107,7 +108,8 @@ export const VERTICAL_LABEL: Record<string, string> = {
   other: "Small business",
 };
 
-export const PAIN_LABEL = (tag: string) => tag.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+const PAIN_NAMES: Record<string, string> = { email_sms_marketing: "Email & SMS marketing", no_shows: "No-shows", admin_writing: "Admin & writing", invoicing_payments: "Invoices & payments", dispatch_routing: "Dispatch & routing" };
+export const PAIN_LABEL = (tag: string) => PAIN_NAMES[tag] ?? tag.replace(/_/g, " ").replace(/^\w/, (c) => c.toUpperCase());
 
 
 /** Sets the browser tab title: "Dashboard · StackSmith". */

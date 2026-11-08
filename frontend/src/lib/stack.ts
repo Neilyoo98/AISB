@@ -1,4 +1,4 @@
-// Shared helpers for "Stack in action" scenarios (compact StackFlow and the Agents page graph).
+// Shared helpers for "Stack in action" scenarios (used by components/agent-graph.tsx).
 import type { Scenario, Tool } from "@/lib/types";
 
 export type ActorKind = "new" | "existing" | "person";

@@ -6,6 +6,8 @@ import { Check, Plus, Save, X } from "lucide-react";
 import { api, cn, money } from "@/lib/api";
 import type { Business, Tool, User } from "@/lib/types";
 import { AppHeader, Ease, HelpTip, PageHeader, PageState, Stars, useTitle } from "@/components/ui";
+import { ToolIcon, toolType } from "@/lib/tool-icons";
+import { AdoptButton } from "@/components/adopt-button";
 
 type Crit = { score: number; no_data: boolean; why: string };
 type TCO = { monthly: number; subscription: number; usage: number; setup: number; hosting: number; total: number; months: number };
@@ -19,7 +21,10 @@ type Eval = { results: Result[]; weights: Record<string, number>; personalized: 
 
 const CRIT_LABEL: Record<string, string> = { cost: "Cost", ease: "Ease of use", fit: "Fit with your tools", security: "Security", scalability: "Scalability", support: "Support" };
 const PRESET_LABEL: Record<string, string> = { balanced: "Balanced", budget_first: "Budget first", security_first: "Security first" };
-const TRUST_LABEL: Record<string, string> = { no_training_on_customer_data: "No training on your data", soc2: "SOC 2" };
+const TRUST_LABEL: Record<string, string> = {
+  soc2: "SOC 2", hipaa: "HIPAA", gdpr: "GDPR", iso27001: "ISO 27001", no_training_on_customer_data: "No training on your data",
+  retention: "Retention policy", data_residency: "Data location", opt_out: "Opt-out of data use",
+};
 
 function CompareInner() {
   useTitle("Compare tools");
@@ -165,10 +170,16 @@ function CompareInner() {
                     {list.map((i) => (
                       <th key={i} className="px-4 py-4 text-left align-top">
                         <div className="flex items-start justify-between gap-2">
-                          <Link href={`/tools/${i}`} className="font-semibold hover:underline">{tools[i].name}</Link>
+                          <div className="flex min-w-0 items-center gap-2.5">
+                            <ToolIcon category={tools[i].category} size={36} />
+                            <div className="min-w-0">
+                              <Link href={`/tools/${i}`} className="font-semibold hover:underline">{tools[i].name}</Link>
+                              <div className="text-xs font-normal text-stone-500">{toolType(tools[i].category).label}</div>
+                            </div>
+                          </div>
                           <button onClick={() => remove(i)} className="text-stone-400 hover:text-stone-700" aria-label={`Remove ${tools[i].name}`}><X size={14} /></button>
                         </div>
-                        <div className="mt-1 text-xs font-normal capitalize text-stone-500">{tools[i].category.replace(/_/g, " ")}</div>
+                        <div className="mt-3 font-normal"><AdoptButton toolId={i} compact className="!items-start" /></div>
                       </th>
                     ))}
                   </tr>
@@ -191,7 +202,7 @@ function CompareInner() {
                             <td key={i} className={cell(!cr?.no_data && vals[k] === best(vals))}>
                               <div className="flex items-center gap-2">
                                 <div className="h-1.5 w-16 overflow-hidden rounded-full bg-stone-100"><div className={cn("h-full rounded-full", cr?.no_data ? "bg-stone-300" : "bg-emerald-600")} style={{ width: `${(cr?.score ?? 0) * 10}%` }} /></div>
-                                <span className={cn("tabular-nums", cr?.no_data && "text-stone-400")}>{cr?.score.toFixed(1)}</span>
+                                <span className={cn("tabular-nums", cr?.no_data && "text-stone-400")}>{cr?.score.toFixed(1)}<span className="text-xs text-stone-400"> /10</span></span>
                               </div>
                               <div className={cn("mt-0.5 text-xs", cr?.no_data ? "italic text-stone-400" : "text-stone-500")}>{cr?.no_data ? `no data · ${cr.why}` : cr?.why}</div>
                             </td>
@@ -205,13 +216,14 @@ function CompareInner() {
                       const t = res[i]?.[tcoKey];
                       return (
                         <td key={i} className={cell(tcos[k] === best(tcos, false))}>
-                          <div className="font-semibold tabular-nums">{money(t?.total)}</div>
+                          <div className="font-semibold tabular-nums">{money(t?.total)} <span className="text-xs font-normal text-stone-500">total</span></div>
+                          <div className="text-xs text-stone-500">≈ {money(t?.monthly)} per month</div>
                           <div className="mt-1.5 flex h-2 w-full max-w-[160px] overflow-hidden rounded-full bg-stone-100" aria-hidden>
                             <span className="bg-emerald-600" style={{ width: `${((t?.subscription ?? 0) / maxTco) * 100}%` }} />
                             <span className="bg-amber-500" style={{ width: `${((t?.usage ?? 0) / maxTco) * 100}%` }} />
                             <span className="bg-sky-400" style={{ width: `${((t?.setup ?? 0) / maxTco) * 100}%` }} />
                           </div>
-                          <div className="mt-1 text-[11px] text-stone-500">{money(t?.subscription)} plan{t?.usage ? ` · ${money(t.usage)} usage` : ""} · {money(t?.setup)} setup</div>
+                          <div className="mt-1 text-[11px] text-stone-500">{money(t?.subscription)} subscription{t?.usage ? ` · ${money(t.usage)} extra usage` : ""} · {money(t?.setup)} setup time</div>
                         </td>
                       );
                     })}
@@ -221,9 +233,9 @@ function CompareInner() {
                       const t = tools[i];
                       return (
                         <td key={i} className={cell(false)}>
-                          {t.price_monthly_typical === 0 ? "Free" : `${money(t.price_monthly_typical)}/mo`}
+                          {t.price_monthly_typical === 0 ? "Free" : `${money(t.price_monthly_typical)} per month`}
                           <div className="text-xs text-stone-500">
-                            {t.pricing_model === "per_seat" ? `${money(t.unit_price)}/extra seat` : t.pricing_model === "usage" ? `${t.units_included} ${t.unit}s incl., then $${(t.unit_price ?? 0).toFixed(2)}/${t.unit}` : "flat"}
+                            {t.pricing_model === "per_seat" ? `$${(t.unit_price ?? 0).toFixed(2)} per extra user` : t.pricing_model === "usage" ? `${t.units_included} ${t.unit}s included, then $${(t.unit_price ?? 0).toFixed(2)} per ${t.unit}` : "flat price"}
                             {t.free_tier ? " · free plan" : ""}
                           </div>
                         </td>
@@ -239,7 +251,7 @@ function CompareInner() {
                             <span className="text-xs text-stone-400">{ev.personalized ? "No current tools on file" : "Log in to check"}</span>
                           ) : (
                             <>
-                              <span className={cn("chip", g.none === 0 ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-amber-200 bg-amber-50 text-amber-800")}>{g.native}/{g.total} native</span>
+                              <span className={cn("chip", g.none === 0 ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-amber-200 bg-amber-50 text-amber-800")}>connects to {g.native} of your {g.total} tools</span>
                               <ul className="mt-1.5 space-y-0.5 text-xs">
                                 {g.links.map((l) => (
                                   <li key={l.tool} className={l.status === "native" ? "text-emerald-800" : l.status === "none" ? "text-stone-400" : "text-amber-800"}>
@@ -256,25 +268,34 @@ function CompareInner() {
                   <Row label="Reviews">
                     {list.map((i) => {
                       const r = tools[i].reviews;
-                      return <td key={i} className={cell(false)}>{r ? <span className="flex items-center gap-1.5"><Stars value={r.overall} size={12} /> <span className="text-xs text-stone-500">{r.overall.toFixed(1)} ({r.count})</span></span> : <span className="text-xs text-stone-400">none yet</span>}</td>;
+                      return <td key={i} className={cell(false)}>{r ? <span className="flex items-center gap-1.5"><Stars value={r.overall} size={12} /> <span className="text-xs text-stone-500">{r.overall.toFixed(1)} out of 5 · {r.count} review{r.count > 1 ? "s" : ""}</span></span> : <span className="text-xs text-stone-400">none yet</span>}</td>;
                     })}
                   </Row>
                   <Row label="Trust" help="Shown only when sourced from the vendor's own documents. “Unknown” means we haven't verified it yet, not that it's false.">
-                    {list.map((i) => (
-                      <td key={i} className={cell(false)}>
-                        <ul className="space-y-0.5 text-xs">
-                          {Object.entries(tools[i].trust || {}).map(([k, v]) => (
-                            <li key={k} className={v.status === "unknown" ? "text-stone-400" : "text-emerald-800"}>{TRUST_LABEL[k] || k}: {v.status.replace("_", " ")}</li>
-                          ))}
-                        </ul>
-                      </td>
-                    ))}
+                    {list.map((i) => {
+                      const facts = Object.entries(tools[i].trust || {});
+                      const sourced = facts.filter(([, v]) => v.status !== "unknown");
+                      const unknown = facts.length - sourced.length;
+                      return (
+                        <td key={i} className={cell(false)}>
+                          <ul className="space-y-0.5 text-xs">
+                            {sourced.map(([k, v]) => (
+                              <li key={k} className="text-emerald-800">
+                                ✓ {TRUST_LABEL[k] || k}{" "}
+                                {v.source_url && <a href={v.source_url} target="_blank" rel="noopener noreferrer" className="underline">source</a>}
+                              </li>
+                            ))}
+                          </ul>
+                          {unknown > 0 && <div className="mt-0.5 text-xs text-stone-400">{unknown} of {facts.length} facts not yet verified</div>}
+                        </td>
+                      );
+                    })}
                   </Row>
                   <Row label="Setup & ease">
-                    {list.map((i) => <td key={i} className={cell(false)}><div className="flex items-center gap-2">~{tools[i].setup_hours}h <Ease n={tools[i].tech_comfort_min} /></div></td>)}
+                    {list.map((i) => <td key={i} className={cell(false)}><div className="flex items-center gap-2">about {tools[i].setup_hours} hour{tools[i].setup_hours === 1 ? "" : "s"} <Ease n={tools[i].tech_comfort_min} /></div></td>)}
                   </Row>
-                  <Row label="Deployment · API">
-                    {list.map((i) => <td key={i} className={cell(false)}><span className="uppercase">{tools[i].deployment}</span> · {tools[i].api_available ? "API available" : "no public API"}</td>)}
+                  <Row label="Hosting · API">
+                    {list.map((i) => <td key={i} className={cell(false)}>{tools[i].deployment === "saas" ? "Cloud" : tools[i].deployment === "vpc" ? "Private cloud" : "On-premises"} · {tools[i].api_available ? "API available" : "no public API"}</td>)}
                   </Row>
                   <Row label="Watch out">
                     {list.map((i) => <td key={i} className={cell(false)}><ul className="space-y-0.5 text-xs text-amber-800">{tools[i].cons.map((c) => <li key={c}>− {c}</li>)}</ul></td>)}

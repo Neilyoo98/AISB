@@ -18,6 +18,18 @@ export type Business = {
   location: string | null;
   description: string | null;
   profile: Profile | null;
+  details?: BusinessDetails | null;
+};
+
+export type BusinessDetails = {
+  business_category?: string | null;
+  business_type?: string | null;
+  team_size?: number | null;
+  budget?: string | null;
+  tech_comfort?: number | null;
+  current_tools?: string[];
+  security_must_haves?: string[];
+  goals?: string[];
 };
 
 export type Tool = {
@@ -48,9 +60,19 @@ export type Tool = {
   unit_price?: number | null;
   seats_included?: number;
   units_included?: number | null;
-  trust?: Record<string, { status: "verified" | "vendor_claimed" | "unknown"; source_url: string | null; as_of: string | null }>;
+  trust?: Record<string, TrustFact>;
   reviews?: ReviewAgg | null;
+  categories?: string[];
 };
+
+export type TrustStatus = "verified" | "vendor_claimed" | "unknown";
+export type TrustFact = { status: TrustStatus; source_url: string | null; as_of: string | null; quote?: string | null };
+
+export type RiskLevel = "low" | "medium" | "high" | "not_assessed";
+export type RiskItem = { level: RiskLevel; reason: string; basis: string };
+export type Risk = Partial<Record<"hallucination" | "bias" | "prompt_injection" | "data_exfiltration", RiskItem>>;
+
+export type Adoption = { tool_id: string; source: "plan" | "manual"; adopted_at: string; run_id?: string | null };
 
 export type ReviewAgg = { count: number; output_quality: number; reliability: number; support: number; overall: number; verified: number };
 

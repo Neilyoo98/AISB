@@ -103,9 +103,14 @@ def score_tool(tool: dict, profile: dict | None, weights: dict | None, reviews_a
                        "why": f"connects to {integ['native']}/{integ['total']} of your tools natively"}
 
     trust = tool.get("trust") or {}
-    pts = [TRUST_POINTS[v["status"]] for v in trust.values() if v.get("status") in TRUST_POINTS]
-    if pts:
-        crit["security"] = {"score": round(sum(pts) / len(trust), 1), "why": f"{len(pts)}/{len(trust)} trust facts sourced"}
+    # Security = sourced claims for SOC 2, (GDPR or ISO 27001), and no-training-on-your-data. Unknown -> neutral.
+    groups = [["soc2"], ["gdpr", "iso27001"], ["no_training_on_customer_data"]]
+    pts = [max((TRUST_POINTS.get((trust.get(k) or {}).get("status"), 0) for k in g), default=0) for g in groups]
+    known = [p for p in pts if p > 0]
+    if known:
+        # unconfirmed groups count as a neutral 5 so one sourced fact can't max out the score
+        crit["security"] = {"score": round(sum(p if p > 0 else 5 for p in pts) / len(groups), 1),
+                            "why": f"{len(known)}/{len(groups)} security facts sourced from the vendor"}
     else:
         crit["security"] = {"score": 5.0, "no_data": True, "why": "not yet verified"}
 

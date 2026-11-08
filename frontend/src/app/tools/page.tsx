@@ -1,12 +1,16 @@
 "use client";
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight, Check, Clock, Scale, Search, Sparkles, X } from "lucide-react";
+import { ArrowRight, Check, Clock, Scale, Search, X } from "lucide-react";
 import { api, cn, money } from "@/lib/api";
 import type { Business, Tool, User } from "@/lib/types";
-import { AppHeader, Ease, PAIN_LABEL, PageHeader, PageState, Stars, VERTICAL_LABEL, useTitle } from "@/components/ui";
+import { CATEGORIES, categoryOfVertical, toolCategories } from "@/lib/categories";
+import { CAPABILITY_LABEL, TOOL_TYPES, ToolIcon, toolType } from "@/lib/tool-icons";
+import { AdoptButton } from "@/components/adopt-button";
+import { ToolQuickView } from "@/components/tool-quickview";
+import { AppHeader, PAIN_LABEL, PageHeader, PageState, Stars, useTitle } from "@/components/ui";
 
 const EASE = [0.23, 1, 0.32, 1] as const;
 const PRICE = [
@@ -15,9 +19,8 @@ const PRICE = [
   { id: "50", label: "Under $50/mo", ok: (t: Tool) => t.price_monthly_typical <= 50 },
   { id: "150", label: "Under $150/mo", ok: (t: Tool) => t.price_monthly_typical <= 150 },
 ];
-const PROBLEMS = ["missed_calls", "reviews", "social_media", "email_sms_marketing", "appointment_booking", "no_shows", "staff_scheduling",
-  "quoting", "invoicing_payments", "bookkeeping", "dispatch_routing", "online_ordering", "menu_costing", "inventory", "customer_chat", "website", "admin_writing"];
-const TYPES = ["cafe", "restaurant", "hvac", "landscaping", "home_services", "salon", "retail"];
+const HELPS_WITH = ["missed_calls", "reviews", "social_media", "email_sms_marketing", "appointment_booking", "no_shows", "staff_scheduling",
+  "quoting", "invoicing_payments", "bookkeeping", "dispatch_routing", "online_ordering", "inventory", "customer_chat", "website", "admin_writing"];
 const EXAMPLES = ["answer my phone when I'm busy", "pull tables out of messy PDFs", "get more Google reviews", "stop no-shows"];
 
 function DiscoverInner() {
@@ -29,10 +32,14 @@ function DiscoverInner() {
   const [q, setQ] = useState(params.get("q") || "");
   const [ranked, setRanked] = useState<Record<string, number> | null>(null);
   const [searching, setSearching] = useState(false);
-  const [type, setType] = useState<string | null>(null);
-  const [problem, setProblem] = useState<string | null>(params.get("problem"));
+  const [biz, setBiz] = useState<string | null>(null);
+  const [type, setType] = useState<string | null>(params.get("type"));
+  const [helps, setHelps] = useState<string | null>(params.get("problem"));
+  const [moreFilters, setMoreFilters] = useState(false);
   const [price, setPrice] = useState("any");
   const [picked, setPicked] = useState<string[]>([]);
+  const [quick, setQuick] = useState<Tool | null>(null);
+  const closeQuick = useCallback(() => setQuick(null), []);
 
   useEffect(() => {
     api<Tool[]>("/catalog").then(setTools).catch(() => setTools([]));
@@ -41,7 +48,8 @@ function DiscoverInner() {
       .then((r) => (r.ok ? r.json() : null))
       .then((m) => {
         setMe(m);
-        if (m?.business?.vertical && TYPES.includes(m.business.vertical)) setType(m.business.vertical);
+        const c = m?.business?.details?.business_category || categoryOfVertical(m?.business?.vertical);
+        if (c && CATEGORIES.some((x) => x.id === c)) setBiz(c);
       })
       .catch(() => setMe(null));
   }, []);
@@ -64,25 +72,26 @@ function DiscoverInner() {
   }, [q]);
 
   const profile = me?.business?.profile;
-  const goodFit = (t: Tool) =>
-    !!profile && (t.verticals.includes(profile.vertical) || t.verticals.includes("all")) && t.price_monthly_typical <= profile.monthly_budget && t.tech_comfort_min <= profile.tech_comfort;
+  const goodFit = (t: Tool) => !!profile && t.price_monthly_typical <= profile.monthly_budget && t.tech_comfort_min <= profile.tech_comfort;
+
+  const types = useMemo(() => Array.from(new Set((tools || []).map((t) => t.category))).filter((c) => TOOL_TYPES[c]), [tools]);
 
   const shown = useMemo(() => {
     if (!tools) return [];
     const p = PRICE.find((x) => x.id === price)!;
     const list = tools
-      .filter((t) => !type || t.verticals.includes(type) || t.verticals.includes("all"))
-      .filter((t) => !problem || t.solves.includes(problem))
+      .filter((t) => !biz || toolCategories(t).includes(biz as never))
+      .filter((t) => !type || t.category === type)
+      .filter((t) => !helps || t.solves.includes(helps))
       .filter(p.ok);
     if (ranked) return list.filter((t) => t.id in ranked).sort((a, b) => ranked[a.id] - ranked[b.id]);
-    return list.sort(
-      (a, b) => Number(goodFit(b)) - Number(goodFit(a)) || (b.reviews?.overall ?? 0) - (a.reviews?.overall ?? 0) || a.price_monthly_typical - b.price_monthly_typical,
-    );
+    return list.sort((a, b) => Number(goodFit(b)) - Number(goodFit(a)) || a.price_monthly_typical - b.price_monthly_typical);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tools, ranked, type, problem, price, profile]);
+  }, [tools, ranked, biz, type, helps, price, profile]);
 
   const toggle = (id: string) => setPicked((p) => (p.includes(id) ? p.filter((x) => x !== id) : p.length >= 4 ? p : [...p, id]));
   const byId = Object.fromEntries((tools || []).map((t) => [t.id, t]));
+  const anyFilter = biz || type || helps || price !== "any";
 
   return (
     <div className="min-h-dvh pb-32">
@@ -93,8 +102,8 @@ function DiscoverInner() {
           title="Find AI tools for your business"
           help={
             <>
-              Every tool here is real and hand-checked. Search in plain words: we match by meaning, not keywords. Filter by business type, problem or price, then tick up to 4 tools to
-              compare side by side.{profile && <> Tools that fit <b>{me?.business?.name}</b> are listed first.</>}
+              Every tool here is a real product we checked by hand. Search in plain words (we match by meaning, not keywords), narrow down with the filters, then tick up to 4 tools to
+              compare, or adopt one straight into your workflow.{profile && <> Tools that fit <b>{me?.business?.name}</b>&apos;s budget and comfort level are listed first.</>}
             </>
           }
         />
@@ -117,21 +126,38 @@ function DiscoverInner() {
               ))}
             </div>
           )}
-          <FilterRow label="Business" value={type} onChange={setType} options={TYPES.map((t) => [t, VERTICAL_LABEL[t]])} />
-          <FilterRow label="Problem" value={problem} onChange={setProblem} options={PROBLEMS.map((p) => [p, PAIN_LABEL(p)])} />
+
+          <FilterRow label="Business" value={biz} onChange={setBiz} allLabel="Any business"
+            options={CATEGORIES.filter((c) => c.id !== "other").map((c) => ({ id: c.id, label: c.label, icon: <c.icon size={13} /> }))} />
+          {(moreFilters || type || helps) ? (
+            <>
+              <FilterRow label="Tool type" value={type} onChange={setType}
+                options={types.map((c) => {
+                  const m = toolType(c);
+                  return { id: c, label: m.label, icon: <m.icon size={13} /> };
+                })} />
+              <FilterRow label="Helps with" value={helps} onChange={setHelps} options={HELPS_WITH.map((p) => ({ id: p, label: PAIN_LABEL(p) }))} />
+            </>
+          ) : (
+            <button type="button" onClick={() => setMoreFilters(true)} className="text-xs font-semibold text-emerald-700 hover:underline">
+              + More filters (tool type, what it helps with)
+            </button>
+          )}
           <div className="flex flex-wrap items-center gap-1.5">
-            <span className="w-20 shrink-0 text-xs font-semibold text-stone-500">Price</span>
+            <span className="w-24 shrink-0 text-xs font-semibold text-stone-500">Price</span>
             {PRICE.map((p) => (
-              <button key={p.id} onClick={() => setPrice(p.id)}
-                className={cn("rounded-full border px-3 py-1 text-xs font-medium transition-colors", price === p.id ? "border-stone-900 bg-stone-900 text-white" : "border-stone-200 bg-white text-stone-700 hover:border-stone-400")}>
-                {p.label}
-              </button>
+              <button key={p.id} onClick={() => setPrice(p.id)} className={chip(price === p.id)}>{p.label}</button>
             ))}
           </div>
         </div>
 
-        <div className="mt-6 text-sm text-stone-500" aria-live="polite">
-          {searching ? "Searching…" : `${shown.length} tools${ranked ? " · best matches first" : ""}`}
+        <div className="mt-6 flex items-center justify-between text-sm text-stone-500" aria-live="polite">
+          <span>{searching ? "Searching…" : `${shown.length} tool${shown.length === 1 ? "" : "s"}${ranked ? " · best matches first" : ""}`}</span>
+          {anyFilter && (
+            <button className="text-xs font-semibold text-emerald-700 hover:underline" onClick={() => { setBiz(null); setType(null); setHelps(null); setPrice("any"); }}>
+              Clear filters
+            </button>
+          )}
         </div>
         {!tools ? (
           <PageState kind="loading" />
@@ -141,43 +167,42 @@ function DiscoverInner() {
           <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {shown.map((t) => {
               const on = picked.includes(t.id);
+              const m = toolType(t.category);
               return (
                 <div key={t.id} className={cn("card flex flex-col p-5 transition-[border-color,box-shadow]", on && "border-emerald-500 ring-2 ring-emerald-500/20")}>
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <Link href={`/tools/${t.id}`} className="font-semibold leading-snug hover:underline">{t.name}</Link>
-                      <div className="mt-0.5 text-xs capitalize text-stone-500">{t.category.replace(/_/g, " ")}</div>
-                    </div>
-                    <div className="shrink-0 text-right">
-                      <div className="font-semibold tabular-nums">{t.price_monthly_typical === 0 ? "Free" : `${money(t.price_monthly_typical)}/mo`}</div>
-                      {t.free_tier && t.price_monthly_typical > 0 && <div className="text-[11px] font-medium text-emerald-700">free plan</div>}
+                  <div className="flex items-start gap-3">
+                    <ToolIcon category={t.category} size={44} />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-start justify-between gap-2">
+                        <button onClick={() => setQuick(t)} className="text-left font-semibold leading-snug hover:underline">{t.name}</button>
+                        <span className="shrink-0 text-right text-sm font-semibold tabular-nums">
+                          {t.price_monthly_typical === 0 ? "Free" : <>{money(t.price_monthly_typical)}<span className="text-xs font-normal text-stone-500">/mo</span></>}
+                        </span>
+                      </div>
+                      <div className="mt-0.5 text-xs text-stone-500">{m.label}</div>
                     </div>
                   </div>
-                  {t.reviews ? (
-                    <div className="mt-1.5 flex items-center gap-1.5 text-xs text-stone-500">
-                      <Stars value={t.reviews.overall} size={12} /> {t.reviews.overall.toFixed(1)} · {t.reviews.count} review{t.reviews.count > 1 ? "s" : ""}
+                  <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-stone-600">{t.description}</p>
+                  <div className="mt-3 flex flex-wrap gap-1">
+                    {t.capability && <span className="chip">{CAPABILITY_LABEL[t.capability] || t.capability}</span>}
+                    {t.free_tier && <span className="chip border-emerald-200 bg-emerald-50 text-emerald-800">Free plan</span>}
+                    {t.api_available && <span className="chip">API</span>}
+                    {goodFit(t) && <span className="chip border-emerald-200 bg-emerald-50 text-emerald-800">Fits your budget</span>}
+                  </div>
+                  {t.reviews && (
+                    <div className="mt-2 flex items-center gap-1.5 text-xs text-stone-500">
+                      <Stars value={t.reviews.overall} size={12} /> {t.reviews.overall.toFixed(1)} out of 5 · {t.reviews.count} review{t.reviews.count > 1 ? "s" : ""}
                     </div>
-                  ) : (
-                    <div className="mt-1.5 text-xs text-stone-400">No reviews yet</div>
                   )}
-                  <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-stone-600">{t.description}</p>
-                  <ul className="mt-3 space-y-1 text-xs text-stone-700">
-                    {t.ai_features.slice(0, 2).map((a) => (
-                      <li key={a} className="flex gap-1.5"><Sparkles size={12} className="mt-0.5 shrink-0 text-emerald-600" /> {a}</li>
-                    ))}
-                  </ul>
-                  {goodFit(t) && <div className="mt-3 w-fit rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-800">Good fit for you</div>}
                   <div className="mt-auto flex items-center justify-between gap-2 pt-4 text-xs text-stone-500">
-                    <span className="flex items-center gap-3">
-                      <span className="flex items-center gap-1"><Clock size={12} /> {t.setup_hours}h</span>
-                      <Ease n={t.tech_comfort_min} />
-                    </span>
+                    <span className="flex items-center gap-1" title="Typical setup time"><Clock size={12} /> ~{t.setup_hours}h setup</span>
                     <span className="flex items-center gap-1">
-                      <Link href={`/tools/${t.id}`} className="btn-ghost px-2 py-1 text-xs">Details</Link>
+                      <button onClick={() => setQuick(t)} className="btn-ghost px-2 py-1 text-xs">Details</button>
                       <button onClick={() => toggle(t.id)} disabled={!on && picked.length >= 4} aria-pressed={on}
-                        className={cn("btn px-2.5 py-1 text-xs", on ? "bg-emerald-700 text-white" : "border border-stone-300 bg-white text-stone-700 hover:bg-stone-50")}>
-                        {on ? <Check size={13} /> : <Scale size={13} />} {on ? "Added" : "Compare"}
+                        className={cn("btn px-2 py-1 text-xs", on ? "bg-stone-900 text-white" : "text-stone-600 hover:bg-stone-100")} title="Add to comparison">
+                        {on ? <Check size={13} /> : <Scale size={13} />} {on ? "Comparing" : "Compare"}
                       </button>
+                      <AdoptButton toolId={t.id} compact />
                     </span>
                   </div>
                 </div>
@@ -217,20 +242,27 @@ function DiscoverInner() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <ToolQuickView tool={quick} onClose={closeQuick} />
     </div>
   );
 }
 
-function FilterRow({ label, value, onChange, options }: { label: string; value: string | null; onChange: (v: string | null) => void; options: [string, string][] }) {
+const chip = (on: boolean) =>
+  cn("inline-flex items-center gap-1 rounded-full border px-3 py-1 text-xs font-medium transition-colors", on ? "border-stone-900 bg-stone-900 text-white" : "border-stone-200 bg-white text-stone-700 hover:border-stone-400");
+
+function FilterRow({ label, value, onChange, options, allLabel = "All" }: {
+  label: string; value: string | null; onChange: (v: string | null) => void; options: { id: string; label: string; icon?: React.ReactNode }[]; allLabel?: string;
+}) {
   return (
     <div className="flex items-start gap-1.5">
-      <span className="w-20 shrink-0 pt-1 text-xs font-semibold text-stone-500">{label}</span>
+      <span className="w-24 shrink-0 pt-1 text-xs font-semibold text-stone-500">{label}</span>
       <div className="flex flex-wrap gap-1.5">
-        <button onClick={() => onChange(null)} className={cn("rounded-full border px-3 py-1 text-xs font-medium", !value ? "border-stone-900 bg-stone-900 text-white" : "border-stone-200 bg-white text-stone-700 hover:border-stone-400")}>All</button>
-        {options.map(([v, l]) => (
-          <button key={v} onClick={() => onChange(value === v ? null : v)}
-            className={cn("rounded-full border px-3 py-1 text-xs font-medium transition-colors", value === v ? "border-stone-900 bg-stone-900 text-white" : "border-stone-200 bg-white text-stone-700 hover:border-stone-400")}>
-            {l}
+        <button onClick={() => onChange(null)} className={chip(!value)}>{allLabel}</button>
+        {options.map((o) => (
+          <button key={o.id} onClick={() => onChange(value === o.id ? null : o.id)} className={chip(value === o.id)}>
+            {o.icon}
+            {o.label}
           </button>
         ))}
       </div>

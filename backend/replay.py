@@ -87,4 +87,6 @@ async def resume_replay(run_id: str, persona_id: str, approved: list[str]):
     result = json.loads(run["result_json"] or "{}") | {"plan": plan, "approved_tool_ids": approved}
     save_plan_tasks(run_id, plan)
     db.update_run(run_id, status="complete", result=result, events=ch.events)
+    import adoptions
+    adoptions.record_plan(run["business_id"], run_id, approved)
     await ch.emit("run.complete", {})

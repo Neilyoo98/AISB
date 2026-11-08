@@ -6,10 +6,14 @@ import { motion } from "framer-motion";
 import { ArrowRight, Check, Clock, Compass, ExternalLink, Footprints, Network, PlayCircle, RotateCcw, Sparkles, Zap } from "lucide-react";
 import { api, cn, money } from "@/lib/api";
 import type { Business, Pain, Scenario, Stack, Tool, User } from "@/lib/types";
-import { StackFlow } from "@/components/stack-flow";
-import { AppHeader, HelpTip, PageHeader, PageState, Spinner, Stat, VERTICAL_LABEL, useTitle } from "@/components/ui";
+import { ToolsGraph } from "@/components/agent-graph";
+import { ToolIcon } from "@/lib/tool-icons";
+import { CATEGORY_LABEL, categoryOfVertical } from "@/lib/categories";
+import { useAdoptions } from "@/hooks/useAdoptions";
+import { AppHeader, HelpTip, PageHeader, PageState, Spinner, Stat, useTitle } from "@/components/ui";
 
-type Task = { id: number; week: number; tool_id: string | null; text: string; owner: string; minutes: number; done: boolean };
+type Task = { id: number; week: number | null; tool_id: string | null; text: string; owner: string; minutes: number; done: boolean };
+type AdoptedTool = { id: string; name: string; url: string; category: string; price: number; source: "plan" | "manual" };
 type Dash = {
   user: User;
   business: Business | null;
@@ -26,6 +30,7 @@ type Dash = {
     scenarios: Scenario[];
     current_tools: string[];
   };
+  adopted?: AdoptedTool[];
   tasks: Task[];
   runs: { id: string; status: string; mode: string; created_at: string }[];
 };
@@ -37,6 +42,7 @@ export default function Dashboard() {
   const [starting, setStarting] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [catalog, setCatalog] = useState<Record<string, Tool>>({});
+  const { data: adoptions } = useAdoptions();
 
   const load = () => {
     setErr(null);
@@ -87,7 +93,12 @@ export default function Dashboard() {
   const profile = b?.profile;
   const done = d.tasks.filter((t) => t.done).length;
   const pct = d.tasks.length ? Math.round((done / d.tasks.length) * 100) : 0;
-  const weeks = Array.from(new Set(d.tasks.map((t) => t.week))).sort();
+  // Adoption setup tasks have no week: show them first under "Setup".
+  const weekOf = (t: Task) => (t.week && t.week > 0 ? t.week : 0);
+  const weeks = Array.from(new Set(d.tasks.map(weekOf))).sort((a, b) => a - b);
+  const adoptedTools: AdoptedTool[] = d.adopted ?? (latest?.approved.map((a) => ({ ...a, source: "plan" as const })) || []);
+  const scenarios = adoptions?.scenarios?.length ? adoptions.scenarios : latest?.scenarios || [];
+  const category = (b?.details as { business_category?: string } | null | undefined)?.business_category || (b?.vertical ? categoryOfVertical(b.vertical) : null);
   const firstName = user.name.split(" ")[0];
   const cardLink = "card group flex flex-col items-start p-5 text-left transition-[border-color,box-shadow] hover:border-emerald-300 hover:shadow-md";
 
@@ -116,8 +127,8 @@ export default function Dashboard() {
               </>
             ) : (
               <>
-                <Link href="/onboard" className="btn-secondary">
-                  Edit business
+                <Link href="/profile" className="btn-secondary">
+                  Edit profile
                 </Link>
                 <button onClick={() => start("live")} disabled={!!starting || d.live_runs_left <= 0 || !d.budget_ok} className="btn-primary">
                   {starting ? <Spinner /> : <Sparkles size={18} />} New analysis
@@ -127,9 +138,13 @@ export default function Dashboard() {
           }
         />
         <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-stone-600">
-          {b?.vertical && <span className="chip">{VERTICAL_LABEL[b.vertical] || b.vertical}</span>}
+          {category && <span className="chip">{CATEGORY_LABEL[category] || category}</span>}
           {b?.location && <span>{b.location}</span>}
-          {profile && <span>· {profile.employees} people · budget {money(profile.monthly_budget)}/mo</span>}
+          {profile && (
+            <span>
+              · team of {profile.employees} · tool budget {money(profile.monthly_budget)}/month
+            </span>
+          )}
         </div>
         {err && (
           <p role="alert" className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-800">
@@ -171,18 +186,18 @@ export default function Dashboard() {
                   calculator; the AI only estimates how much of each problem a tool removes.
                 </HelpTip>
               </div>
-              <Stat label="Net gain / month" value={money(latest.stack.net_monthly, { sign: true })} tone="good" />
-              <Stat label="Hours saved / month" value={`${Math.round(latest.stack.hours_saved_per_month)}h`} />
+              <Stat label="Net gain / month" value={money(latest.stack.net_monthly, { sign: true })} tone="good" sub="estimated, after tool costs" />
+              <Stat label="Hours saved / month" value={`${Math.round(latest.stack.hours_saved_per_month)} h`} sub="owner + staff time" />
               <Stat
                 label="Tool cost / month"
                 value={money(latest.stack.monthly_cost)}
                 sub={latest.stack.within_budget ? `within ${money(latest.stack.budget)} budget` : "over budget"}
                 tone={latest.stack.within_budget ? "default" : "warn"}
               />
-              <Stat label="Plan progress" value={`${pct}%`} sub={`${done} of ${d.tasks.length} steps`} />
+              <Stat label="Plan progress" value={`${pct}%`} sub={`${done} of ${d.tasks.length} steps done`} />
             </section>
 
-            {latest.scenarios?.length > 0 && (
+            {scenarios.length > 0 && (
               <section className="mt-6">
                 <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
                   <div>
@@ -198,7 +213,14 @@ export default function Dashboard() {
                     </Link>
                   </div>
                 </div>
-                <StackFlow scenarios={latest.scenarios} catalog={catalog} approved={latest.approved.map((a) => a.id)} />
+                <ToolsGraph
+                  key={scenarios.map((x) => x.title).join("|")}
+                  compact
+                  scenarios={scenarios}
+                  catalog={catalog}
+                  approved={adoptedTools.map((a) => a.id)}
+                  note={adoptions?.scenarios_status === "updating" ? "Updating with your new tool…" : null}
+                />
               </section>
             )}
 
@@ -215,27 +237,37 @@ export default function Dashboard() {
                     </Link>
                   </div>
                   <ul className="mt-4 divide-y divide-stone-100">
-                    {latest.approved.map((t) => (
-                      <li key={t.id} className="flex items-center justify-between gap-3 py-3">
-                        <div className="min-w-0">
-                          <Link href={`/tools/${t.id}`} className="font-medium text-stone-900 hover:underline">
-                            {t.name}
-                          </Link>
-                          <a href={t.url} target="_blank" rel="noopener noreferrer" className="ml-1.5 inline-flex text-stone-400 hover:text-stone-700" aria-label={`Visit ${t.name}`}>
-                            <ExternalLink size={12} />
-                          </a>
-                          <div className="text-xs text-stone-500">
-                            Solves:{" "}
-                            {Object.entries(latest.stack.picks)
-                              .filter(([, tid]) => tid === t.id)
-                              .map(([pid]) => latest.pains?.find((p) => p.id === pid)?.title || pid)
-                              .join(" · ")}
+                    {adoptedTools.map((t) => {
+                      const solves = Object.entries(latest.stack.picks)
+                        .filter(([, tid]) => tid === t.id)
+                        .map(([pid]) => latest.pains?.find((p) => p.id === pid)?.title || pid);
+                      return (
+                        <li key={t.id} className="flex items-center justify-between gap-3 py-3">
+                          <div className="flex min-w-0 items-center gap-3">
+                            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-emerald-50 text-emerald-700">
+                              <ToolIcon category={t.category} size={18} />
+                            </span>
+                            <div className="min-w-0">
+                              <div className="flex flex-wrap items-center gap-1.5">
+                                <Link href={`/tools/${t.id}`} className="font-medium text-stone-900 hover:underline">
+                                  {t.name}
+                                </Link>
+                                <a href={t.url} target="_blank" rel="noopener noreferrer" className="inline-flex text-stone-400 hover:text-stone-700" aria-label={`Visit ${t.name}`}>
+                                  <ExternalLink size={12} />
+                                </a>
+                                <span className={cn("chip", t.source === "manual" && "border-sky-200 bg-sky-50 text-sky-800")}>{t.source === "manual" ? "Adopted" : "From plan"}</span>
+                              </div>
+                              {solves.length > 0 && <div className="text-xs text-stone-500">Solves: {solves.join(" · ")}</div>}
+                            </div>
                           </div>
-                        </div>
-                        <span className="shrink-0 text-sm font-semibold tabular-nums">{t.price === 0 ? "Free" : `${money(t.price)}/mo`}</span>
-                      </li>
-                    ))}
+                          <span className="shrink-0 text-sm font-semibold tabular-nums">{t.price === 0 ? "Free" : `${money(t.price)}/month`}</span>
+                        </li>
+                      );
+                    })}
                   </ul>
+                  <Link href="/tools" className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-emerald-700 hover:underline">
+                    Adopt another tool <ArrowRight size={14} />
+                  </Link>
                 </div>
 
                 {latest.first_step_today && (
@@ -270,7 +302,7 @@ export default function Dashboard() {
                 <div className="flex items-center justify-between">
                   <h2 className="font-semibold">30-day adoption plan</h2>
                   <span className="text-sm tabular-nums text-stone-500">
-                    {done}/{d.tasks.length}
+                    {done} of {d.tasks.length} done
                   </span>
                 </div>
                 <div className="mt-3 h-2 overflow-hidden rounded-full bg-stone-100">
@@ -279,10 +311,10 @@ export default function Dashboard() {
                 <div className="mt-5 space-y-5">
                   {weeks.map((w) => (
                     <div key={w}>
-                      <h3 className="eyebrow">Week {w}</h3>
+                      <h3 className="eyebrow">{w === 0 ? "Setup" : `Week ${w}`}</h3>
                       <ul className="mt-2 space-y-1">
                         {d.tasks
-                          .filter((t) => t.week === w)
+                          .filter((t) => weekOf(t) === w)
                           .map((t) => (
                             <li key={t.id}>
                               <button onClick={() => toggle(t)} className="flex w-full items-start gap-3 rounded-lg px-2 py-2 text-left hover:bg-stone-50" aria-pressed={t.done}>
@@ -297,7 +329,7 @@ export default function Dashboard() {
                                 <span className="min-w-0 flex-1">
                                   <span className={cn("block text-sm leading-snug", t.done && "text-stone-400 line-through")}>{t.text}</span>
                                   <span className="mt-0.5 flex items-center gap-2 text-xs text-stone-500">
-                                    {t.owner} <Clock size={11} /> {t.minutes} min
+                                    {t.owner} <Clock size={11} /> about {t.minutes} min
                                   </span>
                                 </span>
                               </button>

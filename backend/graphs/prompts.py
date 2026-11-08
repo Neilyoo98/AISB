@@ -59,6 +59,14 @@ Write for a busy owner with no tech background: short, concrete, no jargon, no h
 For each recommended tool write a two-sentence verdict mentioning the payback and the main caveat from the advisor panel.
 Then a two-sentence stack_summary."""
 
+ADOPTION_REFRESH_SYSTEM = """You are the Adoption Coach. The owner just added a tool to their AI stack.
+1) Write exactly 2 realistic day-in-the-life scenarios (4-7 steps each) showing ALL the adopted tools handing work
+   to each other and to the tools the owner already uses. Use adopted tool_ids exactly as actors; existing tools by
+   their plain name; people as Customer / Owner / Staff. Only show integrations the tools actually support
+   (see integrates_with). Include the newly adopted tool in both scenarios.
+2) Write exactly 3 concrete setup tasks for the NEWLY adopted tool only (who does it, minutes), first-week sized.
+Keep every field short and plain-spoken for a busy small-business owner."""
+
 PLAN_SYSTEM = """You are the Adoption Coach. Write a realistic 30-day rollout plan for ONLY the approved tools.
 The owner is busy: max ~2 hours of owner time per week. Sequence by quickest payback first.
 Each task: a concrete action (e.g. "Forward your business line to Rosie after 3 rings"), who does it, minutes.

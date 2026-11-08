@@ -115,8 +115,22 @@ class Metric(BaseModel):
     target: str
 
 
+class FlowStep(BaseModel):
+    time: str = Field(description="time of day, e.g. 9:40 AM")
+    actor: str = Field(description="who acts: an approved tool_id copied exactly, an existing tool name, or Customer / Owner / Staff")
+    action: str = Field(description="what happens, max 18 words")
+    handoff_to: Optional[str] = Field(default=None, description="actor that receives the work next (same naming rules), or null")
+    result: str = Field(description="the payoff for the business, max 12 words")
+
+
+class Scenario(BaseModel):
+    title: str = Field(description="short, concrete, e.g. 'A no-cooling call during lunch'")
+    steps: list[FlowStep] = Field(description="4 to 7 steps")
+
+
 class PlanOut(BaseModel):
     first_step_today: str
+    scenarios: list[Scenario] = Field(description="exactly 2 day-in-the-life scenarios showing the approved tools and the owner's existing tools working together")
     weeks: list[PlanWeek] = Field(description="exactly 4 weeks, week 1 to 4")
     success_metrics: list[Metric] = Field(description="2 to 4 metrics")
 

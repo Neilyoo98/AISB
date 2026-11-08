@@ -89,8 +89,12 @@ export type Stack = {
 };
 
 export type PlanTask = { tool_id: string | null; text: string; owner: string; minutes: number };
+export type FlowStep = { time: string; actor: string; action: string; handoff_to?: string | null; result: string };
+export type Scenario = { title: string; steps: FlowStep[] };
+
 export type Plan = {
   first_step_today: string;
+  scenarios?: Scenario[];
   weeks: { week: number; theme: string; tasks: PlanTask[] }[];
   success_metrics: { metric: string; target: string }[];
 };

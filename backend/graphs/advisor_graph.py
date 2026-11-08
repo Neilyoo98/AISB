@@ -201,7 +201,8 @@ async def adoption_planner(state: AdvisorState):
     approved = state.get("approved_tool_ids", [])
     await emit(rid, "agent.start", {"label": "Writing your 30-day adoption plan"}, agent="planner")
     if not approved:
-        plan = {"first_step_today": "No tools approved — revisit when ready.", "weeks": [], "success_metrics": []}
+        plan = {"first_step_today": "No tools approved — revisit when ready.", "weeks": [], "success_metrics": [],
+                "scenarios": []}
     else:
         catalog = store.load_catalog()
         tools = [{"tool_id": t, "name": catalog[t]["name"], "setup_hours": catalog[t]["setup_hours"],
@@ -209,10 +210,11 @@ async def adoption_planner(state: AdvisorState):
                  for t in approved]
         out = await call_json(tier="smart", system=P.PLAN_SYSTEM, node="adoption_planner", run_id=rid, schema=PlanOut,
                               user=f"PROFILE: {_j(state['profile'])}\nPAINS: {_j(state['pains'])}\nAPPROVED TOOLS: {_j(tools)}",
-                              max_tokens=5000)
+                              max_tokens=6500)
         plan = out.model_dump()
         plan["weeks"] = plan["weeks"][:4]
         plan["success_metrics"] = plan["success_metrics"][:4]
+        plan["scenarios"] = [sc | {"steps": sc["steps"][:7]} for sc in plan.get("scenarios", [])[:2]]
         for w in plan["weeks"]:
             w["tasks"] = w["tasks"][:5]
             for t in w["tasks"]:

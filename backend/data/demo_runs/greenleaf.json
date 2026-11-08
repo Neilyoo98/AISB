@@ -129,7 +129,7 @@
   },
   {
    "seq": 3,
-   "t": 0,
+   "t": 15,
    "type": "agent.start",
    "agent": "memory",
    "data": {
@@ -138,13 +138,26 @@
   },
   {
    "seq": 4,
-   "t": 0,
+   "t": 15,
    "type": "memory.recalled",
    "agent": "memory",
    "data": {
     "prior_facts": 0,
     "own_episodes": [],
-    "similar_businesses": []
+    "similar_businesses": [
+     {
+      "business_id": "448eced09c7e4435",
+      "vertical": "landscaping",
+      "text": "GreenLeaf Landscaping adopted Jobber for slow-quote-turnaround, inefficient-crew-routing, paid-by-check",
+      "tool_id": "jobber",
+      "pains": [
+       "slow-quote-turnaround",
+       "inefficient-crew-routing",
+       "paid-by-check"
+      ],
+      "run_id": "ff377691ced04e1c"
+     }
+    ]
    }
   },
   {
@@ -221,7 +234,7 @@
   },
   {
    "seq": 9,
-   "t": 30,
+   "t": 15,
    "type": "agent.start",
    "agent": "scout:paid-by-check",
    "data": {
@@ -231,48 +244,7 @@
   },
   {
    "seq": 10,
-   "t": 30,
-   "type": "scout.result",
-   "agent": "scout:inefficient-crew-routing",
-   "data": {
-    "pain_id": "inefficient-crew-routing",
-    "searched": [
-     "lmn",
-     "jobber",
-     "yardbook",
-     "housecall-pro"
-    ],
-    "picks": [
-     {
-      "tool_id": "yardbook",
-      "why_fit": "Yardbook's free tier includes route planning and recurring job scheduling, directly addressing the back-and-forth crew driving, and it fits the $200/mo budget at $0 with a low tech_comfort requirement of 1.",
-      "pct_time_saved": 0.5,
-      "pct_revenue_recovered": 0.0,
-      "estimate_reasoning": "Route planning typically cuts unnecessary driving substantially, but the dated interface and light AI features limit how much of the routing waste it can eliminate, so I estimate about half of the 4 weekly hours of routing pain are removed.",
-      "pain_id": "inefficient-crew-routing"
-     },
-     {
-      "tool_id": "jobber",
-      "why_fit": "Jobber includes route optimization (on higher tiers) plus dispatch and scheduling, and its tech_comfort_min of 2 matches the owner's level, though the route optimization requires a higher-priced plan that may strain the $200 budget.",
-      "pct_time_saved": 0.6,
-      "pct_revenue_recovered": 0.0,
-      "estimate_reasoning": "Automated route optimization combined with dispatch can remove a large share of daily driving inefficiency, but the cons note that optimization is limited to higher tiers, so I estimate a moderately high reduction of 0.6 of the routing hours.",
-      "pain_id": "inefficient-crew-routing"
-     },
-     {
-      "tool_id": "lmn",
-      "why_fit": "LMN offers landscape-specific crew time tracking and scheduling with a free tier, which can show where crew hours are lost each day, but its tech_comfort_min of 3 exceeds the owner's comfort level of 2, which is a real adoption risk.",
-      "pct_time_saved": 0.4,
-      "pct_revenue_recovered": 0.0,
-      "estimate_reasoning": "Crew time tracking and scheduling help reduce wasted hours by improving daily planning, but the higher tech requirement and learning curve make realistic savings lower, around 0.4 of the routing pain.",
-      "pain_id": "inefficient-crew-routing"
-     }
-    ]
-   }
-  },
-  {
-   "seq": 11,
-   "t": 46,
+   "t": 62,
    "type": "scout.result",
    "agent": "scout:paid-by-check",
    "data": {
@@ -313,8 +285,49 @@
    }
   },
   {
+   "seq": 11,
+   "t": 62,
+   "type": "scout.result",
+   "agent": "scout:inefficient-crew-routing",
+   "data": {
+    "pain_id": "inefficient-crew-routing",
+    "searched": [
+     "lmn",
+     "jobber",
+     "yardbook",
+     "housecall-pro"
+    ],
+    "picks": [
+     {
+      "tool_id": "yardbook",
+      "why_fit": "Yardbook's free tier includes route planning and recurring job scheduling, directly addressing the back-and-forth crew driving, and it fits the $200/mo budget at $0 with a low tech_comfort requirement of 1.",
+      "pct_time_saved": 0.5,
+      "pct_revenue_recovered": 0.0,
+      "estimate_reasoning": "Route planning typically cuts unnecessary driving substantially, but the dated interface and light AI features limit how much of the routing waste it can eliminate, so I estimate about half of the 4 weekly hours of routing pain are removed.",
+      "pain_id": "inefficient-crew-routing"
+     },
+     {
+      "tool_id": "jobber",
+      "why_fit": "Jobber includes route optimization (on higher tiers) plus dispatch and scheduling, and its tech_comfort_min of 2 matches the owner's level, though the route optimization requires a higher-priced plan that may strain the $200 budget.",
+      "pct_time_saved": 0.6,
+      "pct_revenue_recovered": 0.0,
+      "estimate_reasoning": "Automated route optimization combined with dispatch can remove a large share of daily driving inefficiency, but the cons note that optimization is limited to higher tiers, so I estimate a moderately high reduction of 0.6 of the routing hours.",
+      "pain_id": "inefficient-crew-routing"
+     },
+     {
+      "tool_id": "lmn",
+      "why_fit": "LMN offers landscape-specific crew time tracking and scheduling with a free tier, which can show where crew hours are lost each day, but its tech_comfort_min of 3 exceeds the owner's comfort level of 2, which is a real adoption risk.",
+      "pct_time_saved": 0.4,
+      "pct_revenue_recovered": 0.0,
+      "estimate_reasoning": "Crew time tracking and scheduling help reduce wasted hours by improving daily planning, but the higher tech requirement and learning curve make realistic savings lower, around 0.4 of the routing pain.",
+      "pain_id": "inefficient-crew-routing"
+     }
+    ]
+   }
+  },
+  {
    "seq": 12,
-   "t": 46,
+   "t": 62,
    "type": "scout.result",
    "agent": "scout:slow-quote-turnaround",
    "data": {
@@ -355,7 +368,7 @@
   },
   {
    "seq": 13,
-   "t": 61,
+   "t": 62,
    "type": "mesh.start",
    "agent": "mesh",
    "data": {
@@ -375,7 +388,7 @@
   },
   {
    "seq": 14,
-   "t": 61,
+   "t": 62,
    "type": "mesh.message",
    "agent": "mesh:budget_hawk",
    "data": {
@@ -416,7 +429,7 @@
   },
   {
    "seq": 15,
-   "t": 61,
+   "t": 62,
    "type": "mesh.message",
    "agent": "mesh:ease_coach",
    "data": {
@@ -450,7 +463,7 @@
   },
   {
    "seq": 16,
-   "t": 61,
+   "t": 62,
    "type": "mesh.message",
    "agent": "mesh:integration_checker",
    "data": {
@@ -491,7 +504,7 @@
   },
   {
    "seq": 17,
-   "t": 61,
+   "t": 62,
    "type": "agent.start",
    "agent": "roi",
    "data": {
@@ -500,7 +513,7 @@
   },
   {
    "seq": 18,
-   "t": 3093,
+   "t": 77,
    "type": "stack.scored",
    "agent": "roi",
    "data": {
@@ -757,7 +770,7 @@
   },
   {
    "seq": 19,
-   "t": 3108,
+   "t": 93,
    "type": "approval.waiting",
    "agent": null,
    "data": {
@@ -768,7 +781,7 @@
   },
   {
    "seq": 20,
-   "t": 3108,
+   "t": 93,
    "type": "agent.start",
    "agent": "planner",
    "data": {
@@ -777,38 +790,127 @@
   },
   {
    "seq": 21,
-   "t": 13327,
+   "t": 14780,
    "type": "plan.ready",
    "agent": "planner",
    "data": {
     "plan": {
-     "first_step_today": "Go to getjobber.com and start the free trial with your business email (about 10 minutes), then text your office helper or a trusted crew lead to say you'll be setting up a new quoting tool this week.",
+     "first_step_today": "Start a Jobber free trial at getjobber.com (10 minutes) and add your business name, logo, and phone number.",
+     "scenarios": [
+      {
+       "title": "A spring mulch quote request on a busy morning",
+       "steps": [
+        {
+         "time": "7:15 AM",
+         "actor": "Customer",
+         "action": "Submits a request for a mulch and bed cleanup quote through the request form on your website.",
+         "handoff_to": "jobber",
+         "result": "Request captured instantly instead of waiting in voicemail."
+        },
+        {
+         "time": "7:20 AM",
+         "actor": "jobber",
+         "action": "Sends the owner a new-request notification and automatically replies to the customer confirming receipt.",
+         "handoff_to": "Owner",
+         "result": "Customer feels heard within minutes."
+        },
+        {
+         "time": "12:10 PM",
+         "actor": "Owner",
+         "action": "Builds the quote from saved service templates on a phone during lunch and sends it.",
+         "handoff_to": "jobber",
+         "result": "Quote sent same day, not days later."
+        },
+        {
+         "time": "2:30 PM",
+         "actor": "Customer",
+         "action": "Approves the quote online with one tap.",
+         "handoff_to": "jobber",
+         "result": "Job won before competitors respond."
+        },
+        {
+         "time": "2:35 PM",
+         "actor": "jobber",
+         "action": "Turns the approved quote into a job ready to schedule on the calendar.",
+         "handoff_to": "Owner",
+         "result": "No retyping of job details."
+        }
+       ]
+      },
+      {
+       "title": "Morning crew dispatch and payment on a weekday",
+       "steps": [
+        {
+         "time": "6:30 AM",
+         "actor": "Owner",
+         "action": "Opens the day's schedule in Jobber and groups jobs by neighborhood for each crew.",
+         "handoff_to": "jobber",
+         "result": "Routes planned in minutes, not a morning scramble."
+        },
+        {
+         "time": "6:45 AM",
+         "actor": "jobber",
+         "action": "Shows each crew lead their job list with addresses, notes, and map directions on their phone.",
+         "handoff_to": "Staff",
+         "result": "Less back-and-forth driving between sites."
+        },
+        {
+         "time": "11:00 AM",
+         "actor": "Staff",
+         "action": "Marks the job complete in Jobber and adds a note about extra work done.",
+         "handoff_to": "jobber",
+         "result": "Owner sees progress without calling the crew."
+        },
+        {
+         "time": "11:05 AM",
+         "actor": "jobber",
+         "action": "Emails the invoice with an online pay link and sends a text reminder if unpaid.",
+         "handoff_to": "Customer",
+         "result": "Customer can pay by card instead of mailing a check."
+        },
+        {
+         "time": "4:00 PM",
+         "actor": "Customer",
+         "action": "Pays the invoice online from their phone.",
+         "handoff_to": "spreadsheet",
+         "result": "Payment arrives in days, not weeks."
+        },
+        {
+         "time": "4:10 PM",
+         "actor": "Owner",
+         "action": "Copies the day's paid totals into the existing spreadsheet for bookkeeping.",
+         "handoff_to": null,
+         "result": "Records stay current with little effort."
+        }
+       ]
+      }
+     ],
      "weeks": [
       {
        "week": 1,
-       "theme": "Set up Jobber and send your first quotes faster",
+       "theme": "Set up Jobber and speed up quoting",
        "tasks": [
         {
          "tool_id": "jobber",
-         "text": "Start the Jobber trial, enter business name, logo, and phone number, and add your 5-6 most common services with prices (mowing, mulch, cleanup, planting, etc.) using your spreadsheet price list",
+         "text": "Start the trial, add company info, and import your client list from the spreadsheet using Jobber's CSV import.",
          "owner": "Owner",
          "minutes": 60
         },
         {
          "tool_id": "jobber",
-         "text": "Import your customer list from the spreadsheet into Jobber using its CSV import (or have Jobber support help)",
+         "text": "Create 6-8 service templates (mowing, mulch, cleanup, pruning, etc.) with your usual prices.",
          "owner": "Owner",
-         "minutes": 30
+         "minutes": 45
         },
         {
          "tool_id": "jobber",
-         "text": "Turn on Jobber's quote templates and email/text delivery, then send a real quote from your phone to a new lead the same day they call",
+         "text": "Add the online request form link to your website or Facebook page and your text signature.",
          "owner": "Owner",
-         "minutes": 30
+         "minutes": 20
         },
         {
          "tool_id": "jobber",
-         "text": "Download the Jobber app on your phone and practice creating one quote on-site from the driveway, with photos",
+         "text": "Send one real quote through Jobber to a current prospect to practice.",
          "owner": "Owner",
          "minutes": 20
         }
@@ -816,111 +918,111 @@
       },
       {
        "week": 2,
-       "theme": "Get paid faster: invoices and card payments",
+       "theme": "Scheduling and crew routing",
        "tasks": [
         {
          "tool_id": "jobber",
-         "text": "Connect Jobber Payments (card and bank payments) to your business bank account",
+         "text": "Enter next week's recurring and booked jobs on the Jobber calendar.",
+         "owner": "Owner",
+         "minutes": 45
+        },
+        {
+         "tool_id": "jobber",
+         "text": "Add crew lead logins and show them the mobile app for 15 minutes before the morning start.",
          "owner": "Owner",
          "minutes": 30
         },
         {
          "tool_id": "jobber",
-         "text": "Send invoices through Jobber with a pay-online link for every finished job this week, and text customers that they can now pay by card or bank transfer",
+         "text": "Each morning, group jobs by neighborhood and assign them to crews; use the text-messaging you already have only for exceptions.",
          "owner": "Owner",
-         "minutes": 30
-        },
-        {
-         "tool_id": "jobber",
-         "text": "Set up automatic invoice reminders for unpaid invoices so you stop chasing checks yourself",
-         "owner": "Owner",
-         "minutes": 20
-        },
-        {
-         "tool_id": null,
-         "text": "Ask your office helper or a crew lead to log which customers still pay by check so you can nudge them toward online payment",
-         "owner": "Crew lead",
          "minutes": 15
+        },
+        {
+         "tool_id": "jobber",
+         "text": "Have crew leads mark jobs complete and note issues from the field.",
+         "owner": "Crew leads",
+         "minutes": 10
         }
        ]
       },
       {
        "week": 3,
-       "theme": "Bring the crew on board: scheduling and routes",
+       "theme": "Get paid faster by card",
        "tasks": [
         {
          "tool_id": "jobber",
-         "text": "Add each crew member as a user in Jobber with limited permissions so they see only their own jobs",
+         "text": "Turn on card and bank payments and connect your bank account.",
+         "owner": "Owner",
+         "minutes": 25
+        },
+        {
+         "tool_id": "jobber",
+         "text": "Send invoices from Jobber for all completed jobs, with the online pay link included.",
          "owner": "Owner",
          "minutes": 30
         },
         {
          "tool_id": "jobber",
-         "text": "Schedule next week's jobs in Jobber the evening before and use the route/map view to group nearby stops in order",
-         "owner": "Owner",
-         "minutes": 40
-        },
-        {
-         "tool_id": "jobber",
-         "text": "Hold a 15-minute morning huddle showing crew leads how to open the app, see today's jobs, and mark them complete",
+         "text": "Turn on automatic invoice reminders for unpaid balances.",
          "owner": "Owner",
          "minutes": 15
         },
         {
-         "tool_id": "jobber",
-         "text": "Keep texting the crew as a backup for the first week, and note any confusion to fix",
-         "owner": "Crew lead",
-         "minutes": 15
+         "tool_id": null,
+         "text": "Add a line to invoices and quotes: 'Pay online by card or bank, or by check.'",
+         "owner": "Owner",
+         "minutes": 10
         }
        ]
       },
       {
        "week": 4,
-       "theme": "Measure results and tighten up",
+       "theme": "Measure results and adjust",
        "tasks": [
         {
          "tool_id": "jobber",
-         "text": "Pull Jobber's reports: quotes sent, quotes approved, and average time from request to quote; compare to your old pace",
+         "text": "Review the quotes sent, quotes approved, and invoices paid reports for the month.",
          "owner": "Owner",
          "minutes": 30
-        },
-        {
-         "tool_id": "jobber",
-         "text": "Count invoices paid online versus by check and total unpaid invoices over 14 days",
-         "owner": "Owner",
-         "minutes": 20
         },
         {
          "tool_id": null,
-         "text": "Ask crew leads how drive time changed since using grouped routes and note one routing tweak to make",
+         "text": "Compare against your old spreadsheet: count hours spent on estimates and check deposits this week.",
          "owner": "Owner",
          "minutes": 20
         },
         {
          "tool_id": "jobber",
-         "text": "Decide whether to keep the paid plan and which features (quote follow-ups, online booking) to add next",
+         "text": "Ask crew leads what slows them down in the app, then fix templates or routes.",
          "owner": "Owner",
          "minutes": 30
+        },
+        {
+         "tool_id": "jobber",
+         "text": "Decide whether to keep your plan tier based on results.",
+         "owner": "Owner",
+         "minutes": 15
         }
        ]
       }
      ],
      "success_metrics": [
       {
-       "metric": "Average time from quote request to quote sent",
-       "target": "Under 4 hours (same day), down from 1-2 days"
+       "metric": "Hours to send a quote after a request",
+       "target": "Under 24 hours, ideally same day"
       },
       {
-       "metric": "Jobs lost to slow response per month",
-       "target": "Cut from 5-6 down to 2 or fewer"
+       "metric": "Quotes sent per week vs. jobs won",
+       "target": "Win at least 1-2 more jobs per month"
       },
       {
-       "metric": "Invoices paid online or by card",
-       "target": "At least 40% of invoices by day 30"
+       "metric": "Invoices paid online instead of by check",
+       "target": "40% of invoices by end of month 1"
       },
       {
-       "metric": "Owner hours per week on quotes and payment chasing",
-       "target": "Down from 8 hrs to 4 hrs"
+       "metric": "Owner hours per week on estimates and check chasing",
+       "target": "Down from 8 to 4 hours"
       }
      ]
     },
@@ -931,7 +1033,7 @@
   },
   {
    "seq": 22,
-   "t": 13421,
+   "t": 14937,
    "type": "memory.saved",
    "agent": "memory",
    "data": {
@@ -941,7 +1043,7 @@
   },
   {
    "seq": 23,
-   "t": 13436,
+   "t": 14968,
    "type": "run.complete",
    "agent": null,
    "data": {}
@@ -1567,33 +1669,122 @@
    "jobber"
   ],
   "plan": {
-   "first_step_today": "Go to getjobber.com and start the free trial with your business email (about 10 minutes), then text your office helper or a trusted crew lead to say you'll be setting up a new quoting tool this week.",
+   "first_step_today": "Start a Jobber free trial at getjobber.com (10 minutes) and add your business name, logo, and phone number.",
+   "scenarios": [
+    {
+     "title": "A spring mulch quote request on a busy morning",
+     "steps": [
+      {
+       "time": "7:15 AM",
+       "actor": "Customer",
+       "action": "Submits a request for a mulch and bed cleanup quote through the request form on your website.",
+       "handoff_to": "jobber",
+       "result": "Request captured instantly instead of waiting in voicemail."
+      },
+      {
+       "time": "7:20 AM",
+       "actor": "jobber",
+       "action": "Sends the owner a new-request notification and automatically replies to the customer confirming receipt.",
+       "handoff_to": "Owner",
+       "result": "Customer feels heard within minutes."
+      },
+      {
+       "time": "12:10 PM",
+       "actor": "Owner",
+       "action": "Builds the quote from saved service templates on a phone during lunch and sends it.",
+       "handoff_to": "jobber",
+       "result": "Quote sent same day, not days later."
+      },
+      {
+       "time": "2:30 PM",
+       "actor": "Customer",
+       "action": "Approves the quote online with one tap.",
+       "handoff_to": "jobber",
+       "result": "Job won before competitors respond."
+      },
+      {
+       "time": "2:35 PM",
+       "actor": "jobber",
+       "action": "Turns the approved quote into a job ready to schedule on the calendar.",
+       "handoff_to": "Owner",
+       "result": "No retyping of job details."
+      }
+     ]
+    },
+    {
+     "title": "Morning crew dispatch and payment on a weekday",
+     "steps": [
+      {
+       "time": "6:30 AM",
+       "actor": "Owner",
+       "action": "Opens the day's schedule in Jobber and groups jobs by neighborhood for each crew.",
+       "handoff_to": "jobber",
+       "result": "Routes planned in minutes, not a morning scramble."
+      },
+      {
+       "time": "6:45 AM",
+       "actor": "jobber",
+       "action": "Shows each crew lead their job list with addresses, notes, and map directions on their phone.",
+       "handoff_to": "Staff",
+       "result": "Less back-and-forth driving between sites."
+      },
+      {
+       "time": "11:00 AM",
+       "actor": "Staff",
+       "action": "Marks the job complete in Jobber and adds a note about extra work done.",
+       "handoff_to": "jobber",
+       "result": "Owner sees progress without calling the crew."
+      },
+      {
+       "time": "11:05 AM",
+       "actor": "jobber",
+       "action": "Emails the invoice with an online pay link and sends a text reminder if unpaid.",
+       "handoff_to": "Customer",
+       "result": "Customer can pay by card instead of mailing a check."
+      },
+      {
+       "time": "4:00 PM",
+       "actor": "Customer",
+       "action": "Pays the invoice online from their phone.",
+       "handoff_to": "spreadsheet",
+       "result": "Payment arrives in days, not weeks."
+      },
+      {
+       "time": "4:10 PM",
+       "actor": "Owner",
+       "action": "Copies the day's paid totals into the existing spreadsheet for bookkeeping.",
+       "handoff_to": null,
+       "result": "Records stay current with little effort."
+      }
+     ]
+    }
+   ],
    "weeks": [
     {
      "week": 1,
-     "theme": "Set up Jobber and send your first quotes faster",
+     "theme": "Set up Jobber and speed up quoting",
      "tasks": [
       {
        "tool_id": "jobber",
-       "text": "Start the Jobber trial, enter business name, logo, and phone number, and add your 5-6 most common services with prices (mowing, mulch, cleanup, planting, etc.) using your spreadsheet price list",
+       "text": "Start the trial, add company info, and import your client list from the spreadsheet using Jobber's CSV import.",
        "owner": "Owner",
        "minutes": 60
       },
       {
        "tool_id": "jobber",
-       "text": "Import your customer list from the spreadsheet into Jobber using its CSV import (or have Jobber support help)",
+       "text": "Create 6-8 service templates (mowing, mulch, cleanup, pruning, etc.) with your usual prices.",
        "owner": "Owner",
-       "minutes": 30
+       "minutes": 45
       },
       {
        "tool_id": "jobber",
-       "text": "Turn on Jobber's quote templates and email/text delivery, then send a real quote from your phone to a new lead the same day they call",
+       "text": "Add the online request form link to your website or Facebook page and your text signature.",
        "owner": "Owner",
-       "minutes": 30
+       "minutes": 20
       },
       {
        "tool_id": "jobber",
-       "text": "Download the Jobber app on your phone and practice creating one quote on-site from the driveway, with photos",
+       "text": "Send one real quote through Jobber to a current prospect to practice.",
        "owner": "Owner",
        "minutes": 20
       }
@@ -1601,111 +1792,111 @@
     },
     {
      "week": 2,
-     "theme": "Get paid faster: invoices and card payments",
+     "theme": "Scheduling and crew routing",
      "tasks": [
       {
        "tool_id": "jobber",
-       "text": "Connect Jobber Payments (card and bank payments) to your business bank account",
+       "text": "Enter next week's recurring and booked jobs on the Jobber calendar.",
+       "owner": "Owner",
+       "minutes": 45
+      },
+      {
+       "tool_id": "jobber",
+       "text": "Add crew lead logins and show them the mobile app for 15 minutes before the morning start.",
        "owner": "Owner",
        "minutes": 30
       },
       {
        "tool_id": "jobber",
-       "text": "Send invoices through Jobber with a pay-online link for every finished job this week, and text customers that they can now pay by card or bank transfer",
+       "text": "Each morning, group jobs by neighborhood and assign them to crews; use the text-messaging you already have only for exceptions.",
        "owner": "Owner",
-       "minutes": 30
-      },
-      {
-       "tool_id": "jobber",
-       "text": "Set up automatic invoice reminders for unpaid invoices so you stop chasing checks yourself",
-       "owner": "Owner",
-       "minutes": 20
-      },
-      {
-       "tool_id": null,
-       "text": "Ask your office helper or a crew lead to log which customers still pay by check so you can nudge them toward online payment",
-       "owner": "Crew lead",
        "minutes": 15
+      },
+      {
+       "tool_id": "jobber",
+       "text": "Have crew leads mark jobs complete and note issues from the field.",
+       "owner": "Crew leads",
+       "minutes": 10
       }
      ]
     },
     {
      "week": 3,
-     "theme": "Bring the crew on board: scheduling and routes",
+     "theme": "Get paid faster by card",
      "tasks": [
       {
        "tool_id": "jobber",
-       "text": "Add each crew member as a user in Jobber with limited permissions so they see only their own jobs",
+       "text": "Turn on card and bank payments and connect your bank account.",
+       "owner": "Owner",
+       "minutes": 25
+      },
+      {
+       "tool_id": "jobber",
+       "text": "Send invoices from Jobber for all completed jobs, with the online pay link included.",
        "owner": "Owner",
        "minutes": 30
       },
       {
        "tool_id": "jobber",
-       "text": "Schedule next week's jobs in Jobber the evening before and use the route/map view to group nearby stops in order",
-       "owner": "Owner",
-       "minutes": 40
-      },
-      {
-       "tool_id": "jobber",
-       "text": "Hold a 15-minute morning huddle showing crew leads how to open the app, see today's jobs, and mark them complete",
+       "text": "Turn on automatic invoice reminders for unpaid balances.",
        "owner": "Owner",
        "minutes": 15
       },
       {
-       "tool_id": "jobber",
-       "text": "Keep texting the crew as a backup for the first week, and note any confusion to fix",
-       "owner": "Crew lead",
-       "minutes": 15
+       "tool_id": null,
+       "text": "Add a line to invoices and quotes: 'Pay online by card or bank, or by check.'",
+       "owner": "Owner",
+       "minutes": 10
       }
      ]
     },
     {
      "week": 4,
-     "theme": "Measure results and tighten up",
+     "theme": "Measure results and adjust",
      "tasks": [
       {
        "tool_id": "jobber",
-       "text": "Pull Jobber's reports: quotes sent, quotes approved, and average time from request to quote; compare to your old pace",
+       "text": "Review the quotes sent, quotes approved, and invoices paid reports for the month.",
        "owner": "Owner",
        "minutes": 30
-      },
-      {
-       "tool_id": "jobber",
-       "text": "Count invoices paid online versus by check and total unpaid invoices over 14 days",
-       "owner": "Owner",
-       "minutes": 20
       },
       {
        "tool_id": null,
-       "text": "Ask crew leads how drive time changed since using grouped routes and note one routing tweak to make",
+       "text": "Compare against your old spreadsheet: count hours spent on estimates and check deposits this week.",
        "owner": "Owner",
        "minutes": 20
       },
       {
        "tool_id": "jobber",
-       "text": "Decide whether to keep the paid plan and which features (quote follow-ups, online booking) to add next",
+       "text": "Ask crew leads what slows them down in the app, then fix templates or routes.",
        "owner": "Owner",
        "minutes": 30
+      },
+      {
+       "tool_id": "jobber",
+       "text": "Decide whether to keep your plan tier based on results.",
+       "owner": "Owner",
+       "minutes": 15
       }
      ]
     }
    ],
    "success_metrics": [
     {
-     "metric": "Average time from quote request to quote sent",
-     "target": "Under 4 hours (same day), down from 1-2 days"
+     "metric": "Hours to send a quote after a request",
+     "target": "Under 24 hours, ideally same day"
     },
     {
-     "metric": "Jobs lost to slow response per month",
-     "target": "Cut from 5-6 down to 2 or fewer"
+     "metric": "Quotes sent per week vs. jobs won",
+     "target": "Win at least 1-2 more jobs per month"
     },
     {
-     "metric": "Invoices paid online or by card",
-     "target": "At least 40% of invoices by day 30"
+     "metric": "Invoices paid online instead of by check",
+     "target": "40% of invoices by end of month 1"
     },
     {
-     "metric": "Owner hours per week on quotes and payment chasing",
-     "target": "Down from 8 hrs to 4 hrs"
+     "metric": "Owner hours per week on estimates and check chasing",
+     "target": "Down from 8 to 4 hours"
     }
    ]
   }

@@ -308,7 +308,7 @@ export function StackPanel({
                           <td className="px-2 py-3 text-right tabular-nums">{s.monthly_cost === 0 ? "Free" : money(s.monthly_cost)}</td>
                           <td className="px-2 py-3 text-right tabular-nums">{money(s.monthly_value)}</td>
                           <td className={cn("px-2 py-3 text-right font-semibold tabular-nums", s.net_monthly > 0 ? "text-emerald-700" : "text-red-700")}>{money(s.net_monthly, { sign: true })}</td>
-                          <td className="px-2 py-3 text-right tabular-nums">{s.payback_days === null ? "—" : s.payback_days < 1 ? "<1 day" : `${Math.round(s.payback_days)} days`}</td>
+                          <td className="px-2 py-3 text-right tabular-nums">{s.payback_days === null ? "—" : s.payback_days < 1 ? "<1 day" : `${Math.round(s.payback_days)} ${Math.round(s.payback_days) === 1 ? "day" : "days"}`}</td>
                           <td className="px-4 py-3">
                             <div className="flex items-center gap-2">
                               <div className="h-1.5 w-16 overflow-hidden rounded-full bg-stone-100">

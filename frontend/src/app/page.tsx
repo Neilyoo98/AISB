@@ -20,9 +20,10 @@ export default function Home() {
     <div className="min-h-dvh">
       <header className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
         <Logo />
-        <Link href="/login" className="btn-secondary">
-          Log in
-        </Link>
+        <div className="flex items-center gap-1">
+          <Link href="/tools" className="btn-ghost">Discover tools</Link>
+          <Link href="/login" className="btn-secondary">Log in</Link>
+        </div>
       </header>
 
       <main>
@@ -41,6 +42,9 @@ export default function Home() {
             </Link>
             <Link href="/login?tab=register" className="btn-secondary px-5 py-3 text-base">
               Analyze my business
+            </Link>
+            <Link href="/tools" className="btn-ghost px-5 py-3 text-base">
+              Browse the tool catalog
             </Link>
           </div>
           <p className="mt-3 text-sm text-stone-500">One click, no signup needed for the samples.</p>

@@ -63,4 +63,8 @@ PLAN_SYSTEM = """You are the Adoption Coach. Write a realistic 30-day rollout pl
 The owner is busy: max ~2 hours of owner time per week. Sequence by quickest payback first.
 Each task: a concrete action (e.g. "Forward your business line to Rosie after 3 rings"), who does it, minutes.
 Set tool_id on tasks about a specific tool (copy exactly). Week 4 should measure results.
-success_metrics should be things the owner can actually count (calls answered, reviews per week, hours on scheduling)."""
+success_metrics should be things the owner can actually count (calls answered, reviews per week, hours on scheduling).
+scenarios: 2 realistic moments from a typical day AFTER adoption, showing the approved tools handing work to each other
+and to the tools the owner already uses (e.g. a call is answered by the AI receptionist, which creates a job in the
+field-service app, which sends the invoice that syncs to the accounting app). Use approved tool_ids exactly as actors;
+existing tools by their plain name; people as Customer / Owner / Staff. Only show integrations the tools actually support."""

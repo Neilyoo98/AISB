@@ -21,6 +21,7 @@ export default function Onboard() {
   const router = useRouter();
   const [me, setMe] = useState<{ user: User; business: Business | null } | null>(null);
   const [form, setForm] = useState({ name: "", location: "", description: "" });
+  const [details, setDetails] = useState({ type: "", team: "", budget: "", comfort: 0, tools: "" });
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
@@ -32,13 +33,26 @@ export default function Onboard() {
     });
   }, [router]);
 
+  const extra = [
+    details.type && `Type of business: ${details.type}.`,
+    details.team && `Team size: ${details.team} people.`,
+    details.budget && `Monthly budget for software: ${details.budget}.`,
+    details.comfort && `Comfort with technology: ${details.comfort} out of 5.`,
+    details.tools.trim() && `Tools we already use: ${details.tools.trim()}.`,
+  ].filter(Boolean).join(" ");
+  const fullDescription = [form.description.trim(), extra].filter(Boolean).join(" ");
+  const MIN = 40;
+  const tooShort = fullDescription.length < MIN;
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!form.name.trim()) return setErr("Please add your business name.");
+    if (tooShort) return setErr("Tell us a little more: a sentence or two about what slows you down (or fill in the quick details below).");
     setBusy(true);
     setErr(null);
     try {
-      await api("/businesses", { method: "POST", json: form });
-      const r = await api<{ run_id: string }>("/runs", { method: "POST", json: { mode: "live", raw_input: form.description } });
+      await api("/businesses", { method: "POST", json: { ...form, description: fullDescription } });
+      const r = await api<{ run_id: string }>("/runs", { method: "POST", json: { mode: "live", raw_input: fullDescription } });
       router.push(`/war-room/${r.run_id}`);
     } catch (e) {
       setErr((e as Error).message);
@@ -75,9 +89,8 @@ export default function Onboard() {
             <textarea
               id="desc"
               className="input min-h-[180px] resize-y leading-relaxed"
-              required
-              minLength={40}
-              maxLength={3000}
+              maxLength={2500}
+              placeholder="e.g. We're a 4-person HVAC shop. When the techs are on a job nobody answers the phone, and I spend evenings writing quotes by hand…"
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
             />
@@ -95,7 +108,51 @@ export default function Onboard() {
               {err}
             </p>
           )}
-          <button className="btn-primary w-full py-3 text-base" disabled={busy || form.description.length < 40}>
+          <div className="rounded-xl border border-stone-200 bg-stone-50/60 p-4">
+            <div className="text-sm font-medium text-stone-700">Quick details <span className="font-normal text-stone-500">(optional, helps the advisors)</span></div>
+            <div className="mt-3 grid gap-3 sm:grid-cols-3">
+              <div>
+                <label className="label text-xs" htmlFor="type">Type of business</label>
+                <select id="type" className="input" value={details.type} onChange={(e) => setDetails({ ...details, type: e.target.value })}>
+                  <option value="">Choose…</option>
+                  {["Café / coffee shop", "Restaurant", "HVAC", "Landscaping", "Plumbing / home services", "Salon / spa", "Retail shop", "Other"].map((o) => <option key={o}>{o}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="label text-xs" htmlFor="team">Team size</label>
+                <input id="team" type="number" min={1} max={500} inputMode="numeric" className="input" value={details.team} onChange={(e) => setDetails({ ...details, team: e.target.value })} />
+              </div>
+              <div>
+                <label className="label text-xs" htmlFor="budget">Monthly budget for tools</label>
+                <select id="budget" className="input" value={details.budget} onChange={(e) => setDetails({ ...details, budget: e.target.value })}>
+                  <option value="">Choose…</option>
+                  {["under $50", "about $100", "about $200", "about $300", "$500+"].map((o) => <option key={o}>{o}</option>)}
+                </select>
+              </div>
+            </div>
+            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+              <div>
+                <span className="label text-xs">Comfort with technology</span>
+                <div className="flex gap-1" role="radiogroup" aria-label="Comfort with technology">
+                  {[1, 2, 3, 4, 5].map((n) => (
+                    <button type="button" key={n} role="radio" aria-checked={details.comfort === n} onClick={() => setDetails({ ...details, comfort: n })}
+                      className={"h-10 flex-1 rounded-lg border text-sm font-semibold transition-colors " + (details.comfort === n ? "border-emerald-700 bg-emerald-700 text-white" : "border-stone-300 bg-white text-stone-700 hover:bg-stone-50")}>
+                      {n}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1 flex justify-between text-[11px] text-stone-500"><span>avoid computers</span><span>power user</span></div>
+              </div>
+              <div>
+                <label className="label text-xs" htmlFor="tools">Tools you already use</label>
+                <input id="tools" className="input" placeholder="Square, QuickBooks, Google Calendar…" value={details.tools} onChange={(e) => setDetails({ ...details, tools: e.target.value })} />
+              </div>
+            </div>
+          </div>
+          <div className={"text-xs " + (tooShort ? "text-stone-500" : "text-emerald-700")}>
+            {tooShort ? `${Math.max(0, MIN - fullDescription.length)} more characters and your advisors are ready.` : "✓ Enough detail. Your advisors are ready."}
+          </div>
+          <button className="btn-primary w-full py-3 text-base" disabled={busy}>
             {busy ? <Spinner /> : <Sparkles size={18} />} Meet your advisors
           </button>
           <p className="text-center text-xs text-stone-500">Takes about 30–60 seconds. You approve everything before anything is saved as a plan.</p>

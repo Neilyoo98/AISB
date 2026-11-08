@@ -8,6 +8,7 @@ import { api, money } from "@/lib/api";
 import type { Business, Tool, User } from "@/lib/types";
 import { useRunStream } from "@/hooks/useRunStream";
 import { AppHeader, Spinner } from "@/components/ui";
+import { StackFlow } from "@/components/stack-flow";
 import { MeshPanel, PainCards, Pipeline, PlanView, ProfileCard, ScoutGrid, Section, StackPanel } from "@/components/war-room";
 
 export default function WarRoom() {
@@ -47,7 +48,7 @@ export default function WarRoom() {
       return;
     }
     if (view.status !== "running" && view.status !== "awaiting_approval") return;
-    const ids = ["s-profile", "s-pains", "s-mesh", "s-stack", "s-plan"];
+    const ids = ["s-profile", "s-pains", "s-mesh", "s-stack", view.plan?.scenarios?.length ? "s-flow" : "s-plan"];
     const el = document.getElementById(ids[sectionCount - 1]);
     el?.scrollIntoView({ behavior: "smooth", block: "start" });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -177,6 +178,15 @@ export default function WarRoom() {
             <div className="card flex items-center gap-3 p-5 text-sm text-stone-600">
               <Spinner className="text-emerald-700" /> The Adoption Coach is writing your plan…
             </div>
+          )}
+
+          {view.plan && (view.plan.scenarios?.length ?? 0) > 0 && (
+            <Section id="s-flow" eyebrow="Stack in action" title="Your AI tools, working together">
+              <p className="-mt-2 mb-4 text-sm text-stone-600">
+                A typical day after adoption: watch the new AI tools hand work to each other and to the tools you already use.
+              </p>
+              <StackFlow scenarios={view.plan.scenarios!} catalog={catalog} approved={view.approved || []} />
+            </Section>
           )}
 
           {view.plan && (

@@ -75,6 +75,10 @@ async def resume_replay(run_id: str, persona_id: str, approved: list[str]):
     for w in plan.get("weeks", []):
         w["tasks"] = [t for t in w["tasks"] if not t.get("tool_id") or t["tool_id"] in approved]
     plan["weeks"] = [w for w in plan.get("weeks", []) if w["tasks"]]
+    # keep only day-in-the-life scenarios whose catalog tools were all approved
+    dropped = set(catalog) - set(approved)
+    plan["scenarios"] = [sc for sc in plan.get("scenarios", [])
+                         if not any(st["actor"] in dropped or st.get("handoff_to") in dropped for st in sc["steps"])]
     await ch.emit("plan.ready", {"plan": plan, "approved_tool_ids": approved}, agent="planner")
     await asyncio.sleep(0.6)
     await ch.emit("memory.saved", {"facts": len(rec["result"].get("facts", []) or []), "episodes": len(approved)},

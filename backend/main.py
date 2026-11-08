@@ -210,6 +210,8 @@ def dashboard(request: Request, user=Depends(current_user)):
                           "category": catalog[t]["category"], "price": catalog[t]["price_monthly_typical"]}
                          for t in approved if t in catalog],
             "first_step_today": (res.get("plan") or {}).get("first_step_today"),
+            "scenarios": (res.get("plan") or {}).get("scenarios") or [],
+            "current_tools": (res.get("profile") or {}).get("current_tools") or [],
         }
         out["tasks"] = db.get_plan_tasks(run["id"])
     out["runs"] = [r | {"created_at": r["created_at"].isoformat() if r["created_at"] else None}

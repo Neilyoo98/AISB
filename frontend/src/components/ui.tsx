@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Hammer, LayoutDashboard, LogOut, BookUser } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { BookUser, Compass, Hammer, LayoutDashboard, LogOut, Radio } from "lucide-react";
 import { api, cn } from "@/lib/api";
 
 export function Logo({ className }: { className?: string }) {
@@ -15,31 +15,48 @@ export function Logo({ className }: { className?: string }) {
   );
 }
 
-export function AppHeader({ businessName, isDemo }: { businessName?: string; isDemo?: boolean }) {
+export function AppHeader({ businessName, isDemo, loggedOut }: { businessName?: string; isDemo?: boolean; loggedOut?: boolean }) {
   const router = useRouter();
+  const pathname = usePathname();
   const logout = async () => {
     await api("/auth/logout", { method: "POST" }).catch(() => {});
     router.push("/login");
   };
+  const links = loggedOut
+    ? [{ href: "/tools", label: "Discover tools", icon: Compass }]
+    : [
+        { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+        { href: "/war-room", label: "War Room", icon: Radio },
+        { href: "/tools", label: "Discover", icon: Compass },
+        { href: "/profile", label: "Constitution", icon: BookUser },
+      ];
   return (
     <header className="sticky top-0 z-30 border-b border-stone-200/80 bg-[#fafaf7]/90 backdrop-blur">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-3 px-4">
         <div className="flex min-w-0 items-center gap-3">
           <Logo />
           {businessName && (
-            <span className="hidden min-w-0 truncate border-l border-stone-300 pl-3 text-sm text-stone-600 sm:block">{businessName}</span>
+            <span className="hidden min-w-0 truncate border-l border-stone-300 pl-3 text-sm text-stone-600 lg:block">{businessName}</span>
           )}
         </div>
-        <nav className="flex items-center gap-1">
-          <Link href="/dashboard" className="btn-ghost px-3" aria-label="Dashboard">
-            <LayoutDashboard size={16} /> <span className="hidden sm:inline">Dashboard</span>
-          </Link>
-          <Link href="/profile" className="btn-ghost px-3" aria-label="Business Constitution">
-            <BookUser size={16} /> <span className="hidden sm:inline">Constitution</span>
-          </Link>
-          <button onClick={logout} className="btn-ghost px-3" aria-label="Log out">
-            <LogOut size={16} /> <span className="hidden sm:inline">Log out</span>
-          </button>
+        <nav className="flex items-center gap-0.5">
+          {links.map((l) => {
+            const active = pathname === l.href || pathname.startsWith(`${l.href}/`);
+            return (
+              <Link key={l.href} href={l.href} className={cn("btn-ghost px-2.5 sm:px-3", active && "bg-stone-100 text-stone-900")} aria-label={l.label}>
+                <l.icon size={16} /> <span className="hidden md:inline">{l.label}</span>
+              </Link>
+            );
+          })}
+          {loggedOut ? (
+            <Link href="/login" className="btn-primary ml-1">
+              Log in
+            </Link>
+          ) : (
+            <button onClick={logout} className="btn-ghost px-2.5 sm:px-3" aria-label="Log out">
+              <LogOut size={16} /> <span className="hidden md:inline">Log out</span>
+            </button>
+          )}
         </nav>
       </div>
       {isDemo && (

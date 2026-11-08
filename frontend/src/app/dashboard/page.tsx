@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { ArrowRight, Check, Clock, ExternalLink, Footprints, PlayCircle, RotateCcw, Sparkles, Zap } from "lucide-react";
 import { api, cn, money } from "@/lib/api";
-import type { Business, Pain, Stack, User } from "@/lib/types";
+import type { Business, Pain, Scenario, Stack, Tool, User } from "@/lib/types";
+import { StackFlow } from "@/components/stack-flow";
 import { AppHeader, Spinner, Stat, VERTICAL_LABEL } from "@/components/ui";
 
 type Task = { id: number; week: number; tool_id: string | null; text: string; owner: string; minutes: number; done: boolean };
@@ -22,6 +23,8 @@ type Dash = {
     pains: Pain[];
     approved: { id: string; name: string; url: string; category: string; price: number }[];
     first_step_today: string;
+    scenarios: Scenario[];
+    current_tools: string[];
   };
   tasks: Task[];
   runs: { id: string; status: string; mode: string; created_at: string }[];
@@ -32,6 +35,11 @@ export default function Dashboard() {
   const [d, setD] = useState<Dash | null>(null);
   const [starting, setStarting] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
+  const [catalog, setCatalog] = useState<Record<string, Tool>>({});
+
+  useEffect(() => {
+    api<Tool[]>("/catalog").then((ts) => setCatalog(Object.fromEntries(ts.map((t) => [t.id, t])))).catch(() => {});
+  }, []);
 
   useEffect(() => {
     api<Dash>("/dashboard")
@@ -144,6 +152,21 @@ export default function Dashboard() {
               />
               <Stat label="Plan progress" value={`${pct}%`} sub={`${done} of ${d.tasks.length} steps`} />
             </section>
+
+            {latest.scenarios?.length > 0 && (
+              <section className="mt-6">
+                <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
+                  <div>
+                    <p className="eyebrow">Stack in action</p>
+                    <h2 className="font-display text-xl font-bold">Your AI tools, working together</h2>
+                  </div>
+                  <Link href={`/war-room/${latest.run_id}`} className="flex items-center gap-1 text-sm font-semibold text-emerald-700 hover:underline">
+                    Open the War Room <ArrowRight size={14} />
+                  </Link>
+                </div>
+                <StackFlow scenarios={latest.scenarios} catalog={catalog} approved={latest.approved.map((a) => a.id)} />
+              </section>
+            )}
 
             <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_1.15fr]">
               <section className="space-y-6">

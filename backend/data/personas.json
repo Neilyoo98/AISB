@@ -1,0 +1,35 @@
+[
+  {
+    "id": "joes-coffee",
+    "owner_name": "Joe Martinez",
+    "email": "joe@demo.stacksmith",
+    "business_name": "Joe's Corner Coffee",
+    "location": "College Park, MD",
+    "vertical": "cafe",
+    "emoji": "☕",
+    "tagline": "Scheduling chaos and a quiet Instagram",
+    "raw_input": "I run a small coffee shop near the UMD campus. 6 employees, mostly students, and their class schedules change every semester so I spend like 4 hours a week just redoing the schedule and texting people to cover shifts. Our Instagram has been dead for months because I don't have time to post. Afternoons between 2 and 5 are super slow on weekdays and I'd love to get students in then. We use Square for the register. I can maybe spend $150 a month on software. I'm OK with apps on my phone but I'm not a computer guy."
+  },
+  {
+    "id": "coolair-hvac",
+    "owner_name": "Maria Okafor",
+    "email": "maria@demo.stacksmith",
+    "business_name": "CoolAir HVAC",
+    "location": "Silver Spring, MD",
+    "vertical": "hvac",
+    "emoji": "❄️",
+    "tagline": "Missed calls while on the job",
+    "raw_input": "We're a 4-tech HVAC company. Biggest problem: when my guys are on a job and I'm on a roof, nobody answers the phone. I think we miss 15-20 calls a week in summer and a new AC install is worth $6-8k, a repair maybe $350. Quotes take me forever, I write them at night on paper and type them up, maybe 6 hours a week. Invoices are paper too and customers pay slow. We use QuickBooks for the books and Google Calendar for scheduling. Budget is around $300 a month if it pays for itself. I'm decent with tech."
+  },
+  {
+    "id": "greenleaf",
+    "owner_name": "Dev Patel",
+    "email": "dev@demo.stacksmith",
+    "business_name": "GreenLeaf Landscaping",
+    "location": "Hyattsville, MD",
+    "vertical": "landscaping",
+    "emoji": "🌿",
+    "tagline": "Quoting and routing a seasonal crew",
+    "raw_input": "Landscaping company, me plus a seasonal crew of 8 from March to November. In spring we get flooded with quote requests and I drive out to every property to measure, then write the estimate by hand — I lose jobs because I'm too slow to respond, probably 5-6 jobs a month at around $1,200 each. Routing the crew each morning is a mess, they waste time driving back and forth. We get paid by check mostly. I don't use any software besides a spreadsheet and texting. I'd spend $200 a month. Keep it simple, I'm not great with computers."
+  }
+]

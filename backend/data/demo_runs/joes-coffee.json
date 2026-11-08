@@ -1,0 +1,1533 @@
+{
+ "persona_id": "joes-coffee",
+ "events": [
+  {
+   "seq": 0,
+   "t": 0,
+   "type": "run.start",
+   "agent": null,
+   "data": {
+    "mode": "live"
+   }
+  },
+  {
+   "seq": 1,
+   "t": 0,
+   "type": "agent.start",
+   "agent": "intake",
+   "data": {
+    "label": "Reading the owner's story"
+   }
+  },
+  {
+   "seq": 2,
+   "t": 0,
+   "type": "intake.done",
+   "agent": "intake",
+   "data": {
+    "profile": {
+     "business_name": "Joe's Corner Coffee",
+     "vertical": "cafe",
+     "location": "Near the UMD campus",
+     "employees": 6,
+     "monthly_budget": 150.0,
+     "tech_comfort": 3,
+     "current_tools": [
+      "square-pos",
+      "instagram"
+     ],
+     "summary": "A small coffee shop near the UMD campus with 6 mostly student employees, struggling with semester-based shift scheduling, dormant Instagram, and slow weekday afternoons."
+    },
+    "raw_pains": [
+     {
+      "title": "Spending about 4 hours a week redoing schedules and texting people to cover shifts",
+      "tag": "staff_scheduling",
+      "owner_quote": "spend like 4 hours a week just redoing the schedule and texting people to cover shifts"
+     },
+     {
+      "title": "Instagram has been dead for months",
+      "tag": "social_media",
+      "owner_quote": "Our Instagram has been dead for months because I don't have time to post"
+     },
+     {
+      "title": "Weekday afternoons from 2 to 5 are very slow",
+      "tag": "email_sms_marketing",
+      "owner_quote": "Afternoons between 2 and 5 are super slow on weekdays and I'd love to get students in then"
+     }
+    ],
+    "facts": [
+     {
+      "subject": "business",
+      "predicate": "is a",
+      "object": "coffee shop near the UMD campus",
+      "category": "identity",
+      "confidence": 0.95
+     },
+     {
+      "subject": "business",
+      "predicate": "has",
+      "object": "6 employees, mostly students",
+      "category": "operations",
+      "confidence": 0.95
+     },
+     {
+      "subject": "business",
+      "predicate": "uses",
+      "object": "Square POS",
+      "category": "current_tools",
+      "confidence": 0.95
+     },
+     {
+      "subject": "business",
+      "predicate": "has social media account on",
+      "object": "Instagram (inactive for months)",
+      "category": "current_tools",
+      "confidence": 0.85
+     },
+     {
+      "subject": "business",
+      "predicate": "has monthly software budget of",
+      "object": "$150",
+      "category": "budget",
+      "confidence": 0.9
+     },
+     {
+      "subject": "owner",
+      "predicate": "is comfortable with",
+      "object": "phone apps but not computers",
+      "category": "tech_comfort",
+      "confidence": 0.8
+     },
+     {
+      "subject": "business",
+      "predicate": "has staff scheduling challenge due to",
+      "object": "semester-based student class schedule changes",
+      "category": "pain",
+      "confidence": 0.9
+     },
+     {
+      "subject": "business",
+      "predicate": "has weekday afternoon slow period",
+      "object": "2 PM to 5 PM",
+      "category": "pain",
+      "confidence": 0.9
+     },
+     {
+      "subject": "owner",
+      "predicate": "wants to grow",
+      "object": "student traffic during weekday afternoons",
+      "category": "goal",
+      "confidence": 0.85
+     }
+    ]
+   }
+  },
+  {
+   "seq": 3,
+   "t": 0,
+   "type": "agent.start",
+   "agent": "memory",
+   "data": {
+    "label": "Checking the Business Constitution"
+   }
+  },
+  {
+   "seq": 4,
+   "t": 484,
+   "type": "memory.recalled",
+   "agent": "memory",
+   "data": {
+    "prior_facts": 0,
+    "own_episodes": [],
+    "similar_businesses": []
+   }
+  },
+  {
+   "seq": 5,
+   "t": 484,
+   "type": "agent.start",
+   "agent": "diagnoser",
+   "data": {
+    "label": "Putting a dollar figure on each pain"
+   }
+  },
+  {
+   "seq": 6,
+   "t": 484,
+   "type": "pain.ranked",
+   "agent": "diagnoser",
+   "data": {
+    "pains": [
+     {
+      "id": "shift-scheduling",
+      "title": "Redoing schedules each semester and texting staff to cover shifts",
+      "tag": "staff_scheduling",
+      "hours_per_week": 4.0,
+      "hourly_cost": 45.0,
+      "revenue_at_risk_monthly": 0.0,
+      "impact_explanation": "4 hrs/wk of owner time at ~$45/hr is about $180/wk, or roughly $780/mo, in time alone. Shift gaps can also leave the counter short during rushes, but that is hard to quantify without data.",
+      "evidence_quote": "spend like 4 hours a week just redoing the schedule and texting people to cover shifts",
+      "monthly_cost_of_pain": 779
+     },
+     {
+      "id": "weekday-afternoon-slump",
+      "title": "Weekday 2-5pm traffic is very slow",
+      "tag": "email_sms_marketing",
+      "hours_per_week": 0.0,
+      "hourly_cost": 0.0,
+      "revenue_at_risk_monthly": 900.0,
+      "impact_explanation": "Assume the 2-5pm weekday window runs about 10 empty transactions per day at a $6 average ticket across 5 weekdays: 10 x $6 x 5 x 4.3 weeks = ~$1,290/mo of capacity. Winning back roughly 2-3 extra customers per day with a student-targeted offer is a conservative ~$700-900/mo.",
+      "evidence_quote": "Afternoons between 2 and 5 are super slow on weekdays and I'd love to get students in then",
+      "monthly_cost_of_pain": 900
+     },
+     {
+      "id": "dormant-instagram",
+      "title": "Instagram has been dead for months",
+      "tag": "social_media",
+      "hours_per_week": 1.5,
+      "hourly_cost": 45.0,
+      "revenue_at_risk_monthly": 300.0,
+      "impact_explanation": "Owner would spend ~1.5 hrs/wk creating and posting content (~$290/mo in time). Lost discovery from a dormant account is hard to measure, but a conservative ~$300/mo in lost walk-ins from campus followers is plausible.",
+      "evidence_quote": "Our Instagram has been dead for months because I don't have time to post",
+      "monthly_cost_of_pain": 592
+     }
+    ]
+   }
+  },
+  {
+   "seq": 7,
+   "t": 484,
+   "type": "agent.start",
+   "agent": "scout:shift-scheduling",
+   "data": {
+    "label": "Scouting tools for “Redoing schedules each semester and texting staff to cover shifts”",
+    "pain_id": "shift-scheduling"
+   }
+  },
+  {
+   "seq": 8,
+   "t": 484,
+   "type": "agent.start",
+   "agent": "scout:weekday-afternoon-slump",
+   "data": {
+    "label": "Scouting tools for “Weekday 2-5pm traffic is very slow”",
+    "pain_id": "weekday-afternoon-slump"
+   }
+  },
+  {
+   "seq": 9,
+   "t": 515,
+   "type": "agent.start",
+   "agent": "scout:dormant-instagram",
+   "data": {
+    "label": "Scouting tools for “Instagram has been dead for months”",
+    "pain_id": "dormant-instagram"
+   }
+  },
+  {
+   "seq": 10,
+   "t": 515,
+   "type": "scout.result",
+   "agent": "scout:shift-scheduling",
+   "data": {
+    "pain_id": "shift-scheduling",
+    "searched": [
+     "7shifts",
+     "homebase",
+     "toast"
+    ],
+    "picks": [
+     {
+      "tool_id": "7shifts",
+      "why_fit": "Builds schedules automatically from sales forecasts and includes a shift trade app so staff can swap shifts without the owner texting around, and it integrates directly with square-pos which Joe's already uses.",
+      "pct_time_saved": 0.7,
+      "pct_revenue_recovered": 0.0,
+      "estimate_reasoning": "The 4 hrs/wk pain is mostly schedule building plus coverage texting. Auto-scheduling and the shift trade app should remove most of both tasks, though the owner still needs to review schedules and approve swaps, so about 0.7 is a realistic share. No revenue at risk was quantified, so pct_revenue_recovered is 0.",
+      "pain_id": "shift-scheduling"
+     },
+     {
+      "tool_id": "homebase",
+      "why_fit": "Offers auto-scheduling, team chat and a time clock for hourly teams, with a free tier and an integration with square-pos, so it fits Joe's budget and existing POS.",
+      "pct_time_saved": 0.6,
+      "pct_revenue_recovered": 0.0,
+      "estimate_reasoning": "Auto-scheduling and team chat reduce both the schedule rebuild and the coverage texting, but the team chat is less specialized for shift trades than 7shifts, so the estimate is a bit lower. Revenue impact is not quantified in the pain, so it is 0.",
+      "pain_id": "shift-scheduling"
+     }
+    ]
+   }
+  },
+  {
+   "seq": 11,
+   "t": 515,
+   "type": "scout.result",
+   "agent": "scout:weekday-afternoon-slump",
+   "data": {
+    "pain_id": "weekday-afternoon-slump",
+    "searched": [
+     "square-marketing",
+     "mailchimp",
+     "owner-com"
+    ],
+    "picks": [
+     {
+      "tool_id": "square-marketing",
+      "why_fit": "It is built into Square POS, which Joe's already uses, and offers auto win-back messages and a loyalty program that can target a student-focused offer for weekday afternoons using the real customer list.",
+      "pct_time_saved": 0.2,
+      "pct_revenue_recovered": 0.55,
+      "estimate_reasoning": "The pain is about recovering weekday 2-5pm traffic, not hours, so time savings are minimal. Revenue recovery is estimated at roughly half of the $900/mo at risk, since a targeted afternoon offer to a student list plausibly wins back 2-3 customers per day, but the shop only has an existing list of unknown size and the offer must be well executed. Price is about $45/mo, within the $150 budget, and setup is about 1 hour.",
+      "pain_id": "weekday-afternoon-slump"
+     },
+     {
+      "tool_id": "mailchimp",
+      "why_fit": "Its free tier and AI email writer plus automated journeys let Joe's send a recurring student afternoon promo without paying much, and it integrates with Square.",
+      "pct_time_saved": 0.1,
+      "pct_revenue_recovered": 0.35,
+      "estimate_reasoning": "Mailchimp can run the same afternoon offer campaign, but it lacks Square's native POS-linked loyalty and redemption tracking, so recovery is lower than the Square option. The free tier keeps cost near zero, leaving budget headroom. Realistic recovery is about 0.35 of the $900/mo at risk given list-building needs and weaker attribution to in-store visits.",
+      "pain_id": "weekday-afternoon-slump"
+     }
+    ]
+   }
+  },
+  {
+   "seq": 12,
+   "t": 530,
+   "type": "scout.result",
+   "agent": "scout:dormant-instagram",
+   "data": {
+    "pain_id": "dormant-instagram",
+    "searched": [
+     "meta-business-suite",
+     "buffer",
+     "canva-pro"
+    ],
+    "picks": [
+     {
+      "tool_id": "meta-business-suite",
+      "why_fit": "Free Instagram scheduling plus AI-generated post text and AI inbox auto-replies lets the owner batch a week of posts in one sitting at zero cost, fitting the $150 budget and tech comfort of 3.",
+      "pct_time_saved": 0.6,
+      "pct_revenue_recovered": 0.4,
+      "estimate_reasoning": "Scheduling and AI copy cut the ~1.5 hrs/week of posting to roughly 30-40 minutes of batching, removing about 60% of the time pain. Revenue recovery is moderate because it only reaches Instagram, which is the sole channel lost, and discovery from campus followers depends on posting consistency.",
+      "pain_id": "dormant-instagram"
+     },
+     {
+      "tool_id": "canva-pro",
+      "why_fit": "Magic Design templates and Magic Write copy let the owner produce on-brand coffee and menu visuals quickly, and the content planner handles scheduling to Instagram, which is already in use.",
+      "pct_time_saved": 0.45,
+      "pct_revenue_recovered": 0.3,
+      "estimate_reasoning": "Templates remove the design step, which is a large share of posting time, but the owner still reviews and schedules, so about 45% of the time pain is removed. Revenue recovery is smaller since visuals help engagement but the scheduler is basic and less reliable for consistent posting.",
+      "pain_id": "dormant-instagram"
+     }
+    ]
+   }
+  },
+  {
+   "seq": 13,
+   "t": 530,
+   "type": "mesh.start",
+   "agent": "mesh",
+   "data": {
+    "personas": [
+     "Budget Hawk",
+     "Ease-of-Use Coach",
+     "Integration Checker"
+    ],
+    "shortlist": [
+     "7shifts",
+     "homebase",
+     "square-marketing",
+     "mailchimp",
+     "meta-business-suite",
+     "canva-pro"
+    ]
+   }
+  },
+  {
+   "seq": 14,
+   "t": 530,
+   "type": "mesh.message",
+   "agent": "mesh:budget_hawk",
+   "data": {
+    "persona": "Budget Hawk",
+    "key": "budget_hawk",
+    "headline": "Plenty of options here, but Square Marketing is pricey for a $150 budget and Canva plus Meta overlaps, so let's keep the spend tight.",
+    "critiques": [
+     {
+      "tool_id": "square-marketing",
+      "concern": "At $45/mo it eats 30% of your $150 budget for one afternoon-slump fix. Square Marketing's loyalty features are nice, but you don't need them yet to win back 2-5pm students.",
+      "severity": "high",
+      "suggestion": "Pick Mailchimp for the afternoon campaign instead, or use Square's free text/email tools until you've proven the offer works.",
+      "persona": "Budget Hawk"
+     },
+     {
+      "tool_id": "mailchimp",
+      "concern": "Its price climbs with list size, so a student list that grows each semester can quietly push you past $20/mo. Read the contact-tier pricing before you commit.",
+      "severity": "medium",
+      "suggestion": "Start on the free or lowest tier and cap your list by pruning inactive contacts each semester.",
+      "persona": "Budget Hawk"
+     },
+     {
+      "tool_id": "canva-pro",
+      "concern": "At $15/mo it duplicates what Meta Business Suite gives you for free, and its scheduling is basic. You'd be paying for design polish you may not need.",
+      "severity": "medium",
+      "suggestion": "Use Meta Business Suite (free) to schedule posts, and only add Canva Pro if you find the free Canva version too limiting.",
+      "persona": "Budget Hawk"
+     },
+     {
+      "tool_id": "7shifts",
+      "concern": "Price is listed as typical, and advanced forecasting sits on higher tiers. Confirm the real monthly cost for 6 staff, since per-user add-ons can creep up on a small team.",
+      "severity": "low",
+      "suggestion": "Compare the 7shifts quote with Homebase directly; Homebase is cheaper and integrates with Square, so it's the safer pick for your budget.",
+      "persona": "Budget Hawk"
+     }
+    ]
+   }
+  },
+  {
+   "seq": 15,
+   "t": 530,
+   "type": "mesh.message",
+   "agent": "mesh:ease_coach",
+   "data": {
+    "persona": "Ease-of-Use Coach",
+    "key": "ease_coach",
+    "headline": "Most of these are approachable for a tech comfort of 3, but the email tool and the schedule tool both need a bit of care so your student staff actually use them.",
+    "critiques": [
+     {
+      "tool_id": "mailchimp",
+      "concern": "Mailchimp has a steeper setup than it looks: list building, audience tags, and campaign templates can eat a couple of evenings, and the interface is busy for a non-marketer.",
+      "severity": "medium",
+      "suggestion": "Prefer Square Marketing if you want the lowest friction, since it connects directly to your Square register and sends offers without building lists by hand.",
+      "persona": "Ease-of-Use Coach"
+     },
+     {
+      "tool_id": "7shifts",
+      "concern": "Your student staff will need to download the app, set availability, and accept swap requests on their phones, and a few may resist or forget if no one reinforces it.",
+      "severity": "medium",
+      "suggestion": "Run a 15-minute phone walkthrough at a shift meeting, pin a one-page how-to by the register, and make app-based swaps the only way to trade shifts.",
+      "persona": "Ease-of-Use Coach"
+     },
+     {
+      "tool_id": "canva-pro",
+      "concern": "Canva is easy to start but it is one more thing to open each week, and scheduling is basic, so you will still be posting by hand from your phone.",
+      "severity": "low",
+      "suggestion": "Use one recurring weekly template so posting becomes a 20-minute habit, and batch-schedule with Meta Business Suite to avoid daily logins.",
+      "persona": "Ease-of-Use Coach"
+     }
+    ]
+   }
+  },
+  {
+   "seq": 16,
+   "t": 530,
+   "type": "mesh.message",
+   "agent": "mesh:integration_checker",
+   "data": {
+    "persona": "Integration Checker",
+    "key": "integration_checker",
+    "headline": "Solid shortlist, but the scheduling tools need a hard look at Square integration and the marketing picks need to share data with Square, or you're back to double entry.",
+    "critiques": [
+     {
+      "tool_id": "mailchimp",
+      "concern": "Mailchimp integrates with Square only through a third-party connector, and your customer and purchase data won't flow natively. You'd be re-keying student contacts and offers by hand.",
+      "severity": "high",
+      "suggestion": "Prefer square-marketing for the afternoon offer since it reads Square purchase data directly, or confirm a working Square-to-Mailchimp sync before committing.",
+      "persona": "Integration Checker"
+     },
+     {
+      "tool_id": "homebase",
+      "concern": "Homebase connects to Square, but payroll is an extra cost and a separate system, so hours and tips may still need reconciling in two places.",
+      "severity": "medium",
+      "suggestion": "Check whether you can run scheduling alone without payroll, and confirm the Square timeclock or POS sync covers tip and hours data.",
+      "persona": "Integration Checker"
+     },
+     {
+      "tool_id": "7shifts",
+      "concern": "7shifts syncs with Square, which is good, but advanced forecasting is locked behind higher tiers, so your budget may not reach the features that matter most.",
+      "severity": "medium",
+      "suggestion": "Start on the base tier for semester schedule rebuilds and confirm the Square sync works before paying for forecasting.",
+      "persona": "Integration Checker"
+     },
+     {
+      "tool_id": "canva-pro",
+      "concern": "Canva posts to Instagram but scheduling is basic, so you may still end up switching to Meta tools to publish, creating a split workflow.",
+      "severity": "low",
+      "suggestion": "Pair it with meta-business-suite for scheduling so you design in Canva and publish from one place, avoiding a second login routine.",
+      "persona": "Integration Checker"
+     }
+    ]
+   }
+  },
+  {
+   "seq": 17,
+   "t": 530,
+   "type": "agent.start",
+   "agent": "roi",
+   "data": {
+    "label": "Computing ROI (deterministic)"
+   }
+  },
+  {
+   "seq": 18,
+   "t": 545,
+   "type": "stack.scored",
+   "agent": "roi",
+   "data": {
+    "scored": [
+     {
+      "tool_id": "7shifts",
+      "pain_id": "shift-scheduling",
+      "monthly_cost": 35.0,
+      "hours_saved_per_month": 12.1,
+      "time_value_monthly": 546,
+      "revenue_recovered_monthly": 0,
+      "monthly_value": 546,
+      "net_monthly": 511,
+      "setup_cost": 90,
+      "payback_days": 6.9,
+      "roi_multiple": 15.6,
+      "fit_score": 90,
+      "fit_breakdown": {
+       "value": 40,
+       "budget": 20,
+       "ease": 20,
+       "integration": 10,
+       "advisor_concerns": 0
+      },
+      "why_fit": "Builds schedules automatically from sales forecasts and includes a shift trade app so staff can swap shifts without the owner texting around, and it integrates directly with square-pos which Joe's already uses.",
+      "estimate_reasoning": "The 4 hrs/wk pain is mostly schedule building plus coverage texting. Auto-scheduling and the shift trade app should remove most of both tasks, though the owner still needs to review schedules and approve swaps, so about 0.7 is a realistic share. No revenue at risk was quantified, so pct_revenue_recovered is 0.",
+      "pct_time_saved": 0.7,
+      "pct_revenue_recovered": 0.0
+     },
+     {
+      "tool_id": "homebase",
+      "pain_id": "shift-scheduling",
+      "monthly_cost": 30.0,
+      "hours_saved_per_month": 10.4,
+      "time_value_monthly": 468,
+      "revenue_recovered_monthly": 0,
+      "monthly_value": 468,
+      "net_monthly": 438,
+      "setup_cost": 68,
+      "payback_days": 6.2,
+      "roi_multiple": 15.6,
+      "fit_score": 95,
+      "fit_breakdown": {
+       "value": 40,
+       "budget": 20,
+       "ease": 20,
+       "integration": 10,
+       "advisor_concerns": 5
+      },
+      "why_fit": "Offers auto-scheduling, team chat and a time clock for hourly teams, with a free tier and an integration with square-pos, so it fits Joe's budget and existing POS.",
+      "estimate_reasoning": "Auto-scheduling and team chat reduce both the schedule rebuild and the coverage texting, but the team chat is less specialized for shift trades than 7shifts, so the estimate is a bit lower. Revenue impact is not quantified in the pain, so it is 0.",
+      "pct_time_saved": 0.6,
+      "pct_revenue_recovered": 0.0
+     },
+     {
+      "tool_id": "square-marketing",
+      "pain_id": "weekday-afternoon-slump",
+      "monthly_cost": 45.0,
+      "hours_saved_per_month": 0.0,
+      "time_value_monthly": 0,
+      "revenue_recovered_monthly": 495,
+      "monthly_value": 495,
+      "net_monthly": 450,
+      "setup_cost": 25,
+      "payback_days": 4.2,
+      "roi_multiple": 11.0,
+      "fit_score": 90,
+      "fit_breakdown": {
+       "value": 40,
+       "budget": 20,
+       "ease": 20,
+       "integration": 10,
+       "advisor_concerns": 0
+      },
+      "why_fit": "It is built into Square POS, which Joe's already uses, and offers auto win-back messages and a loyalty program that can target a student-focused offer for weekday afternoons using the real customer list.",
+      "estimate_reasoning": "The pain is about recovering weekday 2-5pm traffic, not hours, so time savings are minimal. Revenue recovery is estimated at roughly half of the $900/mo at risk, since a targeted afternoon offer to a student list plausibly wins back 2-3 customers per day, but the shop only has an existing list of unknown size and the offer must be well executed. Price is about $45/mo, within the $150 budget, and setup is about 1 hour.",
+      "pct_time_saved": 0.2,
+      "pct_revenue_recovered": 0.55
+     },
+     {
+      "tool_id": "mailchimp",
+      "pain_id": "weekday-afternoon-slump",
+      "monthly_cost": 20.0,
+      "hours_saved_per_month": 0.0,
+      "time_value_monthly": 0,
+      "revenue_recovered_monthly": 315,
+      "monthly_value": 315,
+      "net_monthly": 295,
+      "setup_cost": 50,
+      "payback_days": 6.7,
+      "roi_multiple": 15.8,
+      "fit_score": 85,
+      "fit_breakdown": {
+       "value": 40,
+       "budget": 20,
+       "ease": 20,
+       "integration": 5,
+       "advisor_concerns": 0
+      },
+      "why_fit": "Its free tier and AI email writer plus automated journeys let Joe's send a recurring student afternoon promo without paying much, and it integrates with Square.",
+      "estimate_reasoning": "Mailchimp can run the same afternoon offer campaign, but it lacks Square's native POS-linked loyalty and redemption tracking, so recovery is lower than the Square option. The free tier keeps cost near zero, leaving budget headroom. Realistic recovery is about 0.35 of the $900/mo at risk given list-building needs and weaker attribution to in-store visits.",
+      "pct_time_saved": 0.1,
+      "pct_revenue_recovered": 0.35
+     },
+     {
+      "tool_id": "meta-business-suite",
+      "pain_id": "dormant-instagram",
+      "monthly_cost": 0.0,
+      "hours_saved_per_month": 3.9,
+      "time_value_monthly": 175,
+      "revenue_recovered_monthly": 120,
+      "monthly_value": 295,
+      "net_monthly": 295,
+      "setup_cost": 45,
+      "payback_days": 4.6,
+      "roi_multiple": null,
+      "fit_score": 100,
+      "fit_breakdown": {
+       "value": 40,
+       "budget": 20,
+       "ease": 20,
+       "integration": 10,
+       "advisor_concerns": 10
+      },
+      "why_fit": "Free Instagram scheduling plus AI-generated post text and AI inbox auto-replies lets the owner batch a week of posts in one sitting at zero cost, fitting the $150 budget and tech comfort of 3.",
+      "estimate_reasoning": "Scheduling and AI copy cut the ~1.5 hrs/week of posting to roughly 30-40 minutes of batching, removing about 60% of the time pain. Revenue recovery is moderate because it only reaches Instagram, which is the sole channel lost, and discovery from campus followers depends on posting consistency.",
+      "pct_time_saved": 0.6,
+      "pct_revenue_recovered": 0.4
+     },
+     {
+      "tool_id": "canva-pro",
+      "pain_id": "dormant-instagram",
+      "monthly_cost": 15.0,
+      "hours_saved_per_month": 2.9,
+      "time_value_monthly": 132,
+      "revenue_recovered_monthly": 90,
+      "monthly_value": 222,
+      "net_monthly": 207,
+      "setup_cost": 45,
+      "payback_days": 8.1,
+      "roi_multiple": 14.8,
+      "fit_score": 91,
+      "fit_breakdown": {
+       "value": 40,
+       "budget": 20,
+       "ease": 20,
+       "integration": 10,
+       "advisor_concerns": 1
+      },
+      "why_fit": "Magic Design templates and Magic Write copy let the owner produce on-brand coffee and menu visuals quickly, and the content planner handles scheduling to Instagram, which is already in use.",
+      "estimate_reasoning": "Templates remove the design step, which is a large share of posting time, but the owner still reviews and schedules, so about 45% of the time pain is removed. Revenue recovery is smaller since visuals help engagement but the scheduler is basic and less reliable for consistent posting.",
+      "pct_time_saved": 0.45,
+      "pct_revenue_recovered": 0.3
+     }
+    ],
+    "stack": {
+     "tool_ids": [
+      "7shifts",
+      "square-marketing",
+      "meta-business-suite"
+     ],
+     "monthly_cost": 80,
+     "monthly_value": 1336,
+     "net_monthly": 1256,
+     "hours_saved_per_month": 16.0,
+     "within_budget": true,
+     "budget": 150.0,
+     "picks": {
+      "shift-scheduling": "7shifts",
+      "weekday-afternoon-slump": "square-marketing",
+      "dormant-instagram": "meta-business-suite"
+     }
+    },
+    "verdicts": {
+     "summary": "This stack fixes your three biggest headaches: messy student schedules, quiet weekday afternoons, and an Instagram account that has gone silent. It costs about $80 a month, well under your $150 budget, and should save around 16 hours a month while bringing back sales.",
+     "by_tool": {
+      "7shifts": "7shifts should pay for itself in about 7 days and save you roughly 12 hours a month on building schedules and texting around for coverage. The main catch is that your student staff must actually use the app, so show them how at a shift meeting and make app swaps the only way to trade shifts.",
+      "square-marketing": "Square Marketing & Loyalty should pay back in about 4 days by winning students back into the shop on weekday afternoons. The main catch is that at $45 a month it takes up almost a third of your budget, so start with a simple targeted offer and check that it brings people in.",
+      "meta-business-suite": "Meta Business Suite is free and should pay back in under 5 days, since it lets you plan a week of Instagram posts in one sitting and saves about 4 hours a month. The advisors raised no concerns, though results depend on you posting steadily."
+     }
+    }
+   }
+  },
+  {
+   "seq": 19,
+   "t": 577,
+   "type": "approval.waiting",
+   "agent": null,
+   "data": {
+    "recommended": [
+     "7shifts",
+     "square-marketing",
+     "meta-business-suite"
+    ]
+   }
+  },
+  {
+   "seq": 20,
+   "t": 592,
+   "type": "agent.start",
+   "agent": "planner",
+   "data": {
+    "label": "Writing your 30-day adoption plan"
+   }
+  },
+  {
+   "seq": 21,
+   "t": 592,
+   "type": "plan.ready",
+   "agent": "planner",
+   "data": {
+    "plan": {
+     "first_step_today": "Create a free 7shifts account and invite your 6 staff by email or text so they can enter their fall class availability this week.",
+     "weeks": [
+      {
+       "week": 1,
+       "theme": "Fix scheduling first (biggest time savings)",
+       "tasks": [
+        {
+         "tool_id": "7shifts",
+         "text": "Sign up for 7shifts, add Joe's Corner Coffee location, set opening hours and roles (barista, cashier, opener/closer)",
+         "owner": "Owner",
+         "minutes": 45
+        },
+        {
+         "tool_id": "7shifts",
+         "text": "Invite all 6 employees and ask each to enter class-schedule availability in the app by Friday",
+         "owner": "Owner",
+         "minutes": 15
+        },
+        {
+         "tool_id": "7shifts",
+         "text": "Connect 7shifts to Square POS if offered, otherwise skip and note typical busy hours from Square reports",
+         "owner": "Manager",
+         "minutes": 20
+        },
+        {
+         "tool_id": "7shifts",
+         "text": "Help staff who have trouble installing the app and confirm everyone has logged in",
+         "owner": "Manager",
+         "minutes": 20
+        }
+       ]
+      },
+      {
+       "week": 2,
+       "theme": "Go live with the schedule, start the afternoon offer",
+       "tasks": [
+        {
+         "tool_id": "7shifts",
+         "text": "Build next week's schedule from submitted availability and publish it; tell staff shift swaps now happen in the app, not by text",
+         "owner": "Owner",
+         "minutes": 40
+        },
+        {
+         "tool_id": "square-marketing",
+         "text": "Turn on Square Marketing and Loyalty, and import existing customers from Square POS",
+         "owner": "Owner",
+         "minutes": 30
+        },
+        {
+         "tool_id": "square-marketing",
+         "text": "Create a loyalty reward and a 2-5pm weekday student offer (e.g. $1 off any drink with student ID)",
+         "owner": "Owner",
+         "minutes": 30
+        },
+        {
+         "tool_id": "square-marketing",
+         "text": "Train counter staff to mention the afternoon offer and sign customers up for loyalty at checkout",
+         "owner": "Front staff",
+         "minutes": 15
+        }
+       ]
+      },
+      {
+       "week": 3,
+       "theme": "Promote the offer and restart Instagram",
+       "tasks": [
+        {
+         "tool_id": "square-marketing",
+         "text": "Send one email or text campaign to customers about the 2-5pm student offer",
+         "owner": "Owner",
+         "minutes": 20
+        },
+        {
+         "tool_id": "meta-business-suite",
+         "text": "Connect Instagram to Meta Business Suite and set up the content scheduler",
+         "owner": "Owner",
+         "minutes": 30
+        },
+        {
+         "tool_id": "meta-business-suite",
+         "text": "Have a student employee take 8-10 photos/videos of drinks, the shop, and the afternoon offer during a slow shift",
+         "owner": "Front staff",
+         "minutes": 45
+        },
+        {
+         "tool_id": "meta-business-suite",
+         "text": "Schedule 3 posts for the week (offer, a drink feature, a team shot) in one sitting; repeat weekly",
+         "owner": "Manager",
+         "minutes": 30
+        },
+        {
+         "tool_id": "7shifts",
+         "text": "Publish the next schedule and approve any shift swaps in the app",
+         "owner": "Owner",
+         "minutes": 20
+        }
+       ]
+      },
+      {
+       "week": 4,
+       "theme": "Measure results and decide what to keep",
+       "tasks": [
+        {
+         "tool_id": "7shifts",
+         "text": "Estimate time spent on scheduling and shift-cover texts this week and compare to the old 4 hrs/wk",
+         "owner": "Owner",
+         "minutes": 10
+        },
+        {
+         "tool_id": "square-marketing",
+         "text": "Check Square reports for 2-5pm weekday transactions and loyalty sign-ups vs. before the offer",
+         "owner": "Owner",
+         "minutes": 25
+        },
+        {
+         "tool_id": "meta-business-suite",
+         "text": "Review Instagram post reach, follower growth, and profile visits in Meta Business Suite",
+         "owner": "Manager",
+         "minutes": 20
+        },
+        {
+         "tool_id": null,
+         "text": "Hold a 15-minute team huddle to gather feedback and decide what to adjust or keep for month two",
+         "owner": "Owner",
+         "minutes": 15
+        }
+       ]
+      }
+     ],
+     "success_metrics": [
+      {
+       "metric": "Owner hours per week on scheduling and shift-cover texts",
+       "target": "Down from 4 hrs to 1 hr or less by week 4"
+      },
+      {
+       "metric": "Weekday 2-5pm transactions per day",
+       "target": "2-3 more per day than the pre-offer baseline"
+      },
+      {
+       "metric": "Loyalty/marketing sign-ups",
+       "target": "50+ customers enrolled by end of week 4"
+      },
+      {
+       "metric": "Instagram posts published per week",
+       "target": "3 posts per week for weeks 3 and 4"
+      }
+     ]
+    },
+    "approved_tool_ids": [
+     "7shifts",
+     "square-marketing",
+     "meta-business-suite"
+    ]
+   }
+  },
+  {
+   "seq": 22,
+   "t": 717,
+   "type": "memory.saved",
+   "agent": "memory",
+   "data": {
+    "facts": 12,
+    "episodes": 3
+   }
+  },
+  {
+   "seq": 23,
+   "t": 734,
+   "type": "run.complete",
+   "agent": null,
+   "data": {}
+  }
+ ],
+ "result": {
+  "profile": {
+   "business_name": "Joe's Corner Coffee",
+   "vertical": "cafe",
+   "location": "Near the UMD campus",
+   "employees": 6,
+   "monthly_budget": 150.0,
+   "tech_comfort": 3,
+   "current_tools": [
+    "square-pos",
+    "instagram"
+   ],
+   "summary": "A small coffee shop near the UMD campus with 6 mostly student employees, struggling with semester-based shift scheduling, dormant Instagram, and slow weekday afternoons."
+  },
+  "facts": [
+   {
+    "subject": "business",
+    "predicate": "is a",
+    "object": "coffee shop near the UMD campus",
+    "category": "identity",
+    "confidence": 0.95
+   },
+   {
+    "subject": "business",
+    "predicate": "has",
+    "object": "6 employees, mostly students",
+    "category": "operations",
+    "confidence": 0.95
+   },
+   {
+    "subject": "business",
+    "predicate": "uses",
+    "object": "Square POS",
+    "category": "current_tools",
+    "confidence": 0.95
+   },
+   {
+    "subject": "business",
+    "predicate": "has social media account on",
+    "object": "Instagram (inactive for months)",
+    "category": "current_tools",
+    "confidence": 0.85
+   },
+   {
+    "subject": "business",
+    "predicate": "has monthly software budget of",
+    "object": "$150",
+    "category": "budget",
+    "confidence": 0.9
+   },
+   {
+    "subject": "owner",
+    "predicate": "is comfortable with",
+    "object": "phone apps but not computers",
+    "category": "tech_comfort",
+    "confidence": 0.8
+   },
+   {
+    "subject": "business",
+    "predicate": "has staff scheduling challenge due to",
+    "object": "semester-based student class schedule changes",
+    "category": "pain",
+    "confidence": 0.9
+   },
+   {
+    "subject": "business",
+    "predicate": "has weekday afternoon slow period",
+    "object": "2 PM to 5 PM",
+    "category": "pain",
+    "confidence": 0.9
+   },
+   {
+    "subject": "owner",
+    "predicate": "wants to grow",
+    "object": "student traffic during weekday afternoons",
+    "category": "goal",
+    "confidence": 0.85
+   }
+  ],
+  "pains": [
+   {
+    "id": "shift-scheduling",
+    "title": "Redoing schedules each semester and texting staff to cover shifts",
+    "tag": "staff_scheduling",
+    "hours_per_week": 4.0,
+    "hourly_cost": 45.0,
+    "revenue_at_risk_monthly": 0.0,
+    "impact_explanation": "4 hrs/wk of owner time at ~$45/hr is about $180/wk, or roughly $780/mo, in time alone. Shift gaps can also leave the counter short during rushes, but that is hard to quantify without data.",
+    "evidence_quote": "spend like 4 hours a week just redoing the schedule and texting people to cover shifts",
+    "monthly_cost_of_pain": 779
+   },
+   {
+    "id": "weekday-afternoon-slump",
+    "title": "Weekday 2-5pm traffic is very slow",
+    "tag": "email_sms_marketing",
+    "hours_per_week": 0.0,
+    "hourly_cost": 0.0,
+    "revenue_at_risk_monthly": 900.0,
+    "impact_explanation": "Assume the 2-5pm weekday window runs about 10 empty transactions per day at a $6 average ticket across 5 weekdays: 10 x $6 x 5 x 4.3 weeks = ~$1,290/mo of capacity. Winning back roughly 2-3 extra customers per day with a student-targeted offer is a conservative ~$700-900/mo.",
+    "evidence_quote": "Afternoons between 2 and 5 are super slow on weekdays and I'd love to get students in then",
+    "monthly_cost_of_pain": 900
+   },
+   {
+    "id": "dormant-instagram",
+    "title": "Instagram has been dead for months",
+    "tag": "social_media",
+    "hours_per_week": 1.5,
+    "hourly_cost": 45.0,
+    "revenue_at_risk_monthly": 300.0,
+    "impact_explanation": "Owner would spend ~1.5 hrs/wk creating and posting content (~$290/mo in time). Lost discovery from a dormant account is hard to measure, but a conservative ~$300/mo in lost walk-ins from campus followers is plausible.",
+    "evidence_quote": "Our Instagram has been dead for months because I don't have time to post",
+    "monthly_cost_of_pain": 592
+   }
+  ],
+  "candidates": [
+   {
+    "tool_id": "7shifts",
+    "why_fit": "Builds schedules automatically from sales forecasts and includes a shift trade app so staff can swap shifts without the owner texting around, and it integrates directly with square-pos which Joe's already uses.",
+    "pct_time_saved": 0.7,
+    "pct_revenue_recovered": 0.0,
+    "estimate_reasoning": "The 4 hrs/wk pain is mostly schedule building plus coverage texting. Auto-scheduling and the shift trade app should remove most of both tasks, though the owner still needs to review schedules and approve swaps, so about 0.7 is a realistic share. No revenue at risk was quantified, so pct_revenue_recovered is 0.",
+    "pain_id": "shift-scheduling"
+   },
+   {
+    "tool_id": "homebase",
+    "why_fit": "Offers auto-scheduling, team chat and a time clock for hourly teams, with a free tier and an integration with square-pos, so it fits Joe's budget and existing POS.",
+    "pct_time_saved": 0.6,
+    "pct_revenue_recovered": 0.0,
+    "estimate_reasoning": "Auto-scheduling and team chat reduce both the schedule rebuild and the coverage texting, but the team chat is less specialized for shift trades than 7shifts, so the estimate is a bit lower. Revenue impact is not quantified in the pain, so it is 0.",
+    "pain_id": "shift-scheduling"
+   },
+   {
+    "tool_id": "square-marketing",
+    "why_fit": "It is built into Square POS, which Joe's already uses, and offers auto win-back messages and a loyalty program that can target a student-focused offer for weekday afternoons using the real customer list.",
+    "pct_time_saved": 0.2,
+    "pct_revenue_recovered": 0.55,
+    "estimate_reasoning": "The pain is about recovering weekday 2-5pm traffic, not hours, so time savings are minimal. Revenue recovery is estimated at roughly half of the $900/mo at risk, since a targeted afternoon offer to a student list plausibly wins back 2-3 customers per day, but the shop only has an existing list of unknown size and the offer must be well executed. Price is about $45/mo, within the $150 budget, and setup is about 1 hour.",
+    "pain_id": "weekday-afternoon-slump"
+   },
+   {
+    "tool_id": "mailchimp",
+    "why_fit": "Its free tier and AI email writer plus automated journeys let Joe's send a recurring student afternoon promo without paying much, and it integrates with Square.",
+    "pct_time_saved": 0.1,
+    "pct_revenue_recovered": 0.35,
+    "estimate_reasoning": "Mailchimp can run the same afternoon offer campaign, but it lacks Square's native POS-linked loyalty and redemption tracking, so recovery is lower than the Square option. The free tier keeps cost near zero, leaving budget headroom. Realistic recovery is about 0.35 of the $900/mo at risk given list-building needs and weaker attribution to in-store visits.",
+    "pain_id": "weekday-afternoon-slump"
+   },
+   {
+    "tool_id": "meta-business-suite",
+    "why_fit": "Free Instagram scheduling plus AI-generated post text and AI inbox auto-replies lets the owner batch a week of posts in one sitting at zero cost, fitting the $150 budget and tech comfort of 3.",
+    "pct_time_saved": 0.6,
+    "pct_revenue_recovered": 0.4,
+    "estimate_reasoning": "Scheduling and AI copy cut the ~1.5 hrs/week of posting to roughly 30-40 minutes of batching, removing about 60% of the time pain. Revenue recovery is moderate because it only reaches Instagram, which is the sole channel lost, and discovery from campus followers depends on posting consistency.",
+    "pain_id": "dormant-instagram"
+   },
+   {
+    "tool_id": "canva-pro",
+    "why_fit": "Magic Design templates and Magic Write copy let the owner produce on-brand coffee and menu visuals quickly, and the content planner handles scheduling to Instagram, which is already in use.",
+    "pct_time_saved": 0.45,
+    "pct_revenue_recovered": 0.3,
+    "estimate_reasoning": "Templates remove the design step, which is a large share of posting time, but the owner still reviews and schedules, so about 45% of the time pain is removed. Revenue recovery is smaller since visuals help engagement but the scheduler is basic and less reliable for consistent posting.",
+    "pain_id": "dormant-instagram"
+   }
+  ],
+  "critiques": [
+   {
+    "tool_id": "square-marketing",
+    "concern": "At $45/mo it eats 30% of your $150 budget for one afternoon-slump fix. Square Marketing's loyalty features are nice, but you don't need them yet to win back 2-5pm students.",
+    "severity": "high",
+    "suggestion": "Pick Mailchimp for the afternoon campaign instead, or use Square's free text/email tools until you've proven the offer works.",
+    "persona": "Budget Hawk"
+   },
+   {
+    "tool_id": "mailchimp",
+    "concern": "Its price climbs with list size, so a student list that grows each semester can quietly push you past $20/mo. Read the contact-tier pricing before you commit.",
+    "severity": "medium",
+    "suggestion": "Start on the free or lowest tier and cap your list by pruning inactive contacts each semester.",
+    "persona": "Budget Hawk"
+   },
+   {
+    "tool_id": "canva-pro",
+    "concern": "At $15/mo it duplicates what Meta Business Suite gives you for free, and its scheduling is basic. You'd be paying for design polish you may not need.",
+    "severity": "medium",
+    "suggestion": "Use Meta Business Suite (free) to schedule posts, and only add Canva Pro if you find the free Canva version too limiting.",
+    "persona": "Budget Hawk"
+   },
+   {
+    "tool_id": "7shifts",
+    "concern": "Price is listed as typical, and advanced forecasting sits on higher tiers. Confirm the real monthly cost for 6 staff, since per-user add-ons can creep up on a small team.",
+    "severity": "low",
+    "suggestion": "Compare the 7shifts quote with Homebase directly; Homebase is cheaper and integrates with Square, so it's the safer pick for your budget.",
+    "persona": "Budget Hawk"
+   },
+   {
+    "tool_id": "mailchimp",
+    "concern": "Mailchimp has a steeper setup than it looks: list building, audience tags, and campaign templates can eat a couple of evenings, and the interface is busy for a non-marketer.",
+    "severity": "medium",
+    "suggestion": "Prefer Square Marketing if you want the lowest friction, since it connects directly to your Square register and sends offers without building lists by hand.",
+    "persona": "Ease-of-Use Coach"
+   },
+   {
+    "tool_id": "7shifts",
+    "concern": "Your student staff will need to download the app, set availability, and accept swap requests on their phones, and a few may resist or forget if no one reinforces it.",
+    "severity": "medium",
+    "suggestion": "Run a 15-minute phone walkthrough at a shift meeting, pin a one-page how-to by the register, and make app-based swaps the only way to trade shifts.",
+    "persona": "Ease-of-Use Coach"
+   },
+   {
+    "tool_id": "canva-pro",
+    "concern": "Canva is easy to start but it is one more thing to open each week, and scheduling is basic, so you will still be posting by hand from your phone.",
+    "severity": "low",
+    "suggestion": "Use one recurring weekly template so posting becomes a 20-minute habit, and batch-schedule with Meta Business Suite to avoid daily logins.",
+    "persona": "Ease-of-Use Coach"
+   },
+   {
+    "tool_id": "mailchimp",
+    "concern": "Mailchimp integrates with Square only through a third-party connector, and your customer and purchase data won't flow natively. You'd be re-keying student contacts and offers by hand.",
+    "severity": "high",
+    "suggestion": "Prefer square-marketing for the afternoon offer since it reads Square purchase data directly, or confirm a working Square-to-Mailchimp sync before committing.",
+    "persona": "Integration Checker"
+   },
+   {
+    "tool_id": "homebase",
+    "concern": "Homebase connects to Square, but payroll is an extra cost and a separate system, so hours and tips may still need reconciling in two places.",
+    "severity": "medium",
+    "suggestion": "Check whether you can run scheduling alone without payroll, and confirm the Square timeclock or POS sync covers tip and hours data.",
+    "persona": "Integration Checker"
+   },
+   {
+    "tool_id": "7shifts",
+    "concern": "7shifts syncs with Square, which is good, but advanced forecasting is locked behind higher tiers, so your budget may not reach the features that matter most.",
+    "severity": "medium",
+    "suggestion": "Start on the base tier for semester schedule rebuilds and confirm the Square sync works before paying for forecasting.",
+    "persona": "Integration Checker"
+   },
+   {
+    "tool_id": "canva-pro",
+    "concern": "Canva posts to Instagram but scheduling is basic, so you may still end up switching to Meta tools to publish, creating a split workflow.",
+    "severity": "low",
+    "suggestion": "Pair it with meta-business-suite for scheduling so you design in Canva and publish from one place, avoiding a second login routine.",
+    "persona": "Integration Checker"
+   }
+  ],
+  "mesh": [
+   {
+    "persona": "Budget Hawk",
+    "key": "budget_hawk",
+    "headline": "Plenty of options here, but Square Marketing is pricey for a $150 budget and Canva plus Meta overlaps, so let's keep the spend tight.",
+    "critiques": [
+     {
+      "tool_id": "square-marketing",
+      "concern": "At $45/mo it eats 30% of your $150 budget for one afternoon-slump fix. Square Marketing's loyalty features are nice, but you don't need them yet to win back 2-5pm students.",
+      "severity": "high",
+      "suggestion": "Pick Mailchimp for the afternoon campaign instead, or use Square's free text/email tools until you've proven the offer works.",
+      "persona": "Budget Hawk"
+     },
+     {
+      "tool_id": "mailchimp",
+      "concern": "Its price climbs with list size, so a student list that grows each semester can quietly push you past $20/mo. Read the contact-tier pricing before you commit.",
+      "severity": "medium",
+      "suggestion": "Start on the free or lowest tier and cap your list by pruning inactive contacts each semester.",
+      "persona": "Budget Hawk"
+     },
+     {
+      "tool_id": "canva-pro",
+      "concern": "At $15/mo it duplicates what Meta Business Suite gives you for free, and its scheduling is basic. You'd be paying for design polish you may not need.",
+      "severity": "medium",
+      "suggestion": "Use Meta Business Suite (free) to schedule posts, and only add Canva Pro if you find the free Canva version too limiting.",
+      "persona": "Budget Hawk"
+     },
+     {
+      "tool_id": "7shifts",
+      "concern": "Price is listed as typical, and advanced forecasting sits on higher tiers. Confirm the real monthly cost for 6 staff, since per-user add-ons can creep up on a small team.",
+      "severity": "low",
+      "suggestion": "Compare the 7shifts quote with Homebase directly; Homebase is cheaper and integrates with Square, so it's the safer pick for your budget.",
+      "persona": "Budget Hawk"
+     }
+    ]
+   },
+   {
+    "persona": "Ease-of-Use Coach",
+    "key": "ease_coach",
+    "headline": "Most of these are approachable for a tech comfort of 3, but the email tool and the schedule tool both need a bit of care so your student staff actually use them.",
+    "critiques": [
+     {
+      "tool_id": "mailchimp",
+      "concern": "Mailchimp has a steeper setup than it looks: list building, audience tags, and campaign templates can eat a couple of evenings, and the interface is busy for a non-marketer.",
+      "severity": "medium",
+      "suggestion": "Prefer Square Marketing if you want the lowest friction, since it connects directly to your Square register and sends offers without building lists by hand.",
+      "persona": "Ease-of-Use Coach"
+     },
+     {
+      "tool_id": "7shifts",
+      "concern": "Your student staff will need to download the app, set availability, and accept swap requests on their phones, and a few may resist or forget if no one reinforces it.",
+      "severity": "medium",
+      "suggestion": "Run a 15-minute phone walkthrough at a shift meeting, pin a one-page how-to by the register, and make app-based swaps the only way to trade shifts.",
+      "persona": "Ease-of-Use Coach"
+     },
+     {
+      "tool_id": "canva-pro",
+      "concern": "Canva is easy to start but it is one more thing to open each week, and scheduling is basic, so you will still be posting by hand from your phone.",
+      "severity": "low",
+      "suggestion": "Use one recurring weekly template so posting becomes a 20-minute habit, and batch-schedule with Meta Business Suite to avoid daily logins.",
+      "persona": "Ease-of-Use Coach"
+     }
+    ]
+   },
+   {
+    "persona": "Integration Checker",
+    "key": "integration_checker",
+    "headline": "Solid shortlist, but the scheduling tools need a hard look at Square integration and the marketing picks need to share data with Square, or you're back to double entry.",
+    "critiques": [
+     {
+      "tool_id": "mailchimp",
+      "concern": "Mailchimp integrates with Square only through a third-party connector, and your customer and purchase data won't flow natively. You'd be re-keying student contacts and offers by hand.",
+      "severity": "high",
+      "suggestion": "Prefer square-marketing for the afternoon offer since it reads Square purchase data directly, or confirm a working Square-to-Mailchimp sync before committing.",
+      "persona": "Integration Checker"
+     },
+     {
+      "tool_id": "homebase",
+      "concern": "Homebase connects to Square, but payroll is an extra cost and a separate system, so hours and tips may still need reconciling in two places.",
+      "severity": "medium",
+      "suggestion": "Check whether you can run scheduling alone without payroll, and confirm the Square timeclock or POS sync covers tip and hours data.",
+      "persona": "Integration Checker"
+     },
+     {
+      "tool_id": "7shifts",
+      "concern": "7shifts syncs with Square, which is good, but advanced forecasting is locked behind higher tiers, so your budget may not reach the features that matter most.",
+      "severity": "medium",
+      "suggestion": "Start on the base tier for semester schedule rebuilds and confirm the Square sync works before paying for forecasting.",
+      "persona": "Integration Checker"
+     },
+     {
+      "tool_id": "canva-pro",
+      "concern": "Canva posts to Instagram but scheduling is basic, so you may still end up switching to Meta tools to publish, creating a split workflow.",
+      "severity": "low",
+      "suggestion": "Pair it with meta-business-suite for scheduling so you design in Canva and publish from one place, avoiding a second login routine.",
+      "persona": "Integration Checker"
+     }
+    ]
+   }
+  ],
+  "scored": [
+   {
+    "tool_id": "7shifts",
+    "pain_id": "shift-scheduling",
+    "monthly_cost": 35.0,
+    "hours_saved_per_month": 12.1,
+    "time_value_monthly": 546,
+    "revenue_recovered_monthly": 0,
+    "monthly_value": 546,
+    "net_monthly": 511,
+    "setup_cost": 90,
+    "payback_days": 6.9,
+    "roi_multiple": 15.6,
+    "fit_score": 90,
+    "fit_breakdown": {
+     "value": 40,
+     "budget": 20,
+     "ease": 20,
+     "integration": 10,
+     "advisor_concerns": 0
+    },
+    "why_fit": "Builds schedules automatically from sales forecasts and includes a shift trade app so staff can swap shifts without the owner texting around, and it integrates directly with square-pos which Joe's already uses.",
+    "estimate_reasoning": "The 4 hrs/wk pain is mostly schedule building plus coverage texting. Auto-scheduling and the shift trade app should remove most of both tasks, though the owner still needs to review schedules and approve swaps, so about 0.7 is a realistic share. No revenue at risk was quantified, so pct_revenue_recovered is 0.",
+    "pct_time_saved": 0.7,
+    "pct_revenue_recovered": 0.0
+   },
+   {
+    "tool_id": "homebase",
+    "pain_id": "shift-scheduling",
+    "monthly_cost": 30.0,
+    "hours_saved_per_month": 10.4,
+    "time_value_monthly": 468,
+    "revenue_recovered_monthly": 0,
+    "monthly_value": 468,
+    "net_monthly": 438,
+    "setup_cost": 68,
+    "payback_days": 6.2,
+    "roi_multiple": 15.6,
+    "fit_score": 95,
+    "fit_breakdown": {
+     "value": 40,
+     "budget": 20,
+     "ease": 20,
+     "integration": 10,
+     "advisor_concerns": 5
+    },
+    "why_fit": "Offers auto-scheduling, team chat and a time clock for hourly teams, with a free tier and an integration with square-pos, so it fits Joe's budget and existing POS.",
+    "estimate_reasoning": "Auto-scheduling and team chat reduce both the schedule rebuild and the coverage texting, but the team chat is less specialized for shift trades than 7shifts, so the estimate is a bit lower. Revenue impact is not quantified in the pain, so it is 0.",
+    "pct_time_saved": 0.6,
+    "pct_revenue_recovered": 0.0
+   },
+   {
+    "tool_id": "square-marketing",
+    "pain_id": "weekday-afternoon-slump",
+    "monthly_cost": 45.0,
+    "hours_saved_per_month": 0.0,
+    "time_value_monthly": 0,
+    "revenue_recovered_monthly": 495,
+    "monthly_value": 495,
+    "net_monthly": 450,
+    "setup_cost": 25,
+    "payback_days": 4.2,
+    "roi_multiple": 11.0,
+    "fit_score": 90,
+    "fit_breakdown": {
+     "value": 40,
+     "budget": 20,
+     "ease": 20,
+     "integration": 10,
+     "advisor_concerns": 0
+    },
+    "why_fit": "It is built into Square POS, which Joe's already uses, and offers auto win-back messages and a loyalty program that can target a student-focused offer for weekday afternoons using the real customer list.",
+    "estimate_reasoning": "The pain is about recovering weekday 2-5pm traffic, not hours, so time savings are minimal. Revenue recovery is estimated at roughly half of the $900/mo at risk, since a targeted afternoon offer to a student list plausibly wins back 2-3 customers per day, but the shop only has an existing list of unknown size and the offer must be well executed. Price is about $45/mo, within the $150 budget, and setup is about 1 hour.",
+    "pct_time_saved": 0.2,
+    "pct_revenue_recovered": 0.55
+   },
+   {
+    "tool_id": "mailchimp",
+    "pain_id": "weekday-afternoon-slump",
+    "monthly_cost": 20.0,
+    "hours_saved_per_month": 0.0,
+    "time_value_monthly": 0,
+    "revenue_recovered_monthly": 315,
+    "monthly_value": 315,
+    "net_monthly": 295,
+    "setup_cost": 50,
+    "payback_days": 6.7,
+    "roi_multiple": 15.8,
+    "fit_score": 85,
+    "fit_breakdown": {
+     "value": 40,
+     "budget": 20,
+     "ease": 20,
+     "integration": 5,
+     "advisor_concerns": 0
+    },
+    "why_fit": "Its free tier and AI email writer plus automated journeys let Joe's send a recurring student afternoon promo without paying much, and it integrates with Square.",
+    "estimate_reasoning": "Mailchimp can run the same afternoon offer campaign, but it lacks Square's native POS-linked loyalty and redemption tracking, so recovery is lower than the Square option. The free tier keeps cost near zero, leaving budget headroom. Realistic recovery is about 0.35 of the $900/mo at risk given list-building needs and weaker attribution to in-store visits.",
+    "pct_time_saved": 0.1,
+    "pct_revenue_recovered": 0.35
+   },
+   {
+    "tool_id": "meta-business-suite",
+    "pain_id": "dormant-instagram",
+    "monthly_cost": 0.0,
+    "hours_saved_per_month": 3.9,
+    "time_value_monthly": 175,
+    "revenue_recovered_monthly": 120,
+    "monthly_value": 295,
+    "net_monthly": 295,
+    "setup_cost": 45,
+    "payback_days": 4.6,
+    "roi_multiple": null,
+    "fit_score": 100,
+    "fit_breakdown": {
+     "value": 40,
+     "budget": 20,
+     "ease": 20,
+     "integration": 10,
+     "advisor_concerns": 10
+    },
+    "why_fit": "Free Instagram scheduling plus AI-generated post text and AI inbox auto-replies lets the owner batch a week of posts in one sitting at zero cost, fitting the $150 budget and tech comfort of 3.",
+    "estimate_reasoning": "Scheduling and AI copy cut the ~1.5 hrs/week of posting to roughly 30-40 minutes of batching, removing about 60% of the time pain. Revenue recovery is moderate because it only reaches Instagram, which is the sole channel lost, and discovery from campus followers depends on posting consistency.",
+    "pct_time_saved": 0.6,
+    "pct_revenue_recovered": 0.4
+   },
+   {
+    "tool_id": "canva-pro",
+    "pain_id": "dormant-instagram",
+    "monthly_cost": 15.0,
+    "hours_saved_per_month": 2.9,
+    "time_value_monthly": 132,
+    "revenue_recovered_monthly": 90,
+    "monthly_value": 222,
+    "net_monthly": 207,
+    "setup_cost": 45,
+    "payback_days": 8.1,
+    "roi_multiple": 14.8,
+    "fit_score": 91,
+    "fit_breakdown": {
+     "value": 40,
+     "budget": 20,
+     "ease": 20,
+     "integration": 10,
+     "advisor_concerns": 1
+    },
+    "why_fit": "Magic Design templates and Magic Write copy let the owner produce on-brand coffee and menu visuals quickly, and the content planner handles scheduling to Instagram, which is already in use.",
+    "estimate_reasoning": "Templates remove the design step, which is a large share of posting time, but the owner still reviews and schedules, so about 45% of the time pain is removed. Revenue recovery is smaller since visuals help engagement but the scheduler is basic and less reliable for consistent posting.",
+    "pct_time_saved": 0.45,
+    "pct_revenue_recovered": 0.3
+   }
+  ],
+  "stack": {
+   "tool_ids": [
+    "7shifts",
+    "square-marketing",
+    "meta-business-suite"
+   ],
+   "monthly_cost": 80,
+   "monthly_value": 1336,
+   "net_monthly": 1256,
+   "hours_saved_per_month": 16.0,
+   "within_budget": true,
+   "budget": 150.0,
+   "picks": {
+    "shift-scheduling": "7shifts",
+    "weekday-afternoon-slump": "square-marketing",
+    "dormant-instagram": "meta-business-suite"
+   }
+  },
+  "verdicts": {
+   "summary": "This stack fixes your three biggest headaches: messy student schedules, quiet weekday afternoons, and an Instagram account that has gone silent. It costs about $80 a month, well under your $150 budget, and should save around 16 hours a month while bringing back sales.",
+   "by_tool": {
+    "7shifts": "7shifts should pay for itself in about 7 days and save you roughly 12 hours a month on building schedules and texting around for coverage. The main catch is that your student staff must actually use the app, so show them how at a shift meeting and make app swaps the only way to trade shifts.",
+    "square-marketing": "Square Marketing & Loyalty should pay back in about 4 days by winning students back into the shop on weekday afternoons. The main catch is that at $45 a month it takes up almost a third of your budget, so start with a simple targeted offer and check that it brings people in.",
+    "meta-business-suite": "Meta Business Suite is free and should pay back in under 5 days, since it lets you plan a week of Instagram posts in one sitting and saves about 4 hours a month. The advisors raised no concerns, though results depend on you posting steadily."
+   }
+  },
+  "approved_tool_ids": [
+   "7shifts",
+   "square-marketing",
+   "meta-business-suite"
+  ],
+  "plan": {
+   "first_step_today": "Create a free 7shifts account and invite your 6 staff by email or text so they can enter their fall class availability this week.",
+   "weeks": [
+    {
+     "week": 1,
+     "theme": "Fix scheduling first (biggest time savings)",
+     "tasks": [
+      {
+       "tool_id": "7shifts",
+       "text": "Sign up for 7shifts, add Joe's Corner Coffee location, set opening hours and roles (barista, cashier, opener/closer)",
+       "owner": "Owner",
+       "minutes": 45
+      },
+      {
+       "tool_id": "7shifts",
+       "text": "Invite all 6 employees and ask each to enter class-schedule availability in the app by Friday",
+       "owner": "Owner",
+       "minutes": 15
+      },
+      {
+       "tool_id": "7shifts",
+       "text": "Connect 7shifts to Square POS if offered, otherwise skip and note typical busy hours from Square reports",
+       "owner": "Manager",
+       "minutes": 20
+      },
+      {
+       "tool_id": "7shifts",
+       "text": "Help staff who have trouble installing the app and confirm everyone has logged in",
+       "owner": "Manager",
+       "minutes": 20
+      }
+     ]
+    },
+    {
+     "week": 2,
+     "theme": "Go live with the schedule, start the afternoon offer",
+     "tasks": [
+      {
+       "tool_id": "7shifts",
+       "text": "Build next week's schedule from submitted availability and publish it; tell staff shift swaps now happen in the app, not by text",
+       "owner": "Owner",
+       "minutes": 40
+      },
+      {
+       "tool_id": "square-marketing",
+       "text": "Turn on Square Marketing and Loyalty, and import existing customers from Square POS",
+       "owner": "Owner",
+       "minutes": 30
+      },
+      {
+       "tool_id": "square-marketing",
+       "text": "Create a loyalty reward and a 2-5pm weekday student offer (e.g. $1 off any drink with student ID)",
+       "owner": "Owner",
+       "minutes": 30
+      },
+      {
+       "tool_id": "square-marketing",
+       "text": "Train counter staff to mention the afternoon offer and sign customers up for loyalty at checkout",
+       "owner": "Front staff",
+       "minutes": 15
+      }
+     ]
+    },
+    {
+     "week": 3,
+     "theme": "Promote the offer and restart Instagram",
+     "tasks": [
+      {
+       "tool_id": "square-marketing",
+       "text": "Send one email or text campaign to customers about the 2-5pm student offer",
+       "owner": "Owner",
+       "minutes": 20
+      },
+      {
+       "tool_id": "meta-business-suite",
+       "text": "Connect Instagram to Meta Business Suite and set up the content scheduler",
+       "owner": "Owner",
+       "minutes": 30
+      },
+      {
+       "tool_id": "meta-business-suite",
+       "text": "Have a student employee take 8-10 photos/videos of drinks, the shop, and the afternoon offer during a slow shift",
+       "owner": "Front staff",
+       "minutes": 45
+      },
+      {
+       "tool_id": "meta-business-suite",
+       "text": "Schedule 3 posts for the week (offer, a drink feature, a team shot) in one sitting; repeat weekly",
+       "owner": "Manager",
+       "minutes": 30
+      },
+      {
+       "tool_id": "7shifts",
+       "text": "Publish the next schedule and approve any shift swaps in the app",
+       "owner": "Owner",
+       "minutes": 20
+      }
+     ]
+    },
+    {
+     "week": 4,
+     "theme": "Measure results and decide what to keep",
+     "tasks": [
+      {
+       "tool_id": "7shifts",
+       "text": "Estimate time spent on scheduling and shift-cover texts this week and compare to the old 4 hrs/wk",
+       "owner": "Owner",
+       "minutes": 10
+      },
+      {
+       "tool_id": "square-marketing",
+       "text": "Check Square reports for 2-5pm weekday transactions and loyalty sign-ups vs. before the offer",
+       "owner": "Owner",
+       "minutes": 25
+      },
+      {
+       "tool_id": "meta-business-suite",
+       "text": "Review Instagram post reach, follower growth, and profile visits in Meta Business Suite",
+       "owner": "Manager",
+       "minutes": 20
+      },
+      {
+       "tool_id": null,
+       "text": "Hold a 15-minute team huddle to gather feedback and decide what to adjust or keep for month two",
+       "owner": "Owner",
+       "minutes": 15
+      }
+     ]
+    }
+   ],
+   "success_metrics": [
+    {
+     "metric": "Owner hours per week on scheduling and shift-cover texts",
+     "target": "Down from 4 hrs to 1 hr or less by week 4"
+    },
+    {
+     "metric": "Weekday 2-5pm transactions per day",
+     "target": "2-3 more per day than the pre-offer baseline"
+    },
+    {
+     "metric": "Loyalty/marketing sign-ups",
+     "target": "50+ customers enrolled by end of week 4"
+    },
+    {
+     "metric": "Instagram posts published per week",
+     "target": "3 posts per week for weeks 3 and 4"
+    }
+   ]
+  }
+ }
+}

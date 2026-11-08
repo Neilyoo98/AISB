@@ -13,3 +13,8 @@ __pycache__/
 node_modules/
 .next/
 .vercel/
+
+# local data
+backend/*.db
+backend/.qdrant/
+.playwright-mcp/

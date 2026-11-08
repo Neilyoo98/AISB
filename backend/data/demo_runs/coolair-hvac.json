@@ -1,0 +1,1725 @@
+{
+ "persona_id": "coolair-hvac",
+ "events": [
+  {
+   "seq": 0,
+   "t": 0,
+   "type": "run.start",
+   "agent": null,
+   "data": {
+    "mode": "live"
+   }
+  },
+  {
+   "seq": 1,
+   "t": 0,
+   "type": "agent.start",
+   "agent": "intake",
+   "data": {
+    "label": "Reading the owner's story"
+   }
+  },
+  {
+   "seq": 2,
+   "t": 0,
+   "type": "intake.done",
+   "agent": "intake",
+   "data": {
+    "profile": {
+     "business_name": "CoolAir HVAC",
+     "vertical": "hvac",
+     "location": null,
+     "employees": 4,
+     "monthly_budget": 300.0,
+     "tech_comfort": 4,
+     "current_tools": [
+      "quickbooks",
+      "google-calendar"
+     ],
+     "summary": "A 4-technician HVAC company whose owner loses summer calls while on jobs, hand-writes and types quotes, and waits on paper invoices that customers pay slowly."
+    },
+    "raw_pains": [
+     {
+      "title": "Missed calls while techs are on jobs",
+      "tag": "missed_calls",
+      "owner_quote": "nobody answers the phone... I think we miss 15-20 calls a week in summer"
+     },
+     {
+      "title": "Quotes take too long to write and type",
+      "tag": "quoting",
+      "owner_quote": "Quotes take me forever, I write them at night on paper and type them up, maybe 6 hours a week"
+     },
+     {
+      "title": "Paper invoices and slow customer payments",
+      "tag": "invoicing_payments",
+      "owner_quote": "Invoices are paper too and customers pay slow"
+     }
+    ],
+    "facts": [
+     {
+      "subject": "business",
+      "predicate": "is",
+      "object": "a 4-technician HVAC company",
+      "category": "identity",
+      "confidence": 0.95
+     },
+     {
+      "subject": "business",
+      "predicate": "uses",
+      "object": "QuickBooks",
+      "category": "current_tools",
+      "confidence": 0.95
+     },
+     {
+      "subject": "business",
+      "predicate": "uses",
+      "object": "Google Calendar for scheduling",
+      "category": "current_tools",
+      "confidence": 0.95
+     },
+     {
+      "subject": "business",
+      "predicate": "handles invoices",
+      "object": "on paper",
+      "category": "operations",
+      "confidence": 0.9
+     },
+     {
+      "subject": "owner",
+      "predicate": "writes quotes",
+      "object": "on paper at night, then types them up, about 6 hours per week",
+      "category": "operations",
+      "confidence": 0.9
+     },
+     {
+      "subject": "business",
+      "predicate": "misses",
+      "object": "an estimated 15-20 calls per week in summer when technicians are on jobs",
+      "category": "pain",
+      "confidence": 0.8
+     },
+     {
+      "subject": "business",
+      "predicate": "earns",
+      "object": "$6,000-$8,000 per new AC installation",
+      "category": "operations",
+      "confidence": 0.8
+     },
+     {
+      "subject": "business",
+      "predicate": "earns",
+      "object": "about $350 per repair job",
+      "category": "operations",
+      "confidence": 0.7
+     },
+     {
+      "subject": "business",
+      "predicate": "has",
+      "object": "a software budget of about $300 per month if it pays for itself",
+      "category": "budget",
+      "confidence": 0.85
+     },
+     {
+      "subject": "owner",
+      "predicate": "is",
+      "object": "comfortable with technology",
+      "category": "tech_comfort",
+      "confidence": 0.7
+     },
+     {
+      "subject": "business",
+      "predicate": "wants",
+      "object": "to capture missed calls and speed up quoting and invoice payment",
+      "category": "goal",
+      "confidence": 0.8
+     }
+    ]
+   }
+  },
+  {
+   "seq": 3,
+   "t": 0,
+   "type": "agent.start",
+   "agent": "memory",
+   "data": {
+    "label": "Checking the Business Constitution"
+   }
+  },
+  {
+   "seq": 4,
+   "t": 16,
+   "type": "memory.recalled",
+   "agent": "memory",
+   "data": {
+    "prior_facts": 0,
+    "own_episodes": [],
+    "similar_businesses": []
+   }
+  },
+  {
+   "seq": 5,
+   "t": 16,
+   "type": "agent.start",
+   "agent": "diagnoser",
+   "data": {
+    "label": "Putting a dollar figure on each pain"
+   }
+  },
+  {
+   "seq": 6,
+   "t": 16,
+   "type": "pain.ranked",
+   "agent": "diagnoser",
+   "data": {
+    "pains": [
+     {
+      "id": "missed-calls",
+      "title": "Missed calls while techs are on jobs",
+      "tag": "missed_calls",
+      "hours_per_week": 0.5,
+      "hourly_cost": 50.0,
+      "revenue_at_risk_monthly": 4500.0,
+      "impact_explanation": "About 15-20 missed calls/week in summer, assume only 20% would have booked: ~3-4 jobs/week. Blending repairs ($350) and some installs ($6-8k) conservatively at ~$1,000 average over ~3.5 lost jobs/week gives ~$15k/week, but to stay conservative we count only the $4,500/mo of repair-level revenue. Owner time to call back is roughly 0.5 hr/week.",
+      "evidence_quote": "nobody answers the phone... I think we miss 15-20 calls a week in summer",
+      "monthly_cost_of_pain": 4608
+     },
+     {
+      "id": "quote-writing",
+      "title": "Quotes take forever to write and type",
+      "tag": "quoting",
+      "hours_per_week": 6.0,
+      "hourly_cost": 50.0,
+      "revenue_at_risk_monthly": 0.0,
+      "impact_explanation": "6 hrs/week of owner time at ~$50/hr = ~$1,300/mo in time cost. Slow quotes also delay decisions, but we keep revenue at risk at $0 to stay conservative.",
+      "evidence_quote": "Quotes take me forever, I write them at night on paper and type them up, maybe 6 hours a week",
+      "monthly_cost_of_pain": 1299
+     },
+     {
+      "id": "slow-invoice-payments",
+      "title": "Paper invoices and slow customer payments",
+      "tag": "invoicing_payments",
+      "hours_per_week": 1.5,
+      "hourly_cost": 25.0,
+      "revenue_at_risk_monthly": 0.0,
+      "impact_explanation": "About 1.5 hrs/week of staff time on paper invoicing and chasing payments at ~$25/hr = ~$160/mo. Cash delay is real but its dollar cost is not quantified from the owner's numbers, so revenue at risk is $0.",
+      "evidence_quote": "Invoices are paper too and customers pay slow",
+      "monthly_cost_of_pain": 162
+     }
+    ]
+   }
+  },
+  {
+   "seq": 7,
+   "t": 16,
+   "type": "agent.start",
+   "agent": "scout:missed-calls",
+   "data": {
+    "label": "Scouting tools for “Missed calls while techs are on jobs”",
+    "pain_id": "missed-calls"
+   }
+  },
+  {
+   "seq": 8,
+   "t": 16,
+   "type": "agent.start",
+   "agent": "scout:quote-writing",
+   "data": {
+    "label": "Scouting tools for “Quotes take forever to write and type”",
+    "pain_id": "quote-writing"
+   }
+  },
+  {
+   "seq": 9,
+   "t": 16,
+   "type": "agent.start",
+   "agent": "scout:slow-invoice-payments",
+   "data": {
+    "label": "Scouting tools for “Paper invoices and slow customer payments”",
+    "pain_id": "slow-invoice-payments"
+   }
+  },
+  {
+   "seq": 10,
+   "t": 32,
+   "type": "scout.result",
+   "agent": "scout:quote-writing",
+   "data": {
+    "pain_id": "quote-writing",
+    "searched": [
+     "jobber",
+     "housecall-pro",
+     "workiz"
+    ],
+    "picks": [
+     {
+      "tool_id": "jobber",
+      "why_fit": "Jobber's AI-written quotes and Copilot drafting directly target the hand-typed quote bottleneck, and it integrates with the QuickBooks and Google Calendar the owner already uses, at a typical $119/month within the $300 budget.",
+      "pct_time_saved": 0.6,
+      "pct_revenue_recovered": 0.1,
+      "estimate_reasoning": "Quote drafting and typing is most of the 6 weekly hours; AI-generated quotes plus templated line items should cut that by roughly 60%. Faster quotes also win some jobs that would otherwise go to competitors, but revenue at risk is $0 so the recovery estimate is conservative.",
+      "pain_id": "quote-writing"
+     },
+     {
+      "tool_id": "housecall-pro",
+      "why_fit": "Housecall Pro offers AI-generated estimates and integrates with QuickBooks and Google Calendar, giving a quoting workflow comparable to Jobber at a typical $149/month, which fits the budget with room for basic add-ons.",
+      "pct_time_saved": 0.5,
+      "pct_revenue_recovered": 0.1,
+      "estimate_reasoning": "AI-generated estimates reduce the drafting time, though the lack of a specific quote-writing feature in the catalog description and the extra cost of AI add-ons make the time savings slightly lower than Jobber's, around 50%.",
+      "pain_id": "quote-writing"
+     },
+     {
+      "tool_id": "workiz",
+      "why_fit": "Workiz covers quoting alongside dispatch and invoicing for HVAC and integrates with QuickBooks and Google Calendar, but its typical $225/month price consumes most of the $300 budget.",
+      "pct_time_saved": 0.4,
+      "pct_revenue_recovered": 0.05,
+      "estimate_reasoning": "Workiz lists quoting as a solved pain but its catalog entry does not name AI-written quotes, so the time savings are estimated lower at about 40%, and the higher price weakens the value case for this single pain.",
+      "pain_id": "quote-writing"
+     }
+    ]
+   }
+  },
+  {
+   "seq": 11,
+   "t": 32,
+   "type": "scout.result",
+   "agent": "scout:missed-calls",
+   "data": {
+    "pain_id": "missed-calls",
+    "searched": [
+     "smith-ai",
+     "workiz",
+     "goodcall",
+     "quo-openphone",
+     "housecall-pro",
+     "rosie",
+     "jobber"
+    ],
+    "picks": [
+     {
+      "tool_id": "rosie",
+      "why_fit": "Rosie is a low-cost AI answering service trained on the company's website that answers calls around the clock and texts call summaries, directly covering the missed calls while techs are on jobs at about $49/month within the $300 budget.",
+      "pct_time_saved": 0.6,
+      "pct_revenue_recovered": 0.6,
+      "estimate_reasoning": "Covers the core missed-call problem by answering every call and texting summaries; the owner still must call back booked leads and the summer volume may exceed the starter plan's minute caps, so I estimate it recovers about 60% of the at-risk repair revenue and removes most of the 0.5 hr/week callback time. Setup is 0.5 hours and tech comfort minimum is 1, well within CoolAir's comfort level of 4 and it integrates with Google Calendar which they already use.",
+      "pain_id": "missed-calls"
+     },
+     {
+      "tool_id": "goodcall",
+      "why_fit": "Goodcall's AI phone agent answers FAQs, captures leads and texts summaries 24/7 at $99/month with integration to Google Calendar, which the owner already uses, fitting the budget with room to spare.",
+      "pct_time_saved": 0.55,
+      "pct_revenue_recovered": 0.55,
+      "estimate_reasoning": "Lead capture and text summaries cover most missed-call scenarios, but it is less capable at booking directly into the calendar than premium options, so I estimate about 55% of the at-risk revenue is recovered and roughly half the callback time is eliminated. Setup takes about 1 hour and the tech comfort minimum is 1.",
+      "pain_id": "missed-calls"
+     },
+     {
+      "tool_id": "jobber",
+      "why_fit": "Jobber combines quoting, scheduling, dispatch and invoicing with an AI Receptionist add-on and Copilot drafting quotes, and it integrates with QuickBooks and Google Calendar, addressing the slow paper invoices and manual quoting as well as missed calls.",
+      "pct_time_saved": 0.5,
+      "pct_revenue_recovered": 0.45,
+      "estimate_reasoning": "Jobber's broader workflow reduces quoting and invoicing time beyond the call problem, but at $119/month plus the AI Receptionist add-on it is tighter on budget and needs about 5 setup hours with tech comfort 2; I estimate roughly half the time is saved and about 45% of at-risk revenue is recovered because the call answering depends on the add-on.",
+      "pain_id": "missed-calls"
+     }
+    ]
+   }
+  },
+  {
+   "seq": 12,
+   "t": 47,
+   "type": "scout.result",
+   "agent": "scout:slow-invoice-payments",
+   "data": {
+    "pain_id": "slow-invoice-payments",
+    "searched": [
+     "wave",
+     "jobber",
+     "podium",
+     "housecall-pro",
+     "workiz"
+    ],
+    "picks": [
+     {
+      "tool_id": "wave",
+      "why_fit": "Wave's free invoicing and invoice automation replace paper invoices at no cost, and it integrates with PayPal and Stripe so customers can pay online, though its QuickBooks overlap means the owner may not need it alongside existing tools.",
+      "pct_time_saved": 0.5,
+      "pct_revenue_recovered": 0.0,
+      "estimate_reasoning": "Digitizing invoices and automating sends removes roughly half of the ~1.5 hrs/week of paper invoicing and chasing; revenue at risk is $0 so no revenue recovery is claimed.",
+      "pain_id": "slow-invoice-payments"
+     },
+     {
+      "tool_id": "jobber",
+      "why_fit": "Jobber's invoicing and payments module, paired with its Copilot AI for drafting messages and its QuickBooks integration, fits a 4-tech HVAC company already on QuickBooks and comfortable with tech (comfort 4), though it is over the $300 budget at typical pricing only if the full suite is needed.",
+      "pct_time_saved": 0.6,
+      "pct_revenue_recovered": 0.0,
+      "estimate_reasoning": "Automated invoicing, AI-written payment reminders and QuickBooks sync should remove around 0.6 of the invoicing/chasing hours; no revenue recovery is claimed since revenue at risk is $0.",
+      "pain_id": "slow-invoice-payments"
+     },
+     {
+      "tool_id": "housecall-pro",
+      "why_fit": "Housecall Pro's integration with QuickBooks and its automated review requests and invoicing features support faster digital billing, but its AI add-ons cost extra and push it near the budget ceiling.",
+      "pct_time_saved": 0.5,
+      "pct_revenue_recovered": 0.0,
+      "estimate_reasoning": "Digital invoicing and QuickBooks sync remove about half of the manual invoicing time; the add-on cost makes it a weaker value than Wave or Jobber for this single pain.",
+      "pain_id": "slow-invoice-payments"
+     }
+    ]
+   }
+  },
+  {
+   "seq": 13,
+   "t": 47,
+   "type": "mesh.start",
+   "agent": "mesh",
+   "data": {
+    "personas": [
+     "Budget Hawk",
+     "Ease-of-Use Coach",
+     "Integration Checker"
+    ],
+    "shortlist": [
+     "rosie",
+     "goodcall",
+     "jobber",
+     "housecall-pro",
+     "workiz",
+     "wave"
+    ]
+   }
+  },
+  {
+   "seq": 14,
+   "t": 47,
+   "type": "mesh.message",
+   "agent": "mesh:budget_hawk",
+   "data": {
+    "persona": "Budget Hawk",
+    "key": "budget_hawk",
+    "headline": "Plenty of options here, but Jobber and Housecall Pro overlap heavily and the budget only stretches if we pick one path per pain, not all of them.",
+    "critiques": [
+     {
+      "tool_id": "housecall-pro",
+      "concern": "At $149/mo it costs more than Jobber, which covers the same quoting and invoicing pains. AI add-ons are extra, so the sticker price understates the real bill.",
+      "severity": "high",
+      "suggestion": "Drop Housecall Pro unless you specifically need its features. Choose Jobber for quoting and invoicing rather than paying for two overlapping field-service platforms.",
+      "persona": "Budget Hawk"
+     },
+     {
+      "tool_id": "workiz",
+      "concern": "$225/mo for quoting alone is the most expensive single-purpose option, and it eats most of the $300 budget before any other tool is added.",
+      "severity": "high",
+      "suggestion": "Skip Workiz. Jobber covers quote writing at a lower price, and the same pain is handled without a separate expensive subscription.",
+      "persona": "Budget Hawk"
+     },
+     {
+      "tool_id": "jobber",
+      "concern": "Covers three pains at $119/mo, but route optimization is locked to higher tiers and the 5-hour setup is real owner time, plus confirm whether the price is per user with four techs.",
+      "severity": "medium",
+      "suggestion": "Check the seat pricing for four technicians before signing, and ask whether the starter tier is enough. Budget the setup hours into your first week.",
+      "persona": "Budget Hawk"
+     },
+     {
+      "tool_id": "goodcall",
+      "concern": "$99/mo for call handling is nearly double Rosie's typical price, with fewer customization options for an HVAC business that needs its own booking script.",
+      "severity": "medium",
+      "suggestion": "Pick Rosie at around $49/mo for missed calls, provided its starter minute caps cover your summer call volume of 15-20 missed calls a week.",
+      "persona": "Budget Hawk"
+     }
+    ]
+   }
+  },
+  {
+   "seq": 15,
+   "t": 47,
+   "type": "mesh.message",
+   "agent": "mesh:ease_coach",
+   "data": {
+    "persona": "Ease-of-Use Coach",
+    "key": "ease_coach",
+    "headline": "Owner comfort is solid at 4/10, so I'm less worried about learning curves than about setup time and staff buy-in during the busy summer season.",
+    "critiques": [
+     {
+      "tool_id": "jobber",
+      "concern": "At 5 hours of setup and a full field-service platform, the team has to learn scheduling, quoting, and invoicing together. Changing habits mid-summer is risky.",
+      "severity": "medium",
+      "suggestion": "Schedule setup for the off-season, import the existing QuickBooks customer list, and roll out quoting first before turning on invoicing.",
+      "persona": "Ease-of-Use Coach"
+     },
+     {
+      "tool_id": "housecall-pro",
+      "concern": "Setup takes about 5 hours and the owner would be learning quoting and invoicing features at the same time as four technicians adopting a mobile app.",
+      "severity": "medium",
+      "suggestion": "Start with the mobile app for technicians only, then add quoting after a few weeks. Skip the paid AI add-ons until the basics are working.",
+      "persona": "Ease-of-Use Coach"
+     },
+     {
+      "tool_id": "workiz",
+      "concern": "At $225/month with 6 hours of setup, this is the heaviest lift on the shortlist for a team that is already stretched thin.",
+      "severity": "low",
+      "suggestion": "Only consider it if Jobber or Housecall Pro can't handle quoting. Otherwise the learning cost outweighs the benefit at this size.",
+      "persona": "Ease-of-Use Coach"
+     }
+    ]
+   }
+  },
+  {
+   "seq": 16,
+   "t": 47,
+   "type": "mesh.message",
+   "agent": "mesh:integration_checker",
+   "data": {
+    "persona": "Integration Checker",
+    "key": "integration_checker",
+    "headline": "Good news: most shortlisted tools play nicely with QuickBooks and Google Calendar, but watch for duplicate entry if you pick Wave or Rosie alongside your existing stack.",
+    "critiques": [
+     {
+      "tool_id": "wave",
+      "concern": "Wave doesn't integrate with QuickBooks or Google Calendar, so you'd be keying invoices twice and running two separate books. That's exactly the double entry you're trying to escape.",
+      "severity": "high",
+      "suggestion": "Skip Wave. If you want a cheap invoicing option, Jobber or Housecall Pro already connect to QuickBooks and keep invoices in one place.",
+      "persona": "Integration Checker"
+     },
+     {
+      "tool_id": "rosie",
+      "concern": "Rosie links to Google Calendar, which is good, but it has no QuickBooks link, so booked jobs won't flow into your accounting without manual handling.",
+      "severity": "medium",
+      "suggestion": "Confirm that Rosie's calendar sync creates real appointments your techs see, and check whether a Zapier bridge to QuickBooks is practical before committing.",
+      "persona": "Integration Checker"
+     },
+     {
+      "tool_id": "jobber",
+      "concern": "Jobber covers three pains and connects to QuickBooks and Google Calendar, which is strong. Setup at 5 hours is significant, and you'll want to confirm the QuickBooks sync doesn't create duplicate customer or invoice records.",
+      "severity": "low",
+      "suggestion": "Plan a setup block and a test with a few real customers before migrating everything. Ask Jobber about how QuickBooks sync handles existing customers.",
+      "persona": "Integration Checker"
+     }
+    ]
+   }
+  },
+  {
+   "seq": 17,
+   "t": 47,
+   "type": "agent.start",
+   "agent": "roi",
+   "data": {
+    "label": "Computing ROI (deterministic)"
+   }
+  },
+  {
+   "seq": 18,
+   "t": 47,
+   "type": "stack.scored",
+   "agent": "roi",
+   "data": {
+    "scored": [
+     {
+      "tool_id": "rosie",
+      "pain_id": "missed-calls",
+      "monthly_cost": 49.0,
+      "hours_saved_per_month": 1.3,
+      "time_value_monthly": 65,
+      "revenue_recovered_monthly": 2700,
+      "monthly_value": 2765,
+      "net_monthly": 2716,
+      "setup_cost": 25,
+      "payback_days": 0.8,
+      "roi_multiple": 56.4,
+      "fit_score": 95,
+      "fit_breakdown": {
+       "value": 40,
+       "budget": 20,
+       "ease": 20,
+       "integration": 10,
+       "advisor_concerns": 5
+      },
+      "why_fit": "Rosie is a low-cost AI answering service trained on the company's website that answers calls around the clock and texts call summaries, directly covering the missed calls while techs are on jobs at about $49/month within the $300 budget.",
+      "estimate_reasoning": "Covers the core missed-call problem by answering every call and texting summaries; the owner still must call back booked leads and the summer volume may exceed the starter plan's minute caps, so I estimate it recovers about 60% of the at-risk repair revenue and removes most of the 0.5 hr/week callback time. Setup is 0.5 hours and tech comfort minimum is 1, well within CoolAir's comfort level of 4 and it integrates with Google Calendar which they already use.",
+      "pct_time_saved": 0.6,
+      "pct_revenue_recovered": 0.6
+     },
+     {
+      "tool_id": "goodcall",
+      "pain_id": "missed-calls",
+      "monthly_cost": 99.0,
+      "hours_saved_per_month": 1.2,
+      "time_value_monthly": 60,
+      "revenue_recovered_monthly": 2475,
+      "monthly_value": 2535,
+      "net_monthly": 2436,
+      "setup_cost": 50,
+      "payback_days": 1.8,
+      "roi_multiple": 25.6,
+      "fit_score": 95,
+      "fit_breakdown": {
+       "value": 40,
+       "budget": 20,
+       "ease": 20,
+       "integration": 10,
+       "advisor_concerns": 5
+      },
+      "why_fit": "Goodcall's AI phone agent answers FAQs, captures leads and texts summaries 24/7 at $99/month with integration to Google Calendar, which the owner already uses, fitting the budget with room to spare.",
+      "estimate_reasoning": "Lead capture and text summaries cover most missed-call scenarios, but it is less capable at booking directly into the calendar than premium options, so I estimate about 55% of the at-risk revenue is recovered and roughly half the callback time is eliminated. Setup takes about 1 hour and the tech comfort minimum is 1.",
+      "pct_time_saved": 0.55,
+      "pct_revenue_recovered": 0.55
+     },
+     {
+      "tool_id": "jobber",
+      "pain_id": "missed-calls",
+      "monthly_cost": 119.0,
+      "hours_saved_per_month": 1.1,
+      "time_value_monthly": 54,
+      "revenue_recovered_monthly": 2025,
+      "monthly_value": 2079,
+      "net_monthly": 1960,
+      "setup_cost": 250,
+      "payback_days": 5.3,
+      "roi_multiple": 17.5,
+      "fit_score": 90,
+      "fit_breakdown": {
+       "value": 40,
+       "budget": 20,
+       "ease": 20,
+       "integration": 10,
+       "advisor_concerns": 0
+      },
+      "why_fit": "Jobber combines quoting, scheduling, dispatch and invoicing with an AI Receptionist add-on and Copilot drafting quotes, and it integrates with QuickBooks and Google Calendar, addressing the slow paper invoices and manual quoting as well as missed calls.",
+      "estimate_reasoning": "Jobber's broader workflow reduces quoting and invoicing time beyond the call problem, but at $119/month plus the AI Receptionist add-on it is tighter on budget and needs about 5 setup hours with tech comfort 2; I estimate roughly half the time is saved and about 45% of at-risk revenue is recovered because the call answering depends on the add-on.",
+      "pct_time_saved": 0.5,
+      "pct_revenue_recovered": 0.45
+     },
+     {
+      "tool_id": "jobber",
+      "pain_id": "quote-writing",
+      "monthly_cost": 119.0,
+      "hours_saved_per_month": 15.6,
+      "time_value_monthly": 779,
+      "revenue_recovered_monthly": 0,
+      "monthly_value": 779,
+      "net_monthly": 660,
+      "setup_cost": 250,
+      "payback_days": 14.2,
+      "roi_multiple": 6.5,
+      "fit_score": 90,
+      "fit_breakdown": {
+       "value": 40,
+       "budget": 20,
+       "ease": 20,
+       "integration": 10,
+       "advisor_concerns": 0
+      },
+      "why_fit": "Jobber's AI-written quotes and Copilot drafting directly target the hand-typed quote bottleneck, and it integrates with the QuickBooks and Google Calendar the owner already uses, at a typical $119/month within the $300 budget.",
+      "estimate_reasoning": "Quote drafting and typing is most of the 6 weekly hours; AI-generated quotes plus templated line items should cut that by roughly 60%. Faster quotes also win some jobs that would otherwise go to competitors, but revenue at risk is $0 so the recovery estimate is conservative.",
+      "pct_time_saved": 0.6,
+      "pct_revenue_recovered": 0.1
+     },
+     {
+      "tool_id": "housecall-pro",
+      "pain_id": "quote-writing",
+      "monthly_cost": 149.0,
+      "hours_saved_per_month": 13.0,
+      "time_value_monthly": 650,
+      "revenue_recovered_monthly": 0,
+      "monthly_value": 650,
+      "net_monthly": 501,
+      "setup_cost": 250,
+      "payback_days": 18.4,
+      "roi_multiple": 4.4,
+      "fit_score": 84,
+      "fit_breakdown": {
+       "value": 34,
+       "budget": 20,
+       "ease": 20,
+       "integration": 10,
+       "advisor_concerns": 0
+      },
+      "why_fit": "Housecall Pro offers AI-generated estimates and integrates with QuickBooks and Google Calendar, giving a quoting workflow comparable to Jobber at a typical $149/month, which fits the budget with room for basic add-ons.",
+      "estimate_reasoning": "AI-generated estimates reduce the drafting time, though the lack of a specific quote-writing feature in the catalog description and the extra cost of AI add-ons make the time savings slightly lower than Jobber's, around 50%.",
+      "pct_time_saved": 0.5,
+      "pct_revenue_recovered": 0.1
+     },
+     {
+      "tool_id": "workiz",
+      "pain_id": "quote-writing",
+      "monthly_cost": 225.0,
+      "hours_saved_per_month": 10.4,
+      "time_value_monthly": 520,
+      "revenue_recovered_monthly": 0,
+      "monthly_value": 520,
+      "net_monthly": 295,
+      "setup_cost": 300,
+      "payback_days": 30.3,
+      "roi_multiple": 2.3,
+      "fit_score": 53,
+      "fit_breakdown": {
+       "value": 13,
+       "budget": 10,
+       "ease": 20,
+       "integration": 10,
+       "advisor_concerns": 0
+      },
+      "why_fit": "Workiz covers quoting alongside dispatch and invoicing for HVAC and integrates with QuickBooks and Google Calendar, but its typical $225/month price consumes most of the $300 budget.",
+      "estimate_reasoning": "Workiz lists quoting as a solved pain but its catalog entry does not name AI-written quotes, so the time savings are estimated lower at about 40%, and the higher price weakens the value case for this single pain.",
+      "pct_time_saved": 0.4,
+      "pct_revenue_recovered": 0.05
+     },
+     {
+      "tool_id": "wave",
+      "pain_id": "slow-invoice-payments",
+      "monthly_cost": 16.0,
+      "hours_saved_per_month": 3.2,
+      "time_value_monthly": 81,
+      "revenue_recovered_monthly": 0,
+      "monthly_value": 81,
+      "net_monthly": 65,
+      "setup_cost": 50,
+      "payback_days": 24.4,
+      "roi_multiple": 5.1,
+      "fit_score": 58,
+      "fit_breakdown": {
+       "value": 13,
+       "budget": 20,
+       "ease": 20,
+       "integration": 5,
+       "advisor_concerns": 0
+      },
+      "why_fit": "Wave's free invoicing and invoice automation replace paper invoices at no cost, and it integrates with PayPal and Stripe so customers can pay online, though its QuickBooks overlap means the owner may not need it alongside existing tools.",
+      "estimate_reasoning": "Digitizing invoices and automating sends removes roughly half of the ~1.5 hrs/week of paper invoicing and chasing; revenue at risk is $0 so no revenue recovery is claimed.",
+      "pct_time_saved": 0.5,
+      "pct_revenue_recovered": 0.0
+     },
+     {
+      "tool_id": "jobber",
+      "pain_id": "slow-invoice-payments",
+      "monthly_cost": 119.0,
+      "hours_saved_per_month": 3.9,
+      "time_value_monthly": 97,
+      "revenue_recovered_monthly": 0,
+      "monthly_value": 97,
+      "net_monthly": -22,
+      "setup_cost": 125,
+      "payback_days": 75.5,
+      "roi_multiple": 0.8,
+      "fit_score": 50,
+      "fit_breakdown": {
+       "value": 0,
+       "budget": 20,
+       "ease": 20,
+       "integration": 10,
+       "advisor_concerns": 0
+      },
+      "why_fit": "Jobber's invoicing and payments module, paired with its Copilot AI for drafting messages and its QuickBooks integration, fits a 4-tech HVAC company already on QuickBooks and comfortable with tech (comfort 4), though it is over the $300 budget at typical pricing only if the full suite is needed.",
+      "estimate_reasoning": "Automated invoicing, AI-written payment reminders and QuickBooks sync should remove around 0.6 of the invoicing/chasing hours; no revenue recovery is claimed since revenue at risk is $0.",
+      "pct_time_saved": 0.6,
+      "pct_revenue_recovered": 0.0
+     },
+     {
+      "tool_id": "housecall-pro",
+      "pain_id": "slow-invoice-payments",
+      "monthly_cost": 149.0,
+      "hours_saved_per_month": 3.2,
+      "time_value_monthly": 81,
+      "revenue_recovered_monthly": 0,
+      "monthly_value": 81,
+      "net_monthly": -68,
+      "setup_cost": 125,
+      "payback_days": 101.5,
+      "roi_multiple": 0.5,
+      "fit_score": 50,
+      "fit_breakdown": {
+       "value": 0,
+       "budget": 20,
+       "ease": 20,
+       "integration": 10,
+       "advisor_concerns": 0
+      },
+      "why_fit": "Housecall Pro's integration with QuickBooks and its automated review requests and invoicing features support faster digital billing, but its AI add-ons cost extra and push it near the budget ceiling.",
+      "estimate_reasoning": "Digital invoicing and QuickBooks sync remove about half of the manual invoicing time; the add-on cost makes it a weaker value than Wave or Jobber for this single pain.",
+      "pct_time_saved": 0.5,
+      "pct_revenue_recovered": 0.0
+     }
+    ],
+    "stack": {
+     "tool_ids": [
+      "rosie",
+      "jobber"
+     ],
+     "monthly_cost": 168,
+     "monthly_value": 3641,
+     "net_monthly": 3473,
+     "hours_saved_per_month": 20.8,
+     "within_budget": true,
+     "budget": 300.0,
+     "picks": {
+      "missed-calls": "rosie",
+      "quote-writing": "jobber",
+      "slow-invoice-payments": "jobber"
+     }
+    },
+    "verdicts": {
+     "summary": "This stack answers every call while you're on a job and speeds up quotes and invoices, so you win more work and get paid faster. It costs $168 a month, well under your $300 budget, and is estimated to return about $3,473 a month after costs.",
+     "by_tool": {
+      "rosie": "Rosie pays back its $25 setup in under a day and is estimated to recover about $2,700 a month in calls you'd otherwise miss. The main caveat is that it doesn't connect to QuickBooks, so check that its calendar bookings show up for your techs and see if a simple bridge is practical.",
+      "jobber": "Jobber pays back its $250 setup in about 14 days and is estimated to save you around 15 hours a month on quotes and invoices. The main caveat is the 5-hour setup, so plan it for a slower period, check the price for four technicians, and roll out quoting before invoicing."
+     }
+    }
+   }
+  },
+  {
+   "seq": 19,
+   "t": 62,
+   "type": "approval.waiting",
+   "agent": null,
+   "data": {
+    "recommended": [
+     "rosie",
+     "jobber"
+    ]
+   }
+  },
+  {
+   "seq": 20,
+   "t": 62,
+   "type": "agent.start",
+   "agent": "planner",
+   "data": {
+    "label": "Writing your 30-day adoption plan"
+   }
+  },
+  {
+   "seq": 21,
+   "t": 77,
+   "type": "plan.ready",
+   "agent": "planner",
+   "data": {
+    "plan": {
+     "first_step_today": "Sign up for Rosie AI Answering at heyrosie.com and spend 15 minutes entering your business hours, service area, and the 5 questions you want asked of every caller (name, address, problem, system age, best callback number).",
+     "weeks": [
+      {
+       "week": 1,
+       "theme": "Stop missing calls with Rosie (fastest payback)",
+       "tasks": [
+        {
+         "tool_id": "rosie",
+         "text": "Create your Rosie account and enter business hours, service area, pricing guidance, and emergency vs. routine rules for no-cooling calls",
+         "owner": "Owner",
+         "minutes": 30
+        },
+        {
+         "tool_id": "rosie",
+         "text": "Make 3 test calls from your cell to check greeting, questions asked, and how the text/email summary reaches you",
+         "owner": "Owner",
+         "minutes": 15
+        },
+        {
+         "tool_id": "rosie",
+         "text": "Forward your business line to Rosie after 3 rings and when you are on a job, and tell techs to send overflow calls there too",
+         "owner": "Owner",
+         "minutes": 10
+        },
+        {
+         "tool_id": "rosie",
+         "text": "Review each day's call summaries and return urgent callbacks in one 10-minute batch at lunch",
+         "owner": "Owner",
+         "minutes": 50
+        }
+       ]
+      },
+      {
+       "week": 2,
+       "theme": "Tune Rosie and start Jobber setup",
+       "tasks": [
+        {
+         "tool_id": "rosie",
+         "text": "Read all of last week's call transcripts and fix any wrong answers or missing questions in Rosie's settings",
+         "owner": "Owner",
+         "minutes": 20
+        },
+        {
+         "tool_id": "jobber",
+         "text": "Start a Jobber trial, enter company info, and import your customer list from QuickBooks (export CSV)",
+         "owner": "Owner",
+         "minutes": 60
+        },
+        {
+         "tool_id": "jobber",
+         "text": "Build your 10 most common services (tune-up, capacitor swap, refrigerant recharge, etc.) with prices as saved line items",
+         "owner": "Owner",
+         "minutes": 60
+        },
+        {
+         "tool_id": "jobber",
+         "text": "Connect Google Calendar and add each technician as a Jobber user",
+         "owner": "Manager",
+         "minutes": 30
+        }
+       ]
+      },
+      {
+       "week": 3,
+       "theme": "Quotes and invoices in Jobber",
+       "tasks": [
+        {
+         "tool_id": "jobber",
+         "text": "Write every new quote in Jobber from your phone or laptop using saved line items instead of paper, and send by text/email",
+         "owner": "Owner",
+         "minutes": 60
+        },
+        {
+         "tool_id": "jobber",
+         "text": "Turn on online card/ACH payments and automatic invoice reminders at 3 and 7 days overdue",
+         "owner": "Owner",
+         "minutes": 20
+        },
+        {
+         "tool_id": "jobber",
+         "text": "Show techs how to mark jobs complete in Jobber so the invoice is sent from the driveway the same day",
+         "owner": "Manager",
+         "minutes": 45
+        },
+        {
+         "tool_id": "jobber",
+         "text": "Connect Jobber to QuickBooks so invoices and payments sync, and confirm one test invoice appears",
+         "owner": "Owner",
+         "minutes": 30
+        }
+       ]
+      },
+      {
+       "week": 4,
+       "theme": "Measure results and adjust",
+       "tasks": [
+        {
+         "tool_id": null,
+         "text": "Count Rosie calls answered, bookings made, and callbacks needed over the 30 days and compare to the 15-20 missed calls/week baseline",
+         "owner": "Owner",
+         "minutes": 30
+        },
+        {
+         "tool_id": "jobber",
+         "text": "Track time spent on quotes this week versus the old 6 hours and note which quote types are still slow",
+         "owner": "Owner",
+         "minutes": 20
+        },
+        {
+         "tool_id": "jobber",
+         "text": "Pull a report of invoices sent, paid, and overdue, and compare average days to payment against your old paper invoices",
+         "owner": "Front staff",
+         "minutes": 30
+        },
+        {
+         "tool_id": null,
+         "text": "Decide which tool to keep, what to adjust, and whether to expand (e.g., Jobber quote follow-ups) based on the numbers",
+         "owner": "Owner",
+         "minutes": 30
+        }
+       ]
+      }
+     ],
+     "success_metrics": [
+      {
+       "metric": "Calls answered by Rosie instead of going to voicemail per week",
+       "target": "90%+ of incoming calls answered; missed calls under 3/week"
+      },
+      {
+       "metric": "Owner hours spent writing quotes per week",
+       "target": "Down from 6 to 2 or fewer"
+      },
+      {
+       "metric": "Invoices sent same day as job completion",
+       "target": "80% or more"
+      },
+      {
+       "metric": "Average days for customers to pay an invoice",
+       "target": "Reduced by at least 5 days versus current"
+      }
+     ]
+    },
+    "approved_tool_ids": [
+     "rosie",
+     "jobber"
+    ]
+   }
+  },
+  {
+   "seq": 22,
+   "t": 234,
+   "type": "memory.saved",
+   "agent": "memory",
+   "data": {
+    "facts": 13,
+    "episodes": 2
+   }
+  },
+  {
+   "seq": 23,
+   "t": 266,
+   "type": "run.complete",
+   "agent": null,
+   "data": {}
+  }
+ ],
+ "result": {
+  "profile": {
+   "business_name": "CoolAir HVAC",
+   "vertical": "hvac",
+   "location": null,
+   "employees": 4,
+   "monthly_budget": 300.0,
+   "tech_comfort": 4,
+   "current_tools": [
+    "quickbooks",
+    "google-calendar"
+   ],
+   "summary": "A 4-technician HVAC company whose owner loses summer calls while on jobs, hand-writes and types quotes, and waits on paper invoices that customers pay slowly."
+  },
+  "facts": [
+   {
+    "subject": "business",
+    "predicate": "is",
+    "object": "a 4-technician HVAC company",
+    "category": "identity",
+    "confidence": 0.95
+   },
+   {
+    "subject": "business",
+    "predicate": "uses",
+    "object": "QuickBooks",
+    "category": "current_tools",
+    "confidence": 0.95
+   },
+   {
+    "subject": "business",
+    "predicate": "uses",
+    "object": "Google Calendar for scheduling",
+    "category": "current_tools",
+    "confidence": 0.95
+   },
+   {
+    "subject": "business",
+    "predicate": "handles invoices",
+    "object": "on paper",
+    "category": "operations",
+    "confidence": 0.9
+   },
+   {
+    "subject": "owner",
+    "predicate": "writes quotes",
+    "object": "on paper at night, then types them up, about 6 hours per week",
+    "category": "operations",
+    "confidence": 0.9
+   },
+   {
+    "subject": "business",
+    "predicate": "misses",
+    "object": "an estimated 15-20 calls per week in summer when technicians are on jobs",
+    "category": "pain",
+    "confidence": 0.8
+   },
+   {
+    "subject": "business",
+    "predicate": "earns",
+    "object": "$6,000-$8,000 per new AC installation",
+    "category": "operations",
+    "confidence": 0.8
+   },
+   {
+    "subject": "business",
+    "predicate": "earns",
+    "object": "about $350 per repair job",
+    "category": "operations",
+    "confidence": 0.7
+   },
+   {
+    "subject": "business",
+    "predicate": "has",
+    "object": "a software budget of about $300 per month if it pays for itself",
+    "category": "budget",
+    "confidence": 0.85
+   },
+   {
+    "subject": "owner",
+    "predicate": "is",
+    "object": "comfortable with technology",
+    "category": "tech_comfort",
+    "confidence": 0.7
+   },
+   {
+    "subject": "business",
+    "predicate": "wants",
+    "object": "to capture missed calls and speed up quoting and invoice payment",
+    "category": "goal",
+    "confidence": 0.8
+   }
+  ],
+  "pains": [
+   {
+    "id": "missed-calls",
+    "title": "Missed calls while techs are on jobs",
+    "tag": "missed_calls",
+    "hours_per_week": 0.5,
+    "hourly_cost": 50.0,
+    "revenue_at_risk_monthly": 4500.0,
+    "impact_explanation": "About 15-20 missed calls/week in summer, assume only 20% would have booked: ~3-4 jobs/week. Blending repairs ($350) and some installs ($6-8k) conservatively at ~$1,000 average over ~3.5 lost jobs/week gives ~$15k/week, but to stay conservative we count only the $4,500/mo of repair-level revenue. Owner time to call back is roughly 0.5 hr/week.",
+    "evidence_quote": "nobody answers the phone... I think we miss 15-20 calls a week in summer",
+    "monthly_cost_of_pain": 4608
+   },
+   {
+    "id": "quote-writing",
+    "title": "Quotes take forever to write and type",
+    "tag": "quoting",
+    "hours_per_week": 6.0,
+    "hourly_cost": 50.0,
+    "revenue_at_risk_monthly": 0.0,
+    "impact_explanation": "6 hrs/week of owner time at ~$50/hr = ~$1,300/mo in time cost. Slow quotes also delay decisions, but we keep revenue at risk at $0 to stay conservative.",
+    "evidence_quote": "Quotes take me forever, I write them at night on paper and type them up, maybe 6 hours a week",
+    "monthly_cost_of_pain": 1299
+   },
+   {
+    "id": "slow-invoice-payments",
+    "title": "Paper invoices and slow customer payments",
+    "tag": "invoicing_payments",
+    "hours_per_week": 1.5,
+    "hourly_cost": 25.0,
+    "revenue_at_risk_monthly": 0.0,
+    "impact_explanation": "About 1.5 hrs/week of staff time on paper invoicing and chasing payments at ~$25/hr = ~$160/mo. Cash delay is real but its dollar cost is not quantified from the owner's numbers, so revenue at risk is $0.",
+    "evidence_quote": "Invoices are paper too and customers pay slow",
+    "monthly_cost_of_pain": 162
+   }
+  ],
+  "candidates": [
+   {
+    "tool_id": "rosie",
+    "why_fit": "Rosie is a low-cost AI answering service trained on the company's website that answers calls around the clock and texts call summaries, directly covering the missed calls while techs are on jobs at about $49/month within the $300 budget.",
+    "pct_time_saved": 0.6,
+    "pct_revenue_recovered": 0.6,
+    "estimate_reasoning": "Covers the core missed-call problem by answering every call and texting summaries; the owner still must call back booked leads and the summer volume may exceed the starter plan's minute caps, so I estimate it recovers about 60% of the at-risk repair revenue and removes most of the 0.5 hr/week callback time. Setup is 0.5 hours and tech comfort minimum is 1, well within CoolAir's comfort level of 4 and it integrates with Google Calendar which they already use.",
+    "pain_id": "missed-calls"
+   },
+   {
+    "tool_id": "goodcall",
+    "why_fit": "Goodcall's AI phone agent answers FAQs, captures leads and texts summaries 24/7 at $99/month with integration to Google Calendar, which the owner already uses, fitting the budget with room to spare.",
+    "pct_time_saved": 0.55,
+    "pct_revenue_recovered": 0.55,
+    "estimate_reasoning": "Lead capture and text summaries cover most missed-call scenarios, but it is less capable at booking directly into the calendar than premium options, so I estimate about 55% of the at-risk revenue is recovered and roughly half the callback time is eliminated. Setup takes about 1 hour and the tech comfort minimum is 1.",
+    "pain_id": "missed-calls"
+   },
+   {
+    "tool_id": "jobber",
+    "why_fit": "Jobber combines quoting, scheduling, dispatch and invoicing with an AI Receptionist add-on and Copilot drafting quotes, and it integrates with QuickBooks and Google Calendar, addressing the slow paper invoices and manual quoting as well as missed calls.",
+    "pct_time_saved": 0.5,
+    "pct_revenue_recovered": 0.45,
+    "estimate_reasoning": "Jobber's broader workflow reduces quoting and invoicing time beyond the call problem, but at $119/month plus the AI Receptionist add-on it is tighter on budget and needs about 5 setup hours with tech comfort 2; I estimate roughly half the time is saved and about 45% of at-risk revenue is recovered because the call answering depends on the add-on.",
+    "pain_id": "missed-calls"
+   },
+   {
+    "tool_id": "jobber",
+    "why_fit": "Jobber's AI-written quotes and Copilot drafting directly target the hand-typed quote bottleneck, and it integrates with the QuickBooks and Google Calendar the owner already uses, at a typical $119/month within the $300 budget.",
+    "pct_time_saved": 0.6,
+    "pct_revenue_recovered": 0.1,
+    "estimate_reasoning": "Quote drafting and typing is most of the 6 weekly hours; AI-generated quotes plus templated line items should cut that by roughly 60%. Faster quotes also win some jobs that would otherwise go to competitors, but revenue at risk is $0 so the recovery estimate is conservative.",
+    "pain_id": "quote-writing"
+   },
+   {
+    "tool_id": "housecall-pro",
+    "why_fit": "Housecall Pro offers AI-generated estimates and integrates with QuickBooks and Google Calendar, giving a quoting workflow comparable to Jobber at a typical $149/month, which fits the budget with room for basic add-ons.",
+    "pct_time_saved": 0.5,
+    "pct_revenue_recovered": 0.1,
+    "estimate_reasoning": "AI-generated estimates reduce the drafting time, though the lack of a specific quote-writing feature in the catalog description and the extra cost of AI add-ons make the time savings slightly lower than Jobber's, around 50%.",
+    "pain_id": "quote-writing"
+   },
+   {
+    "tool_id": "workiz",
+    "why_fit": "Workiz covers quoting alongside dispatch and invoicing for HVAC and integrates with QuickBooks and Google Calendar, but its typical $225/month price consumes most of the $300 budget.",
+    "pct_time_saved": 0.4,
+    "pct_revenue_recovered": 0.05,
+    "estimate_reasoning": "Workiz lists quoting as a solved pain but its catalog entry does not name AI-written quotes, so the time savings are estimated lower at about 40%, and the higher price weakens the value case for this single pain.",
+    "pain_id": "quote-writing"
+   },
+   {
+    "tool_id": "wave",
+    "why_fit": "Wave's free invoicing and invoice automation replace paper invoices at no cost, and it integrates with PayPal and Stripe so customers can pay online, though its QuickBooks overlap means the owner may not need it alongside existing tools.",
+    "pct_time_saved": 0.5,
+    "pct_revenue_recovered": 0.0,
+    "estimate_reasoning": "Digitizing invoices and automating sends removes roughly half of the ~1.5 hrs/week of paper invoicing and chasing; revenue at risk is $0 so no revenue recovery is claimed.",
+    "pain_id": "slow-invoice-payments"
+   },
+   {
+    "tool_id": "jobber",
+    "why_fit": "Jobber's invoicing and payments module, paired with its Copilot AI for drafting messages and its QuickBooks integration, fits a 4-tech HVAC company already on QuickBooks and comfortable with tech (comfort 4), though it is over the $300 budget at typical pricing only if the full suite is needed.",
+    "pct_time_saved": 0.6,
+    "pct_revenue_recovered": 0.0,
+    "estimate_reasoning": "Automated invoicing, AI-written payment reminders and QuickBooks sync should remove around 0.6 of the invoicing/chasing hours; no revenue recovery is claimed since revenue at risk is $0.",
+    "pain_id": "slow-invoice-payments"
+   },
+   {
+    "tool_id": "housecall-pro",
+    "why_fit": "Housecall Pro's integration with QuickBooks and its automated review requests and invoicing features support faster digital billing, but its AI add-ons cost extra and push it near the budget ceiling.",
+    "pct_time_saved": 0.5,
+    "pct_revenue_recovered": 0.0,
+    "estimate_reasoning": "Digital invoicing and QuickBooks sync remove about half of the manual invoicing time; the add-on cost makes it a weaker value than Wave or Jobber for this single pain.",
+    "pain_id": "slow-invoice-payments"
+   }
+  ],
+  "critiques": [
+   {
+    "tool_id": "housecall-pro",
+    "concern": "At $149/mo it costs more than Jobber, which covers the same quoting and invoicing pains. AI add-ons are extra, so the sticker price understates the real bill.",
+    "severity": "high",
+    "suggestion": "Drop Housecall Pro unless you specifically need its features. Choose Jobber for quoting and invoicing rather than paying for two overlapping field-service platforms.",
+    "persona": "Budget Hawk"
+   },
+   {
+    "tool_id": "workiz",
+    "concern": "$225/mo for quoting alone is the most expensive single-purpose option, and it eats most of the $300 budget before any other tool is added.",
+    "severity": "high",
+    "suggestion": "Skip Workiz. Jobber covers quote writing at a lower price, and the same pain is handled without a separate expensive subscription.",
+    "persona": "Budget Hawk"
+   },
+   {
+    "tool_id": "jobber",
+    "concern": "Covers three pains at $119/mo, but route optimization is locked to higher tiers and the 5-hour setup is real owner time, plus confirm whether the price is per user with four techs.",
+    "severity": "medium",
+    "suggestion": "Check the seat pricing for four technicians before signing, and ask whether the starter tier is enough. Budget the setup hours into your first week.",
+    "persona": "Budget Hawk"
+   },
+   {
+    "tool_id": "goodcall",
+    "concern": "$99/mo for call handling is nearly double Rosie's typical price, with fewer customization options for an HVAC business that needs its own booking script.",
+    "severity": "medium",
+    "suggestion": "Pick Rosie at around $49/mo for missed calls, provided its starter minute caps cover your summer call volume of 15-20 missed calls a week.",
+    "persona": "Budget Hawk"
+   },
+   {
+    "tool_id": "jobber",
+    "concern": "At 5 hours of setup and a full field-service platform, the team has to learn scheduling, quoting, and invoicing together. Changing habits mid-summer is risky.",
+    "severity": "medium",
+    "suggestion": "Schedule setup for the off-season, import the existing QuickBooks customer list, and roll out quoting first before turning on invoicing.",
+    "persona": "Ease-of-Use Coach"
+   },
+   {
+    "tool_id": "housecall-pro",
+    "concern": "Setup takes about 5 hours and the owner would be learning quoting and invoicing features at the same time as four technicians adopting a mobile app.",
+    "severity": "medium",
+    "suggestion": "Start with the mobile app for technicians only, then add quoting after a few weeks. Skip the paid AI add-ons until the basics are working.",
+    "persona": "Ease-of-Use Coach"
+   },
+   {
+    "tool_id": "workiz",
+    "concern": "At $225/month with 6 hours of setup, this is the heaviest lift on the shortlist for a team that is already stretched thin.",
+    "severity": "low",
+    "suggestion": "Only consider it if Jobber or Housecall Pro can't handle quoting. Otherwise the learning cost outweighs the benefit at this size.",
+    "persona": "Ease-of-Use Coach"
+   },
+   {
+    "tool_id": "wave",
+    "concern": "Wave doesn't integrate with QuickBooks or Google Calendar, so you'd be keying invoices twice and running two separate books. That's exactly the double entry you're trying to escape.",
+    "severity": "high",
+    "suggestion": "Skip Wave. If you want a cheap invoicing option, Jobber or Housecall Pro already connect to QuickBooks and keep invoices in one place.",
+    "persona": "Integration Checker"
+   },
+   {
+    "tool_id": "rosie",
+    "concern": "Rosie links to Google Calendar, which is good, but it has no QuickBooks link, so booked jobs won't flow into your accounting without manual handling.",
+    "severity": "medium",
+    "suggestion": "Confirm that Rosie's calendar sync creates real appointments your techs see, and check whether a Zapier bridge to QuickBooks is practical before committing.",
+    "persona": "Integration Checker"
+   },
+   {
+    "tool_id": "jobber",
+    "concern": "Jobber covers three pains and connects to QuickBooks and Google Calendar, which is strong. Setup at 5 hours is significant, and you'll want to confirm the QuickBooks sync doesn't create duplicate customer or invoice records.",
+    "severity": "low",
+    "suggestion": "Plan a setup block and a test with a few real customers before migrating everything. Ask Jobber about how QuickBooks sync handles existing customers.",
+    "persona": "Integration Checker"
+   }
+  ],
+  "mesh": [
+   {
+    "persona": "Budget Hawk",
+    "key": "budget_hawk",
+    "headline": "Plenty of options here, but Jobber and Housecall Pro overlap heavily and the budget only stretches if we pick one path per pain, not all of them.",
+    "critiques": [
+     {
+      "tool_id": "housecall-pro",
+      "concern": "At $149/mo it costs more than Jobber, which covers the same quoting and invoicing pains. AI add-ons are extra, so the sticker price understates the real bill.",
+      "severity": "high",
+      "suggestion": "Drop Housecall Pro unless you specifically need its features. Choose Jobber for quoting and invoicing rather than paying for two overlapping field-service platforms.",
+      "persona": "Budget Hawk"
+     },
+     {
+      "tool_id": "workiz",
+      "concern": "$225/mo for quoting alone is the most expensive single-purpose option, and it eats most of the $300 budget before any other tool is added.",
+      "severity": "high",
+      "suggestion": "Skip Workiz. Jobber covers quote writing at a lower price, and the same pain is handled without a separate expensive subscription.",
+      "persona": "Budget Hawk"
+     },
+     {
+      "tool_id": "jobber",
+      "concern": "Covers three pains at $119/mo, but route optimization is locked to higher tiers and the 5-hour setup is real owner time, plus confirm whether the price is per user with four techs.",
+      "severity": "medium",
+      "suggestion": "Check the seat pricing for four technicians before signing, and ask whether the starter tier is enough. Budget the setup hours into your first week.",
+      "persona": "Budget Hawk"
+     },
+     {
+      "tool_id": "goodcall",
+      "concern": "$99/mo for call handling is nearly double Rosie's typical price, with fewer customization options for an HVAC business that needs its own booking script.",
+      "severity": "medium",
+      "suggestion": "Pick Rosie at around $49/mo for missed calls, provided its starter minute caps cover your summer call volume of 15-20 missed calls a week.",
+      "persona": "Budget Hawk"
+     }
+    ]
+   },
+   {
+    "persona": "Ease-of-Use Coach",
+    "key": "ease_coach",
+    "headline": "Owner comfort is solid at 4/10, so I'm less worried about learning curves than about setup time and staff buy-in during the busy summer season.",
+    "critiques": [
+     {
+      "tool_id": "jobber",
+      "concern": "At 5 hours of setup and a full field-service platform, the team has to learn scheduling, quoting, and invoicing together. Changing habits mid-summer is risky.",
+      "severity": "medium",
+      "suggestion": "Schedule setup for the off-season, import the existing QuickBooks customer list, and roll out quoting first before turning on invoicing.",
+      "persona": "Ease-of-Use Coach"
+     },
+     {
+      "tool_id": "housecall-pro",
+      "concern": "Setup takes about 5 hours and the owner would be learning quoting and invoicing features at the same time as four technicians adopting a mobile app.",
+      "severity": "medium",
+      "suggestion": "Start with the mobile app for technicians only, then add quoting after a few weeks. Skip the paid AI add-ons until the basics are working.",
+      "persona": "Ease-of-Use Coach"
+     },
+     {
+      "tool_id": "workiz",
+      "concern": "At $225/month with 6 hours of setup, this is the heaviest lift on the shortlist for a team that is already stretched thin.",
+      "severity": "low",
+      "suggestion": "Only consider it if Jobber or Housecall Pro can't handle quoting. Otherwise the learning cost outweighs the benefit at this size.",
+      "persona": "Ease-of-Use Coach"
+     }
+    ]
+   },
+   {
+    "persona": "Integration Checker",
+    "key": "integration_checker",
+    "headline": "Good news: most shortlisted tools play nicely with QuickBooks and Google Calendar, but watch for duplicate entry if you pick Wave or Rosie alongside your existing stack.",
+    "critiques": [
+     {
+      "tool_id": "wave",
+      "concern": "Wave doesn't integrate with QuickBooks or Google Calendar, so you'd be keying invoices twice and running two separate books. That's exactly the double entry you're trying to escape.",
+      "severity": "high",
+      "suggestion": "Skip Wave. If you want a cheap invoicing option, Jobber or Housecall Pro already connect to QuickBooks and keep invoices in one place.",
+      "persona": "Integration Checker"
+     },
+     {
+      "tool_id": "rosie",
+      "concern": "Rosie links to Google Calendar, which is good, but it has no QuickBooks link, so booked jobs won't flow into your accounting without manual handling.",
+      "severity": "medium",
+      "suggestion": "Confirm that Rosie's calendar sync creates real appointments your techs see, and check whether a Zapier bridge to QuickBooks is practical before committing.",
+      "persona": "Integration Checker"
+     },
+     {
+      "tool_id": "jobber",
+      "concern": "Jobber covers three pains and connects to QuickBooks and Google Calendar, which is strong. Setup at 5 hours is significant, and you'll want to confirm the QuickBooks sync doesn't create duplicate customer or invoice records.",
+      "severity": "low",
+      "suggestion": "Plan a setup block and a test with a few real customers before migrating everything. Ask Jobber about how QuickBooks sync handles existing customers.",
+      "persona": "Integration Checker"
+     }
+    ]
+   }
+  ],
+  "scored": [
+   {
+    "tool_id": "rosie",
+    "pain_id": "missed-calls",
+    "monthly_cost": 49.0,
+    "hours_saved_per_month": 1.3,
+    "time_value_monthly": 65,
+    "revenue_recovered_monthly": 2700,
+    "monthly_value": 2765,
+    "net_monthly": 2716,
+    "setup_cost": 25,
+    "payback_days": 0.8,
+    "roi_multiple": 56.4,
+    "fit_score": 95,
+    "fit_breakdown": {
+     "value": 40,
+     "budget": 20,
+     "ease": 20,
+     "integration": 10,
+     "advisor_concerns": 5
+    },
+    "why_fit": "Rosie is a low-cost AI answering service trained on the company's website that answers calls around the clock and texts call summaries, directly covering the missed calls while techs are on jobs at about $49/month within the $300 budget.",
+    "estimate_reasoning": "Covers the core missed-call problem by answering every call and texting summaries; the owner still must call back booked leads and the summer volume may exceed the starter plan's minute caps, so I estimate it recovers about 60% of the at-risk repair revenue and removes most of the 0.5 hr/week callback time. Setup is 0.5 hours and tech comfort minimum is 1, well within CoolAir's comfort level of 4 and it integrates with Google Calendar which they already use.",
+    "pct_time_saved": 0.6,
+    "pct_revenue_recovered": 0.6
+   },
+   {
+    "tool_id": "goodcall",
+    "pain_id": "missed-calls",
+    "monthly_cost": 99.0,
+    "hours_saved_per_month": 1.2,
+    "time_value_monthly": 60,
+    "revenue_recovered_monthly": 2475,
+    "monthly_value": 2535,
+    "net_monthly": 2436,
+    "setup_cost": 50,
+    "payback_days": 1.8,
+    "roi_multiple": 25.6,
+    "fit_score": 95,
+    "fit_breakdown": {
+     "value": 40,
+     "budget": 20,
+     "ease": 20,
+     "integration": 10,
+     "advisor_concerns": 5
+    },
+    "why_fit": "Goodcall's AI phone agent answers FAQs, captures leads and texts summaries 24/7 at $99/month with integration to Google Calendar, which the owner already uses, fitting the budget with room to spare.",
+    "estimate_reasoning": "Lead capture and text summaries cover most missed-call scenarios, but it is less capable at booking directly into the calendar than premium options, so I estimate about 55% of the at-risk revenue is recovered and roughly half the callback time is eliminated. Setup takes about 1 hour and the tech comfort minimum is 1.",
+    "pct_time_saved": 0.55,
+    "pct_revenue_recovered": 0.55
+   },
+   {
+    "tool_id": "jobber",
+    "pain_id": "missed-calls",
+    "monthly_cost": 119.0,
+    "hours_saved_per_month": 1.1,
+    "time_value_monthly": 54,
+    "revenue_recovered_monthly": 2025,
+    "monthly_value": 2079,
+    "net_monthly": 1960,
+    "setup_cost": 250,
+    "payback_days": 5.3,
+    "roi_multiple": 17.5,
+    "fit_score": 90,
+    "fit_breakdown": {
+     "value": 40,
+     "budget": 20,
+     "ease": 20,
+     "integration": 10,
+     "advisor_concerns": 0
+    },
+    "why_fit": "Jobber combines quoting, scheduling, dispatch and invoicing with an AI Receptionist add-on and Copilot drafting quotes, and it integrates with QuickBooks and Google Calendar, addressing the slow paper invoices and manual quoting as well as missed calls.",
+    "estimate_reasoning": "Jobber's broader workflow reduces quoting and invoicing time beyond the call problem, but at $119/month plus the AI Receptionist add-on it is tighter on budget and needs about 5 setup hours with tech comfort 2; I estimate roughly half the time is saved and about 45% of at-risk revenue is recovered because the call answering depends on the add-on.",
+    "pct_time_saved": 0.5,
+    "pct_revenue_recovered": 0.45
+   },
+   {
+    "tool_id": "jobber",
+    "pain_id": "quote-writing",
+    "monthly_cost": 119.0,
+    "hours_saved_per_month": 15.6,
+    "time_value_monthly": 779,
+    "revenue_recovered_monthly": 0,
+    "monthly_value": 779,
+    "net_monthly": 660,
+    "setup_cost": 250,
+    "payback_days": 14.2,
+    "roi_multiple": 6.5,
+    "fit_score": 90,
+    "fit_breakdown": {
+     "value": 40,
+     "budget": 20,
+     "ease": 20,
+     "integration": 10,
+     "advisor_concerns": 0
+    },
+    "why_fit": "Jobber's AI-written quotes and Copilot drafting directly target the hand-typed quote bottleneck, and it integrates with the QuickBooks and Google Calendar the owner already uses, at a typical $119/month within the $300 budget.",
+    "estimate_reasoning": "Quote drafting and typing is most of the 6 weekly hours; AI-generated quotes plus templated line items should cut that by roughly 60%. Faster quotes also win some jobs that would otherwise go to competitors, but revenue at risk is $0 so the recovery estimate is conservative.",
+    "pct_time_saved": 0.6,
+    "pct_revenue_recovered": 0.1
+   },
+   {
+    "tool_id": "housecall-pro",
+    "pain_id": "quote-writing",
+    "monthly_cost": 149.0,
+    "hours_saved_per_month": 13.0,
+    "time_value_monthly": 650,
+    "revenue_recovered_monthly": 0,
+    "monthly_value": 650,
+    "net_monthly": 501,
+    "setup_cost": 250,
+    "payback_days": 18.4,
+    "roi_multiple": 4.4,
+    "fit_score": 84,
+    "fit_breakdown": {
+     "value": 34,
+     "budget": 20,
+     "ease": 20,
+     "integration": 10,
+     "advisor_concerns": 0
+    },
+    "why_fit": "Housecall Pro offers AI-generated estimates and integrates with QuickBooks and Google Calendar, giving a quoting workflow comparable to Jobber at a typical $149/month, which fits the budget with room for basic add-ons.",
+    "estimate_reasoning": "AI-generated estimates reduce the drafting time, though the lack of a specific quote-writing feature in the catalog description and the extra cost of AI add-ons make the time savings slightly lower than Jobber's, around 50%.",
+    "pct_time_saved": 0.5,
+    "pct_revenue_recovered": 0.1
+   },
+   {
+    "tool_id": "workiz",
+    "pain_id": "quote-writing",
+    "monthly_cost": 225.0,
+    "hours_saved_per_month": 10.4,
+    "time_value_monthly": 520,
+    "revenue_recovered_monthly": 0,
+    "monthly_value": 520,
+    "net_monthly": 295,
+    "setup_cost": 300,
+    "payback_days": 30.3,
+    "roi_multiple": 2.3,
+    "fit_score": 53,
+    "fit_breakdown": {
+     "value": 13,
+     "budget": 10,
+     "ease": 20,
+     "integration": 10,
+     "advisor_concerns": 0
+    },
+    "why_fit": "Workiz covers quoting alongside dispatch and invoicing for HVAC and integrates with QuickBooks and Google Calendar, but its typical $225/month price consumes most of the $300 budget.",
+    "estimate_reasoning": "Workiz lists quoting as a solved pain but its catalog entry does not name AI-written quotes, so the time savings are estimated lower at about 40%, and the higher price weakens the value case for this single pain.",
+    "pct_time_saved": 0.4,
+    "pct_revenue_recovered": 0.05
+   },
+   {
+    "tool_id": "wave",
+    "pain_id": "slow-invoice-payments",
+    "monthly_cost": 16.0,
+    "hours_saved_per_month": 3.2,
+    "time_value_monthly": 81,
+    "revenue_recovered_monthly": 0,
+    "monthly_value": 81,
+    "net_monthly": 65,
+    "setup_cost": 50,
+    "payback_days": 24.4,
+    "roi_multiple": 5.1,
+    "fit_score": 58,
+    "fit_breakdown": {
+     "value": 13,
+     "budget": 20,
+     "ease": 20,
+     "integration": 5,
+     "advisor_concerns": 0
+    },
+    "why_fit": "Wave's free invoicing and invoice automation replace paper invoices at no cost, and it integrates with PayPal and Stripe so customers can pay online, though its QuickBooks overlap means the owner may not need it alongside existing tools.",
+    "estimate_reasoning": "Digitizing invoices and automating sends removes roughly half of the ~1.5 hrs/week of paper invoicing and chasing; revenue at risk is $0 so no revenue recovery is claimed.",
+    "pct_time_saved": 0.5,
+    "pct_revenue_recovered": 0.0
+   },
+   {
+    "tool_id": "jobber",
+    "pain_id": "slow-invoice-payments",
+    "monthly_cost": 119.0,
+    "hours_saved_per_month": 3.9,
+    "time_value_monthly": 97,
+    "revenue_recovered_monthly": 0,
+    "monthly_value": 97,
+    "net_monthly": -22,
+    "setup_cost": 125,
+    "payback_days": 75.5,
+    "roi_multiple": 0.8,
+    "fit_score": 50,
+    "fit_breakdown": {
+     "value": 0,
+     "budget": 20,
+     "ease": 20,
+     "integration": 10,
+     "advisor_concerns": 0
+    },
+    "why_fit": "Jobber's invoicing and payments module, paired with its Copilot AI for drafting messages and its QuickBooks integration, fits a 4-tech HVAC company already on QuickBooks and comfortable with tech (comfort 4), though it is over the $300 budget at typical pricing only if the full suite is needed.",
+    "estimate_reasoning": "Automated invoicing, AI-written payment reminders and QuickBooks sync should remove around 0.6 of the invoicing/chasing hours; no revenue recovery is claimed since revenue at risk is $0.",
+    "pct_time_saved": 0.6,
+    "pct_revenue_recovered": 0.0
+   },
+   {
+    "tool_id": "housecall-pro",
+    "pain_id": "slow-invoice-payments",
+    "monthly_cost": 149.0,
+    "hours_saved_per_month": 3.2,
+    "time_value_monthly": 81,
+    "revenue_recovered_monthly": 0,
+    "monthly_value": 81,
+    "net_monthly": -68,
+    "setup_cost": 125,
+    "payback_days": 101.5,
+    "roi_multiple": 0.5,
+    "fit_score": 50,
+    "fit_breakdown": {
+     "value": 0,
+     "budget": 20,
+     "ease": 20,
+     "integration": 10,
+     "advisor_concerns": 0
+    },
+    "why_fit": "Housecall Pro's integration with QuickBooks and its automated review requests and invoicing features support faster digital billing, but its AI add-ons cost extra and push it near the budget ceiling.",
+    "estimate_reasoning": "Digital invoicing and QuickBooks sync remove about half of the manual invoicing time; the add-on cost makes it a weaker value than Wave or Jobber for this single pain.",
+    "pct_time_saved": 0.5,
+    "pct_revenue_recovered": 0.0
+   }
+  ],
+  "stack": {
+   "tool_ids": [
+    "rosie",
+    "jobber"
+   ],
+   "monthly_cost": 168,
+   "monthly_value": 3641,
+   "net_monthly": 3473,
+   "hours_saved_per_month": 20.8,
+   "within_budget": true,
+   "budget": 300.0,
+   "picks": {
+    "missed-calls": "rosie",
+    "quote-writing": "jobber",
+    "slow-invoice-payments": "jobber"
+   }
+  },
+  "verdicts": {
+   "summary": "This stack answers every call while you're on a job and speeds up quotes and invoices, so you win more work and get paid faster. It costs $168 a month, well under your $300 budget, and is estimated to return about $3,473 a month after costs.",
+   "by_tool": {
+    "rosie": "Rosie pays back its $25 setup in under a day and is estimated to recover about $2,700 a month in calls you'd otherwise miss. The main caveat is that it doesn't connect to QuickBooks, so check that its calendar bookings show up for your techs and see if a simple bridge is practical.",
+    "jobber": "Jobber pays back its $250 setup in about 14 days and is estimated to save you around 15 hours a month on quotes and invoices. The main caveat is the 5-hour setup, so plan it for a slower period, check the price for four technicians, and roll out quoting before invoicing."
+   }
+  },
+  "approved_tool_ids": [
+   "rosie",
+   "jobber"
+  ],
+  "plan": {
+   "first_step_today": "Sign up for Rosie AI Answering at heyrosie.com and spend 15 minutes entering your business hours, service area, and the 5 questions you want asked of every caller (name, address, problem, system age, best callback number).",
+   "weeks": [
+    {
+     "week": 1,
+     "theme": "Stop missing calls with Rosie (fastest payback)",
+     "tasks": [
+      {
+       "tool_id": "rosie",
+       "text": "Create your Rosie account and enter business hours, service area, pricing guidance, and emergency vs. routine rules for no-cooling calls",
+       "owner": "Owner",
+       "minutes": 30
+      },
+      {
+       "tool_id": "rosie",
+       "text": "Make 3 test calls from your cell to check greeting, questions asked, and how the text/email summary reaches you",
+       "owner": "Owner",
+       "minutes": 15
+      },
+      {
+       "tool_id": "rosie",
+       "text": "Forward your business line to Rosie after 3 rings and when you are on a job, and tell techs to send overflow calls there too",
+       "owner": "Owner",
+       "minutes": 10
+      },
+      {
+       "tool_id": "rosie",
+       "text": "Review each day's call summaries and return urgent callbacks in one 10-minute batch at lunch",
+       "owner": "Owner",
+       "minutes": 50
+      }
+     ]
+    },
+    {
+     "week": 2,
+     "theme": "Tune Rosie and start Jobber setup",
+     "tasks": [
+      {
+       "tool_id": "rosie",
+       "text": "Read all of last week's call transcripts and fix any wrong answers or missing questions in Rosie's settings",
+       "owner": "Owner",
+       "minutes": 20
+      },
+      {
+       "tool_id": "jobber",
+       "text": "Start a Jobber trial, enter company info, and import your customer list from QuickBooks (export CSV)",
+       "owner": "Owner",
+       "minutes": 60
+      },
+      {
+       "tool_id": "jobber",
+       "text": "Build your 10 most common services (tune-up, capacitor swap, refrigerant recharge, etc.) with prices as saved line items",
+       "owner": "Owner",
+       "minutes": 60
+      },
+      {
+       "tool_id": "jobber",
+       "text": "Connect Google Calendar and add each technician as a Jobber user",
+       "owner": "Manager",
+       "minutes": 30
+      }
+     ]
+    },
+    {
+     "week": 3,
+     "theme": "Quotes and invoices in Jobber",
+     "tasks": [
+      {
+       "tool_id": "jobber",
+       "text": "Write every new quote in Jobber from your phone or laptop using saved line items instead of paper, and send by text/email",
+       "owner": "Owner",
+       "minutes": 60
+      },
+      {
+       "tool_id": "jobber",
+       "text": "Turn on online card/ACH payments and automatic invoice reminders at 3 and 7 days overdue",
+       "owner": "Owner",
+       "minutes": 20
+      },
+      {
+       "tool_id": "jobber",
+       "text": "Show techs how to mark jobs complete in Jobber so the invoice is sent from the driveway the same day",
+       "owner": "Manager",
+       "minutes": 45
+      },
+      {
+       "tool_id": "jobber",
+       "text": "Connect Jobber to QuickBooks so invoices and payments sync, and confirm one test invoice appears",
+       "owner": "Owner",
+       "minutes": 30
+      }
+     ]
+    },
+    {
+     "week": 4,
+     "theme": "Measure results and adjust",
+     "tasks": [
+      {
+       "tool_id": null,
+       "text": "Count Rosie calls answered, bookings made, and callbacks needed over the 30 days and compare to the 15-20 missed calls/week baseline",
+       "owner": "Owner",
+       "minutes": 30
+      },
+      {
+       "tool_id": "jobber",
+       "text": "Track time spent on quotes this week versus the old 6 hours and note which quote types are still slow",
+       "owner": "Owner",
+       "minutes": 20
+      },
+      {
+       "tool_id": "jobber",
+       "text": "Pull a report of invoices sent, paid, and overdue, and compare average days to payment against your old paper invoices",
+       "owner": "Front staff",
+       "minutes": 30
+      },
+      {
+       "tool_id": null,
+       "text": "Decide which tool to keep, what to adjust, and whether to expand (e.g., Jobber quote follow-ups) based on the numbers",
+       "owner": "Owner",
+       "minutes": 30
+      }
+     ]
+    }
+   ],
+   "success_metrics": [
+    {
+     "metric": "Calls answered by Rosie instead of going to voicemail per week",
+     "target": "90%+ of incoming calls answered; missed calls under 3/week"
+    },
+    {
+     "metric": "Owner hours spent writing quotes per week",
+     "target": "Down from 6 to 2 or fewer"
+    },
+    {
+     "metric": "Invoices sent same day as job completion",
+     "target": "80% or more"
+    },
+    {
+     "metric": "Average days for customers to pay an invoice",
+     "target": "Reduced by at least 5 days versus current"
+    }
+   ]
+  }
+ }
+}

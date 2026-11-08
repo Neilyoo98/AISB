@@ -1,0 +1,1713 @@
+{
+ "persona_id": "greenleaf",
+ "events": [
+  {
+   "seq": 0,
+   "t": 0,
+   "type": "run.start",
+   "agent": null,
+   "data": {
+    "mode": "live"
+   }
+  },
+  {
+   "seq": 1,
+   "t": 0,
+   "type": "agent.start",
+   "agent": "intake",
+   "data": {
+    "label": "Reading the owner's story"
+   }
+  },
+  {
+   "seq": 2,
+   "t": 0,
+   "type": "intake.done",
+   "agent": "intake",
+   "data": {
+    "profile": {
+     "business_name": "GreenLeaf Landscaping",
+     "vertical": "landscaping",
+     "location": null,
+     "employees": 9,
+     "monthly_budget": 200.0,
+     "tech_comfort": 2,
+     "current_tools": [
+      "spreadsheet",
+      "text-messaging"
+     ],
+     "summary": "Owner-operated landscaping company with a seasonal crew of 8 (March to November) that struggles with slow quote turnaround during spring demand and inefficient daily crew routing, and is paid mostly by check."
+    },
+    "raw_pains": [
+     {
+      "title": "Slow quote turnaround causes lost jobs",
+      "tag": "quoting",
+      "owner_quote": "I lose jobs because I'm too slow to respond, probably 5-6 jobs a month at around $1,200 each"
+     },
+     {
+      "title": "Driving to every property to measure by hand",
+      "tag": "quoting",
+      "owner_quote": "I drive out to every property to measure, then write the estimate by hand"
+     },
+     {
+      "title": "Inefficient daily crew routing",
+      "tag": "dispatch_routing",
+      "owner_quote": "Routing the crew each morning is a mess, they waste time driving back and forth"
+     },
+     {
+      "title": "Getting paid by check",
+      "tag": "invoicing_payments",
+      "owner_quote": "We get paid by check mostly"
+     }
+    ],
+    "facts": [
+     {
+      "subject": "business",
+      "predicate": "is",
+      "object": "landscaping company with a seasonal crew of 8",
+      "category": "identity",
+      "confidence": 0.95
+     },
+     {
+      "subject": "business",
+      "predicate": "operates",
+      "object": "March to November seasonal schedule",
+      "category": "operations",
+      "confidence": 0.9
+     },
+     {
+      "subject": "business",
+      "predicate": "uses",
+      "object": "spreadsheet and text messaging only",
+      "category": "current_tools",
+      "confidence": 0.95
+     },
+     {
+      "subject": "owner",
+      "predicate": "has",
+      "object": "monthly software budget of $200",
+      "category": "budget",
+      "confidence": 0.9
+     },
+     {
+      "subject": "owner",
+      "predicate": "has",
+      "object": "low tech comfort and prefers simple tools",
+      "category": "tech_comfort",
+      "confidence": 0.9
+     },
+     {
+      "subject": "business",
+      "predicate": "loses",
+      "object": "5-6 jobs per month at about $1,200 each during spring quote surge",
+      "category": "pain",
+      "confidence": 0.85
+     },
+     {
+      "subject": "business",
+      "predicate": "receives",
+      "object": "payments mostly by check",
+      "category": "operations",
+      "confidence": 0.9
+     },
+     {
+      "subject": "business",
+      "predicate": "struggles with",
+      "object": "daily crew routing inefficiency",
+      "category": "pain",
+      "confidence": 0.85
+     },
+     {
+      "subject": "business",
+      "predicate": "goal",
+      "object": "respond to quote requests faster and win more jobs",
+      "category": "goal",
+      "confidence": 0.85
+     }
+    ]
+   }
+  },
+  {
+   "seq": 3,
+   "t": 0,
+   "type": "agent.start",
+   "agent": "memory",
+   "data": {
+    "label": "Checking the Business Constitution"
+   }
+  },
+  {
+   "seq": 4,
+   "t": 0,
+   "type": "memory.recalled",
+   "agent": "memory",
+   "data": {
+    "prior_facts": 0,
+    "own_episodes": [],
+    "similar_businesses": []
+   }
+  },
+  {
+   "seq": 5,
+   "t": 15,
+   "type": "agent.start",
+   "agent": "diagnoser",
+   "data": {
+    "label": "Putting a dollar figure on each pain"
+   }
+  },
+  {
+   "seq": 6,
+   "t": 15,
+   "type": "pain.ranked",
+   "agent": "diagnoser",
+   "data": {
+    "pains": [
+     {
+      "id": "slow-quote-turnaround",
+      "title": "Slow quote turnaround causes lost jobs",
+      "tag": "quoting",
+      "hours_per_week": 6.0,
+      "hourly_cost": 50.0,
+      "revenue_at_risk_monthly": 6000.0,
+      "impact_explanation": "About 5-6 jobs a month are lost to slow response at roughly $1,200 each, so about $6,000/mo in revenue at risk. Owner time spent driving out and hand-writing estimates adds roughly 6 hrs/wk x $50/hr = about $1,300/mo in time cost.",
+      "evidence_quote": "I lose jobs because I'm too slow to respond, probably 5-6 jobs a month at around $1,200 each",
+      "monthly_cost_of_pain": 7299
+     },
+     {
+      "id": "inefficient-crew-routing",
+      "title": "Inefficient daily crew routing",
+      "tag": "dispatch_routing",
+      "hours_per_week": 4.0,
+      "hourly_cost": 22.0,
+      "revenue_at_risk_monthly": 0.0,
+      "impact_explanation": "Crew wasting about 1 hr/day of driving back and forth across 8 workers is roughly 4 crew-hours per week of extra wages, about 9 crew-hours... conservatively 8 workers x 4 hrs/wk x $22/hr = about $700/mo in lost wages, plus fuel and fewer jobs completed per day.",
+      "evidence_quote": "Routing the crew each morning is a mess, they waste time driving back and forth",
+      "monthly_cost_of_pain": 381
+     },
+     {
+      "id": "paid-by-check",
+      "title": "Getting paid by check",
+      "tag": "invoicing_payments",
+      "hours_per_week": 2.0,
+      "hourly_cost": 50.0,
+      "revenue_at_risk_monthly": 400.0,
+      "impact_explanation": "Chasing checks and depositing them takes about 2 hrs/wk x $50/hr = about $400/mo in time. Slow or lost payments on roughly 1 job a month put about $400/mo at risk.",
+      "evidence_quote": "We get paid by check mostly",
+      "monthly_cost_of_pain": 833
+     }
+    ]
+   }
+  },
+  {
+   "seq": 7,
+   "t": 15,
+   "type": "agent.start",
+   "agent": "scout:slow-quote-turnaround",
+   "data": {
+    "label": "Scouting tools for “Slow quote turnaround causes lost jobs”",
+    "pain_id": "slow-quote-turnaround"
+   }
+  },
+  {
+   "seq": 8,
+   "t": 15,
+   "type": "agent.start",
+   "agent": "scout:inefficient-crew-routing",
+   "data": {
+    "label": "Scouting tools for “Inefficient daily crew routing”",
+    "pain_id": "inefficient-crew-routing"
+   }
+  },
+  {
+   "seq": 9,
+   "t": 30,
+   "type": "agent.start",
+   "agent": "scout:paid-by-check",
+   "data": {
+    "label": "Scouting tools for “Getting paid by check”",
+    "pain_id": "paid-by-check"
+   }
+  },
+  {
+   "seq": 10,
+   "t": 30,
+   "type": "scout.result",
+   "agent": "scout:inefficient-crew-routing",
+   "data": {
+    "pain_id": "inefficient-crew-routing",
+    "searched": [
+     "lmn",
+     "jobber",
+     "yardbook",
+     "housecall-pro"
+    ],
+    "picks": [
+     {
+      "tool_id": "yardbook",
+      "why_fit": "Yardbook's free tier includes route planning and recurring job scheduling, directly addressing the back-and-forth crew driving, and it fits the $200/mo budget at $0 with a low tech_comfort requirement of 1.",
+      "pct_time_saved": 0.5,
+      "pct_revenue_recovered": 0.0,
+      "estimate_reasoning": "Route planning typically cuts unnecessary driving substantially, but the dated interface and light AI features limit how much of the routing waste it can eliminate, so I estimate about half of the 4 weekly hours of routing pain are removed.",
+      "pain_id": "inefficient-crew-routing"
+     },
+     {
+      "tool_id": "jobber",
+      "why_fit": "Jobber includes route optimization (on higher tiers) plus dispatch and scheduling, and its tech_comfort_min of 2 matches the owner's level, though the route optimization requires a higher-priced plan that may strain the $200 budget.",
+      "pct_time_saved": 0.6,
+      "pct_revenue_recovered": 0.0,
+      "estimate_reasoning": "Automated route optimization combined with dispatch can remove a large share of daily driving inefficiency, but the cons note that optimization is limited to higher tiers, so I estimate a moderately high reduction of 0.6 of the routing hours.",
+      "pain_id": "inefficient-crew-routing"
+     },
+     {
+      "tool_id": "lmn",
+      "why_fit": "LMN offers landscape-specific crew time tracking and scheduling with a free tier, which can show where crew hours are lost each day, but its tech_comfort_min of 3 exceeds the owner's comfort level of 2, which is a real adoption risk.",
+      "pct_time_saved": 0.4,
+      "pct_revenue_recovered": 0.0,
+      "estimate_reasoning": "Crew time tracking and scheduling help reduce wasted hours by improving daily planning, but the higher tech requirement and learning curve make realistic savings lower, around 0.4 of the routing pain.",
+      "pain_id": "inefficient-crew-routing"
+     }
+    ]
+   }
+  },
+  {
+   "seq": 11,
+   "t": 46,
+   "type": "scout.result",
+   "agent": "scout:paid-by-check",
+   "data": {
+    "pain_id": "paid-by-check",
+    "searched": [
+     "jobber",
+     "wave",
+     "quickbooks",
+     "yardbook",
+     "housecall-pro"
+    ],
+    "picks": [
+     {
+      "tool_id": "yardbook",
+      "why_fit": "Yardbook is built specifically for landscaping and includes online invoicing and route planning, so checks can be replaced by payable invoices within a free plan that fits the $200/mo budget and the owner's low tech comfort.",
+      "pct_time_saved": 0.4,
+      "pct_revenue_recovered": 0.4,
+      "estimate_reasoning": "Online invoicing and automated scheduling remove a meaningful share of manual check chasing and deposit trips, but the dated interface and light AI features limit how much of the 2 hrs/wk is eliminated, so a 40% time reduction is a realistic estimate. Recovering about 40% of the $400/mo at risk assumes faster digital payment reduces some late or lost payments on the roughly one job per month that gets delayed.",
+      "pain_id": "paid-by-check"
+     },
+     {
+      "tool_id": "wave",
+      "why_fit": "Wave is free for invoicing with invoice automation and integrates with PayPal and Stripe, letting the owner send invoices that customers can pay electronically instead of by mailed check.",
+      "pct_time_saved": 0.35,
+      "pct_revenue_recovered": 0.35,
+      "estimate_reasoning": "Wave's invoice automation and card/PayPal payment links cut the back-and-forth of collecting checks, though it does not dispatch or route jobs and has fewer integrations, so the time reduction is moderate. The revenue recovery is somewhat lower than Yardbook's because Wave addresses payment collection without job-level scheduling that prevents slow invoicing.",
+      "pain_id": "paid-by-check"
+     },
+     {
+      "tool_id": "jobber",
+      "why_fit": "Jobber covers quoting, invoicing and payments in one platform for landscaping, and its AI-written messages can prompt customers to pay online, which fits the budget at roughly $119/mo but exceeds the owner's typical tooling.",
+      "pct_time_saved": 0.55,
+      "pct_revenue_recovered": 0.5,
+      "estimate_reasoning": "Jobber's combined invoicing, customer follow-up and AI-drafted messages address the check chase directly and also reduce admin across the 9-person team, giving a higher time reduction than the free options. Its reminder and payment features plausibly recover half the revenue at risk, though the $119 price consumes most of the $200 budget and its setup effort may challenge the owner's tech comfort of 2.",
+      "pain_id": "paid-by-check"
+     }
+    ]
+   }
+  },
+  {
+   "seq": 12,
+   "t": 46,
+   "type": "scout.result",
+   "agent": "scout:slow-quote-turnaround",
+   "data": {
+    "pain_id": "slow-quote-turnaround",
+    "searched": [
+     "jobber",
+     "yardbook",
+     "lmn",
+     "housecall-pro"
+    ],
+    "picks": [
+     {
+      "tool_id": "jobber",
+      "why_fit": "Jobber Copilot drafts quotes and replies with AI-written quotes and messages, and its quoting module fits a landscaper's estimate workflow, at a $119/mo typical price within the $200 budget and a tech_comfort_min of 2 that matches the owner.",
+      "pct_time_saved": 0.55,
+      "pct_revenue_recovered": 0.6,
+      "estimate_reasoning": "AI-written quotes and messages can cut most of the hand-writing and driving-out overhead on the 6 hrs/wk pain, and faster quote delivery should recover most of the 5-6 lost jobs a month, since the response lag is the core driver. Estimated at roughly half to 60% given the owner still needs to review quotes and site visits remain manual.",
+      "pain_id": "slow-quote-turnaround"
+     },
+     {
+      "tool_id": "yardbook",
+      "why_fit": "Yardbook is a free landscaping-specific tool offering estimates and routing with a tech_comfort_min of 1, so it fits the $200 budget and owner's comfort level at $0/mo.",
+      "pct_time_saved": 0.35,
+      "pct_revenue_recovered": 0.4,
+      "estimate_reasoning": "Built-in estimates and recurring scheduling reduce paperwork time, but it has light AI features and a dated interface, so it removes less of the quoting delay than Jobber. A free option with a moderate impact on both time and lost jobs.",
+      "pain_id": "slow-quote-turnaround"
+     },
+     {
+      "tool_id": "housecall-pro",
+      "why_fit": "Housecall Pro provides AI-generated estimates and an AI CSR/voice agent for missed calls, which addresses slow response directly, at a $149/mo typical price that stays within the $200 budget.",
+      "pct_time_saved": 0.45,
+      "pct_revenue_recovered": 0.5,
+      "estimate_reasoning": "AI-generated estimates speed up quote creation and the voice agent can answer calls immediately, which targets lost jobs, but AI add-ons carry extra cost that could push it past budget, and it is less landscaping-specific than alternatives, so the estimate is moderate.",
+      "pain_id": "slow-quote-turnaround"
+     }
+    ]
+   }
+  },
+  {
+   "seq": 13,
+   "t": 61,
+   "type": "mesh.start",
+   "agent": "mesh",
+   "data": {
+    "personas": [
+     "Budget Hawk",
+     "Ease-of-Use Coach",
+     "Integration Checker"
+    ],
+    "shortlist": [
+     "jobber",
+     "yardbook",
+     "housecall-pro",
+     "lmn",
+     "wave"
+    ]
+   }
+  },
+  {
+   "seq": 14,
+   "t": 61,
+   "type": "mesh.message",
+   "agent": "mesh:budget_hawk",
+   "data": {
+    "persona": "Budget Hawk",
+    "key": "budget_hawk",
+    "headline": "Budget is $200/mo, so Jobber at $119 plus extras is tight, and Housecall Pro at $149 only fits if nothing else gets added; Yardbook is the cheapest path if the owner can live with its interface.",
+    "critiques": [
+     {
+      "tool_id": "housecall-pro",
+      "concern": "At $149/mo it covers only the quoting pain, and the AI add-ons cost extra. That could push the total past the $200 budget before any routing or payment tools are added.",
+      "severity": "high",
+      "suggestion": "Veto as the main pick unless the add-on costs are confirmed and fit under budget. Choose it only for quoting alone.",
+      "persona": "Budget Hawk"
+     },
+     {
+      "tool_id": "jobber",
+      "concern": "Typical price is $119/mo, and route optimization only works on higher tiers. The routing pain may not be solved at the price you can afford, and per-user pricing could raise the cost for 9 workers.",
+      "severity": "medium",
+      "suggestion": "Ask for the exact per-user price and confirm which tier includes routing. Negotiate or drop the routing feature if it pushes you over $200.",
+      "persona": "Budget Hawk"
+     },
+     {
+      "tool_id": "yardbook",
+      "concern": "Free at $0 and covers all three pains, but the dated interface and light AI could be hard for a tech comfort level of 2 to adopt. Low cost does not mean low setup time.",
+      "severity": "low",
+      "suggestion": "Good budget fit. Run a free trial with the crew before committing and check that the free tier includes what you need.",
+      "persona": "Budget Hawk"
+     },
+     {
+      "tool_id": "lmn",
+      "concern": "At $97/mo for routing alone, it is expensive for one pain and has a learning curve that needs tech comfort of 3, above your current 2.",
+      "severity": "high",
+      "suggestion": "Veto. Routing gains don't justify the price or the training burden when Yardbook or Jobber cover routing too.",
+      "persona": "Budget Hawk"
+     }
+    ]
+   }
+  },
+  {
+   "seq": 15,
+   "t": 61,
+   "type": "mesh.message",
+   "agent": "mesh:ease_coach",
+   "data": {
+    "persona": "Ease-of-Use Coach",
+    "key": "ease_coach",
+    "headline": "Owner comfort is a 2 out of 5 and the crew is seasonal, so anything with a steep setup or a 3+ learning curve will likely be abandoned before spring.",
+    "critiques": [
+     {
+      "tool_id": "lmn",
+      "concern": "Requires tech comfort 3 and 6 setup hours, well above the owner's level of 2. Crew routing alone would be a heavy lift for a seasonal team that rotates in and out.",
+      "severity": "high",
+      "suggestion": "Veto LMN for this owner. Choose Yardbook or Jobber for routing so setup stays within a manageable window.",
+      "persona": "Ease-of-Use Coach"
+     },
+     {
+      "tool_id": "jobber",
+      "concern": "Five setup hours at comfort level 2 is feasible but tight, and route optimization is locked behind higher tiers that may exceed the $200 budget.",
+      "severity": "medium",
+      "suggestion": "Have someone help configure it once, limit the rollout to quoting and invoicing first, and confirm which tier includes routing before committing.",
+      "persona": "Ease-of-Use Coach"
+     },
+     {
+      "tool_id": "yardbook",
+      "concern": "Free and only 3 setup hours with comfort min 1 fits well, but the dated interface and light AI could make quoting feel slow to a hands-on owner.",
+      "severity": "low",
+      "suggestion": "Good fit for ease. Run a quick test quote with the owner before the spring rush to confirm the interface feels workable.",
+      "persona": "Ease-of-Use Coach"
+     }
+    ]
+   }
+  },
+  {
+   "seq": 16,
+   "t": 61,
+   "type": "mesh.message",
+   "agent": "mesh:integration_checker",
+   "data": {
+    "persona": "Integration Checker",
+    "key": "integration_checker",
+    "headline": "Good news: you already live in a spreadsheet and text messages, so none of these tools should force you to retype data, but most of them want QuickBooks, which you don't use yet.",
+    "critiques": [
+     {
+      "tool_id": "jobber",
+      "concern": "Jobber covers all three pains, which is convenient, but it only integrates with QuickBooks, Google Calendar, Mailchimp and NiceJob. Your spreadsheet and texting aren't on the list, so you'll be re-entering client and job data by hand at first.",
+      "severity": "medium",
+      "suggestion": "Import your client list from the spreadsheet once at setup, and confirm whether Jobber's text tools replace your current texting before you switch.",
+      "persona": "Integration Checker"
+     },
+     {
+      "tool_id": "housecall-pro",
+      "concern": "Housecall Pro only solves the quoting pain, yet costs about $149/mo, most of your $200 budget. It also needs QuickBooks for accounting sync, which you don't have.",
+      "severity": "medium",
+      "suggestion": "Drop it unless quoting turns out to be the only pain that matters; Jobber covers quoting plus two other pains for less.",
+      "persona": "Integration Checker"
+     },
+     {
+      "tool_id": "lmn",
+      "concern": "LMN needs tech comfort level 3, and you're at 2. It also covers only routing, and its QuickBooks link means it adds a dependency you don't have.",
+      "severity": "high",
+      "suggestion": "Veto for now. Routing is a small pain (about $381/mo) and this tool is too hard for your current skills.",
+      "persona": "Integration Checker"
+     },
+     {
+      "tool_id": "yardbook",
+      "concern": "Yardbook is free and fits your tech level, but its only accounting link is QuickBooks, and its routing and quoting features are light. Starting here may mean a second migration later.",
+      "severity": "low",
+      "suggestion": "Good free starting point if budget is tight, but confirm its routing covers 8 crew members before committing.",
+      "persona": "Integration Checker"
+     }
+    ]
+   }
+  },
+  {
+   "seq": 17,
+   "t": 61,
+   "type": "agent.start",
+   "agent": "roi",
+   "data": {
+    "label": "Computing ROI (deterministic)"
+   }
+  },
+  {
+   "seq": 18,
+   "t": 3093,
+   "type": "stack.scored",
+   "agent": "roi",
+   "data": {
+    "scored": [
+     {
+      "tool_id": "jobber",
+      "pain_id": "slow-quote-turnaround",
+      "monthly_cost": 119.0,
+      "hours_saved_per_month": 14.3,
+      "time_value_monthly": 714,
+      "revenue_recovered_monthly": 3600,
+      "monthly_value": 4314,
+      "net_monthly": 4195,
+      "setup_cost": 250,
+      "payback_days": 2.6,
+      "roi_multiple": 36.3,
+      "fit_score": 85,
+      "fit_breakdown": {
+       "value": 40,
+       "budget": 20,
+       "ease": 20,
+       "integration": 5,
+       "advisor_concerns": 0
+      },
+      "why_fit": "Jobber Copilot drafts quotes and replies with AI-written quotes and messages, and its quoting module fits a landscaper's estimate workflow, at a $119/mo typical price within the $200 budget and a tech_comfort_min of 2 that matches the owner.",
+      "estimate_reasoning": "AI-written quotes and messages can cut most of the hand-writing and driving-out overhead on the 6 hrs/wk pain, and faster quote delivery should recover most of the 5-6 lost jobs a month, since the response lag is the core driver. Estimated at roughly half to 60% given the owner still needs to review quotes and site visits remain manual.",
+      "pct_time_saved": 0.55,
+      "pct_revenue_recovered": 0.6
+     },
+     {
+      "tool_id": "yardbook",
+      "pain_id": "slow-quote-turnaround",
+      "monthly_cost": 0.0,
+      "hours_saved_per_month": 9.1,
+      "time_value_monthly": 455,
+      "revenue_recovered_monthly": 2400,
+      "monthly_value": 2855,
+      "net_monthly": 2855,
+      "setup_cost": 150,
+      "payback_days": 1.6,
+      "roi_multiple": null,
+      "fit_score": 89,
+      "fit_breakdown": {
+       "value": 40,
+       "budget": 20,
+       "ease": 20,
+       "integration": 5,
+       "advisor_concerns": 4
+      },
+      "why_fit": "Yardbook is a free landscaping-specific tool offering estimates and routing with a tech_comfort_min of 1, so it fits the $200 budget and owner's comfort level at $0/mo.",
+      "estimate_reasoning": "Built-in estimates and recurring scheduling reduce paperwork time, but it has light AI features and a dated interface, so it removes less of the quoting delay than Jobber. A free option with a moderate impact on both time and lost jobs.",
+      "pct_time_saved": 0.35,
+      "pct_revenue_recovered": 0.4
+     },
+     {
+      "tool_id": "housecall-pro",
+      "pain_id": "slow-quote-turnaround",
+      "monthly_cost": 149.0,
+      "hours_saved_per_month": 11.7,
+      "time_value_monthly": 585,
+      "revenue_recovered_monthly": 3000,
+      "monthly_value": 3585,
+      "net_monthly": 3436,
+      "setup_cost": 250,
+      "payback_days": 3.3,
+      "roi_multiple": 24.1,
+      "fit_score": 75,
+      "fit_breakdown": {
+       "value": 40,
+       "budget": 10,
+       "ease": 20,
+       "integration": 5,
+       "advisor_concerns": 0
+      },
+      "why_fit": "Housecall Pro provides AI-generated estimates and an AI CSR/voice agent for missed calls, which addresses slow response directly, at a $149/mo typical price that stays within the $200 budget.",
+      "estimate_reasoning": "AI-generated estimates speed up quote creation and the voice agent can answer calls immediately, which targets lost jobs, but AI add-ons carry extra cost that could push it past budget, and it is less landscaping-specific than alternatives, so the estimate is moderate.",
+      "pct_time_saved": 0.45,
+      "pct_revenue_recovered": 0.5
+     },
+     {
+      "tool_id": "yardbook",
+      "pain_id": "inefficient-crew-routing",
+      "monthly_cost": 0.0,
+      "hours_saved_per_month": 8.7,
+      "time_value_monthly": 191,
+      "revenue_recovered_monthly": 0,
+      "monthly_value": 191,
+      "net_monthly": 191,
+      "setup_cost": 66,
+      "payback_days": 10.4,
+      "roi_multiple": null,
+      "fit_score": 87,
+      "fit_breakdown": {
+       "value": 38,
+       "budget": 20,
+       "ease": 20,
+       "integration": 5,
+       "advisor_concerns": 4
+      },
+      "why_fit": "Yardbook's free tier includes route planning and recurring job scheduling, directly addressing the back-and-forth crew driving, and it fits the $200/mo budget at $0 with a low tech_comfort requirement of 1.",
+      "estimate_reasoning": "Route planning typically cuts unnecessary driving substantially, but the dated interface and light AI features limit how much of the routing waste it can eliminate, so I estimate about half of the 4 weekly hours of routing pain are removed.",
+      "pct_time_saved": 0.5,
+      "pct_revenue_recovered": 0.0
+     },
+     {
+      "tool_id": "jobber",
+      "pain_id": "inefficient-crew-routing",
+      "monthly_cost": 119.0,
+      "hours_saved_per_month": 10.4,
+      "time_value_monthly": 229,
+      "revenue_recovered_monthly": 0,
+      "monthly_value": 229,
+      "net_monthly": 110,
+      "setup_cost": 110,
+      "payback_days": 30.0,
+      "roi_multiple": 1.9,
+      "fit_score": 54,
+      "fit_breakdown": {
+       "value": 9,
+       "budget": 20,
+       "ease": 20,
+       "integration": 5,
+       "advisor_concerns": 0
+      },
+      "why_fit": "Jobber includes route optimization (on higher tiers) plus dispatch and scheduling, and its tech_comfort_min of 2 matches the owner's level, though the route optimization requires a higher-priced plan that may strain the $200 budget.",
+      "estimate_reasoning": "Automated route optimization combined with dispatch can remove a large share of daily driving inefficiency, but the cons note that optimization is limited to higher tiers, so I estimate a moderately high reduction of 0.6 of the routing hours.",
+      "pct_time_saved": 0.6,
+      "pct_revenue_recovered": 0.0
+     },
+     {
+      "tool_id": "lmn",
+      "pain_id": "inefficient-crew-routing",
+      "monthly_cost": 97.0,
+      "hours_saved_per_month": 6.9,
+      "time_value_monthly": 152,
+      "revenue_recovered_monthly": 0,
+      "monthly_value": 152,
+      "net_monthly": 55,
+      "setup_cost": 132,
+      "payback_days": 45.2,
+      "roi_multiple": 1.6,
+      "fit_score": 41,
+      "fit_breakdown": {
+       "value": 6,
+       "budget": 20,
+       "ease": 10,
+       "integration": 5,
+       "advisor_concerns": 0
+      },
+      "why_fit": "LMN offers landscape-specific crew time tracking and scheduling with a free tier, which can show where crew hours are lost each day, but its tech_comfort_min of 3 exceeds the owner's comfort level of 2, which is a real adoption risk.",
+      "estimate_reasoning": "Crew time tracking and scheduling help reduce wasted hours by improving daily planning, but the higher tech requirement and learning curve make realistic savings lower, around 0.4 of the routing pain.",
+      "pct_time_saved": 0.4,
+      "pct_revenue_recovered": 0.0
+     },
+     {
+      "tool_id": "yardbook",
+      "pain_id": "paid-by-check",
+      "monthly_cost": 0.0,
+      "hours_saved_per_month": 3.5,
+      "time_value_monthly": 173,
+      "revenue_recovered_monthly": 160,
+      "monthly_value": 333,
+      "net_monthly": 333,
+      "setup_cost": 150,
+      "payback_days": 13.5,
+      "roi_multiple": null,
+      "fit_score": 89,
+      "fit_breakdown": {
+       "value": 40,
+       "budget": 20,
+       "ease": 20,
+       "integration": 5,
+       "advisor_concerns": 4
+      },
+      "why_fit": "Yardbook is built specifically for landscaping and includes online invoicing and route planning, so checks can be replaced by payable invoices within a free plan that fits the $200/mo budget and the owner's low tech comfort.",
+      "estimate_reasoning": "Online invoicing and automated scheduling remove a meaningful share of manual check chasing and deposit trips, but the dated interface and light AI features limit how much of the 2 hrs/wk is eliminated, so a 40% time reduction is a realistic estimate. Recovering about 40% of the $400/mo at risk assumes faster digital payment reduces some late or lost payments on the roughly one job per month that gets delayed.",
+      "pct_time_saved": 0.4,
+      "pct_revenue_recovered": 0.4
+     },
+     {
+      "tool_id": "wave",
+      "pain_id": "paid-by-check",
+      "monthly_cost": 16.0,
+      "hours_saved_per_month": 3.0,
+      "time_value_monthly": 152,
+      "revenue_recovered_monthly": 140,
+      "monthly_value": 292,
+      "net_monthly": 276,
+      "setup_cost": 100,
+      "payback_days": 11.9,
+      "roi_multiple": 18.2,
+      "fit_score": 95,
+      "fit_breakdown": {
+       "value": 40,
+       "budget": 20,
+       "ease": 20,
+       "integration": 5,
+       "advisor_concerns": 10
+      },
+      "why_fit": "Wave is free for invoicing with invoice automation and integrates with PayPal and Stripe, letting the owner send invoices that customers can pay electronically instead of by mailed check.",
+      "estimate_reasoning": "Wave's invoice automation and card/PayPal payment links cut the back-and-forth of collecting checks, though it does not dispatch or route jobs and has fewer integrations, so the time reduction is moderate. The revenue recovery is somewhat lower than Yardbook's because Wave addresses payment collection without job-level scheduling that prevents slow invoicing.",
+      "pct_time_saved": 0.35,
+      "pct_revenue_recovered": 0.35
+     },
+     {
+      "tool_id": "jobber",
+      "pain_id": "paid-by-check",
+      "monthly_cost": 119.0,
+      "hours_saved_per_month": 4.8,
+      "time_value_monthly": 238,
+      "revenue_recovered_monthly": 200,
+      "monthly_value": 438,
+      "net_monthly": 319,
+      "setup_cost": 250,
+      "payback_days": 25.3,
+      "roi_multiple": 3.7,
+      "fit_score": 72,
+      "fit_breakdown": {
+       "value": 27,
+       "budget": 20,
+       "ease": 20,
+       "integration": 5,
+       "advisor_concerns": 0
+      },
+      "why_fit": "Jobber covers quoting, invoicing and payments in one platform for landscaping, and its AI-written messages can prompt customers to pay online, which fits the budget at roughly $119/mo but exceeds the owner's typical tooling.",
+      "estimate_reasoning": "Jobber's combined invoicing, customer follow-up and AI-drafted messages address the check chase directly and also reduce admin across the 9-person team, giving a higher time reduction than the free options. Its reminder and payment features plausibly recover half the revenue at risk, though the $119 price consumes most of the $200 budget and its setup effort may challenge the owner's tech comfort of 2.",
+      "pct_time_saved": 0.55,
+      "pct_revenue_recovered": 0.5
+     }
+    ],
+    "stack": {
+     "tool_ids": [
+      "jobber"
+     ],
+     "monthly_cost": 119,
+     "monthly_value": 4981,
+     "net_monthly": 4862,
+     "hours_saved_per_month": 29.5,
+     "within_budget": true,
+     "budget": 200.0,
+     "picks": {
+      "slow-quote-turnaround": "jobber",
+      "inefficient-crew-routing": "jobber",
+      "paid-by-check": "jobber"
+     }
+    },
+    "verdicts": {
+     "summary": "Jobber alone covers all three of your problems: it speeds up quotes, helps plan crew days, and makes it easier to get paid without waiting on checks. It costs $119 a month, well under your $200 budget, and the calculator estimates about 29.5 hours saved each month.",
+     "by_tool": {
+      "jobber": "Jobber should pay for its $250 setup in under 3 days (about 2.6) and brings in roughly $4,195 more than it costs each month, mostly from winning back jobs you lose to slow quotes. The main catch is that crew routing may only come with a higher-priced plan, so ask for the exact price per user and which plan includes routing before you sign, and plan to load your client list in from your spreadsheet once at the start."
+     }
+    }
+   }
+  },
+  {
+   "seq": 19,
+   "t": 3108,
+   "type": "approval.waiting",
+   "agent": null,
+   "data": {
+    "recommended": [
+     "jobber"
+    ]
+   }
+  },
+  {
+   "seq": 20,
+   "t": 3108,
+   "type": "agent.start",
+   "agent": "planner",
+   "data": {
+    "label": "Writing your 30-day adoption plan"
+   }
+  },
+  {
+   "seq": 21,
+   "t": 13327,
+   "type": "plan.ready",
+   "agent": "planner",
+   "data": {
+    "plan": {
+     "first_step_today": "Go to getjobber.com and start the free trial with your business email (about 10 minutes), then text your office helper or a trusted crew lead to say you'll be setting up a new quoting tool this week.",
+     "weeks": [
+      {
+       "week": 1,
+       "theme": "Set up Jobber and send your first quotes faster",
+       "tasks": [
+        {
+         "tool_id": "jobber",
+         "text": "Start the Jobber trial, enter business name, logo, and phone number, and add your 5-6 most common services with prices (mowing, mulch, cleanup, planting, etc.) using your spreadsheet price list",
+         "owner": "Owner",
+         "minutes": 60
+        },
+        {
+         "tool_id": "jobber",
+         "text": "Import your customer list from the spreadsheet into Jobber using its CSV import (or have Jobber support help)",
+         "owner": "Owner",
+         "minutes": 30
+        },
+        {
+         "tool_id": "jobber",
+         "text": "Turn on Jobber's quote templates and email/text delivery, then send a real quote from your phone to a new lead the same day they call",
+         "owner": "Owner",
+         "minutes": 30
+        },
+        {
+         "tool_id": "jobber",
+         "text": "Download the Jobber app on your phone and practice creating one quote on-site from the driveway, with photos",
+         "owner": "Owner",
+         "minutes": 20
+        }
+       ]
+      },
+      {
+       "week": 2,
+       "theme": "Get paid faster: invoices and card payments",
+       "tasks": [
+        {
+         "tool_id": "jobber",
+         "text": "Connect Jobber Payments (card and bank payments) to your business bank account",
+         "owner": "Owner",
+         "minutes": 30
+        },
+        {
+         "tool_id": "jobber",
+         "text": "Send invoices through Jobber with a pay-online link for every finished job this week, and text customers that they can now pay by card or bank transfer",
+         "owner": "Owner",
+         "minutes": 30
+        },
+        {
+         "tool_id": "jobber",
+         "text": "Set up automatic invoice reminders for unpaid invoices so you stop chasing checks yourself",
+         "owner": "Owner",
+         "minutes": 20
+        },
+        {
+         "tool_id": null,
+         "text": "Ask your office helper or a crew lead to log which customers still pay by check so you can nudge them toward online payment",
+         "owner": "Crew lead",
+         "minutes": 15
+        }
+       ]
+      },
+      {
+       "week": 3,
+       "theme": "Bring the crew on board: scheduling and routes",
+       "tasks": [
+        {
+         "tool_id": "jobber",
+         "text": "Add each crew member as a user in Jobber with limited permissions so they see only their own jobs",
+         "owner": "Owner",
+         "minutes": 30
+        },
+        {
+         "tool_id": "jobber",
+         "text": "Schedule next week's jobs in Jobber the evening before and use the route/map view to group nearby stops in order",
+         "owner": "Owner",
+         "minutes": 40
+        },
+        {
+         "tool_id": "jobber",
+         "text": "Hold a 15-minute morning huddle showing crew leads how to open the app, see today's jobs, and mark them complete",
+         "owner": "Owner",
+         "minutes": 15
+        },
+        {
+         "tool_id": "jobber",
+         "text": "Keep texting the crew as a backup for the first week, and note any confusion to fix",
+         "owner": "Crew lead",
+         "minutes": 15
+        }
+       ]
+      },
+      {
+       "week": 4,
+       "theme": "Measure results and tighten up",
+       "tasks": [
+        {
+         "tool_id": "jobber",
+         "text": "Pull Jobber's reports: quotes sent, quotes approved, and average time from request to quote; compare to your old pace",
+         "owner": "Owner",
+         "minutes": 30
+        },
+        {
+         "tool_id": "jobber",
+         "text": "Count invoices paid online versus by check and total unpaid invoices over 14 days",
+         "owner": "Owner",
+         "minutes": 20
+        },
+        {
+         "tool_id": null,
+         "text": "Ask crew leads how drive time changed since using grouped routes and note one routing tweak to make",
+         "owner": "Owner",
+         "minutes": 20
+        },
+        {
+         "tool_id": "jobber",
+         "text": "Decide whether to keep the paid plan and which features (quote follow-ups, online booking) to add next",
+         "owner": "Owner",
+         "minutes": 30
+        }
+       ]
+      }
+     ],
+     "success_metrics": [
+      {
+       "metric": "Average time from quote request to quote sent",
+       "target": "Under 4 hours (same day), down from 1-2 days"
+      },
+      {
+       "metric": "Jobs lost to slow response per month",
+       "target": "Cut from 5-6 down to 2 or fewer"
+      },
+      {
+       "metric": "Invoices paid online or by card",
+       "target": "At least 40% of invoices by day 30"
+      },
+      {
+       "metric": "Owner hours per week on quotes and payment chasing",
+       "target": "Down from 8 hrs to 4 hrs"
+      }
+     ]
+    },
+    "approved_tool_ids": [
+     "jobber"
+    ]
+   }
+  },
+  {
+   "seq": 22,
+   "t": 13421,
+   "type": "memory.saved",
+   "agent": "memory",
+   "data": {
+    "facts": 10,
+    "episodes": 1
+   }
+  },
+  {
+   "seq": 23,
+   "t": 13436,
+   "type": "run.complete",
+   "agent": null,
+   "data": {}
+  }
+ ],
+ "result": {
+  "profile": {
+   "business_name": "GreenLeaf Landscaping",
+   "vertical": "landscaping",
+   "location": null,
+   "employees": 9,
+   "monthly_budget": 200.0,
+   "tech_comfort": 2,
+   "current_tools": [
+    "spreadsheet",
+    "text-messaging"
+   ],
+   "summary": "Owner-operated landscaping company with a seasonal crew of 8 (March to November) that struggles with slow quote turnaround during spring demand and inefficient daily crew routing, and is paid mostly by check."
+  },
+  "facts": [
+   {
+    "subject": "business",
+    "predicate": "is",
+    "object": "landscaping company with a seasonal crew of 8",
+    "category": "identity",
+    "confidence": 0.95
+   },
+   {
+    "subject": "business",
+    "predicate": "operates",
+    "object": "March to November seasonal schedule",
+    "category": "operations",
+    "confidence": 0.9
+   },
+   {
+    "subject": "business",
+    "predicate": "uses",
+    "object": "spreadsheet and text messaging only",
+    "category": "current_tools",
+    "confidence": 0.95
+   },
+   {
+    "subject": "owner",
+    "predicate": "has",
+    "object": "monthly software budget of $200",
+    "category": "budget",
+    "confidence": 0.9
+   },
+   {
+    "subject": "owner",
+    "predicate": "has",
+    "object": "low tech comfort and prefers simple tools",
+    "category": "tech_comfort",
+    "confidence": 0.9
+   },
+   {
+    "subject": "business",
+    "predicate": "loses",
+    "object": "5-6 jobs per month at about $1,200 each during spring quote surge",
+    "category": "pain",
+    "confidence": 0.85
+   },
+   {
+    "subject": "business",
+    "predicate": "receives",
+    "object": "payments mostly by check",
+    "category": "operations",
+    "confidence": 0.9
+   },
+   {
+    "subject": "business",
+    "predicate": "struggles with",
+    "object": "daily crew routing inefficiency",
+    "category": "pain",
+    "confidence": 0.85
+   },
+   {
+    "subject": "business",
+    "predicate": "goal",
+    "object": "respond to quote requests faster and win more jobs",
+    "category": "goal",
+    "confidence": 0.85
+   }
+  ],
+  "pains": [
+   {
+    "id": "slow-quote-turnaround",
+    "title": "Slow quote turnaround causes lost jobs",
+    "tag": "quoting",
+    "hours_per_week": 6.0,
+    "hourly_cost": 50.0,
+    "revenue_at_risk_monthly": 6000.0,
+    "impact_explanation": "About 5-6 jobs a month are lost to slow response at roughly $1,200 each, so about $6,000/mo in revenue at risk. Owner time spent driving out and hand-writing estimates adds roughly 6 hrs/wk x $50/hr = about $1,300/mo in time cost.",
+    "evidence_quote": "I lose jobs because I'm too slow to respond, probably 5-6 jobs a month at around $1,200 each",
+    "monthly_cost_of_pain": 7299
+   },
+   {
+    "id": "inefficient-crew-routing",
+    "title": "Inefficient daily crew routing",
+    "tag": "dispatch_routing",
+    "hours_per_week": 4.0,
+    "hourly_cost": 22.0,
+    "revenue_at_risk_monthly": 0.0,
+    "impact_explanation": "Crew wasting about 1 hr/day of driving back and forth across 8 workers is roughly 4 crew-hours per week of extra wages, about 9 crew-hours... conservatively 8 workers x 4 hrs/wk x $22/hr = about $700/mo in lost wages, plus fuel and fewer jobs completed per day.",
+    "evidence_quote": "Routing the crew each morning is a mess, they waste time driving back and forth",
+    "monthly_cost_of_pain": 381
+   },
+   {
+    "id": "paid-by-check",
+    "title": "Getting paid by check",
+    "tag": "invoicing_payments",
+    "hours_per_week": 2.0,
+    "hourly_cost": 50.0,
+    "revenue_at_risk_monthly": 400.0,
+    "impact_explanation": "Chasing checks and depositing them takes about 2 hrs/wk x $50/hr = about $400/mo in time. Slow or lost payments on roughly 1 job a month put about $400/mo at risk.",
+    "evidence_quote": "We get paid by check mostly",
+    "monthly_cost_of_pain": 833
+   }
+  ],
+  "candidates": [
+   {
+    "tool_id": "jobber",
+    "why_fit": "Jobber Copilot drafts quotes and replies with AI-written quotes and messages, and its quoting module fits a landscaper's estimate workflow, at a $119/mo typical price within the $200 budget and a tech_comfort_min of 2 that matches the owner.",
+    "pct_time_saved": 0.55,
+    "pct_revenue_recovered": 0.6,
+    "estimate_reasoning": "AI-written quotes and messages can cut most of the hand-writing and driving-out overhead on the 6 hrs/wk pain, and faster quote delivery should recover most of the 5-6 lost jobs a month, since the response lag is the core driver. Estimated at roughly half to 60% given the owner still needs to review quotes and site visits remain manual.",
+    "pain_id": "slow-quote-turnaround"
+   },
+   {
+    "tool_id": "yardbook",
+    "why_fit": "Yardbook is a free landscaping-specific tool offering estimates and routing with a tech_comfort_min of 1, so it fits the $200 budget and owner's comfort level at $0/mo.",
+    "pct_time_saved": 0.35,
+    "pct_revenue_recovered": 0.4,
+    "estimate_reasoning": "Built-in estimates and recurring scheduling reduce paperwork time, but it has light AI features and a dated interface, so it removes less of the quoting delay than Jobber. A free option with a moderate impact on both time and lost jobs.",
+    "pain_id": "slow-quote-turnaround"
+   },
+   {
+    "tool_id": "housecall-pro",
+    "why_fit": "Housecall Pro provides AI-generated estimates and an AI CSR/voice agent for missed calls, which addresses slow response directly, at a $149/mo typical price that stays within the $200 budget.",
+    "pct_time_saved": 0.45,
+    "pct_revenue_recovered": 0.5,
+    "estimate_reasoning": "AI-generated estimates speed up quote creation and the voice agent can answer calls immediately, which targets lost jobs, but AI add-ons carry extra cost that could push it past budget, and it is less landscaping-specific than alternatives, so the estimate is moderate.",
+    "pain_id": "slow-quote-turnaround"
+   },
+   {
+    "tool_id": "yardbook",
+    "why_fit": "Yardbook's free tier includes route planning and recurring job scheduling, directly addressing the back-and-forth crew driving, and it fits the $200/mo budget at $0 with a low tech_comfort requirement of 1.",
+    "pct_time_saved": 0.5,
+    "pct_revenue_recovered": 0.0,
+    "estimate_reasoning": "Route planning typically cuts unnecessary driving substantially, but the dated interface and light AI features limit how much of the routing waste it can eliminate, so I estimate about half of the 4 weekly hours of routing pain are removed.",
+    "pain_id": "inefficient-crew-routing"
+   },
+   {
+    "tool_id": "jobber",
+    "why_fit": "Jobber includes route optimization (on higher tiers) plus dispatch and scheduling, and its tech_comfort_min of 2 matches the owner's level, though the route optimization requires a higher-priced plan that may strain the $200 budget.",
+    "pct_time_saved": 0.6,
+    "pct_revenue_recovered": 0.0,
+    "estimate_reasoning": "Automated route optimization combined with dispatch can remove a large share of daily driving inefficiency, but the cons note that optimization is limited to higher tiers, so I estimate a moderately high reduction of 0.6 of the routing hours.",
+    "pain_id": "inefficient-crew-routing"
+   },
+   {
+    "tool_id": "lmn",
+    "why_fit": "LMN offers landscape-specific crew time tracking and scheduling with a free tier, which can show where crew hours are lost each day, but its tech_comfort_min of 3 exceeds the owner's comfort level of 2, which is a real adoption risk.",
+    "pct_time_saved": 0.4,
+    "pct_revenue_recovered": 0.0,
+    "estimate_reasoning": "Crew time tracking and scheduling help reduce wasted hours by improving daily planning, but the higher tech requirement and learning curve make realistic savings lower, around 0.4 of the routing pain.",
+    "pain_id": "inefficient-crew-routing"
+   },
+   {
+    "tool_id": "yardbook",
+    "why_fit": "Yardbook is built specifically for landscaping and includes online invoicing and route planning, so checks can be replaced by payable invoices within a free plan that fits the $200/mo budget and the owner's low tech comfort.",
+    "pct_time_saved": 0.4,
+    "pct_revenue_recovered": 0.4,
+    "estimate_reasoning": "Online invoicing and automated scheduling remove a meaningful share of manual check chasing and deposit trips, but the dated interface and light AI features limit how much of the 2 hrs/wk is eliminated, so a 40% time reduction is a realistic estimate. Recovering about 40% of the $400/mo at risk assumes faster digital payment reduces some late or lost payments on the roughly one job per month that gets delayed.",
+    "pain_id": "paid-by-check"
+   },
+   {
+    "tool_id": "wave",
+    "why_fit": "Wave is free for invoicing with invoice automation and integrates with PayPal and Stripe, letting the owner send invoices that customers can pay electronically instead of by mailed check.",
+    "pct_time_saved": 0.35,
+    "pct_revenue_recovered": 0.35,
+    "estimate_reasoning": "Wave's invoice automation and card/PayPal payment links cut the back-and-forth of collecting checks, though it does not dispatch or route jobs and has fewer integrations, so the time reduction is moderate. The revenue recovery is somewhat lower than Yardbook's because Wave addresses payment collection without job-level scheduling that prevents slow invoicing.",
+    "pain_id": "paid-by-check"
+   },
+   {
+    "tool_id": "jobber",
+    "why_fit": "Jobber covers quoting, invoicing and payments in one platform for landscaping, and its AI-written messages can prompt customers to pay online, which fits the budget at roughly $119/mo but exceeds the owner's typical tooling.",
+    "pct_time_saved": 0.55,
+    "pct_revenue_recovered": 0.5,
+    "estimate_reasoning": "Jobber's combined invoicing, customer follow-up and AI-drafted messages address the check chase directly and also reduce admin across the 9-person team, giving a higher time reduction than the free options. Its reminder and payment features plausibly recover half the revenue at risk, though the $119 price consumes most of the $200 budget and its setup effort may challenge the owner's tech comfort of 2.",
+    "pain_id": "paid-by-check"
+   }
+  ],
+  "critiques": [
+   {
+    "tool_id": "housecall-pro",
+    "concern": "At $149/mo it covers only the quoting pain, and the AI add-ons cost extra. That could push the total past the $200 budget before any routing or payment tools are added.",
+    "severity": "high",
+    "suggestion": "Veto as the main pick unless the add-on costs are confirmed and fit under budget. Choose it only for quoting alone.",
+    "persona": "Budget Hawk"
+   },
+   {
+    "tool_id": "jobber",
+    "concern": "Typical price is $119/mo, and route optimization only works on higher tiers. The routing pain may not be solved at the price you can afford, and per-user pricing could raise the cost for 9 workers.",
+    "severity": "medium",
+    "suggestion": "Ask for the exact per-user price and confirm which tier includes routing. Negotiate or drop the routing feature if it pushes you over $200.",
+    "persona": "Budget Hawk"
+   },
+   {
+    "tool_id": "yardbook",
+    "concern": "Free at $0 and covers all three pains, but the dated interface and light AI could be hard for a tech comfort level of 2 to adopt. Low cost does not mean low setup time.",
+    "severity": "low",
+    "suggestion": "Good budget fit. Run a free trial with the crew before committing and check that the free tier includes what you need.",
+    "persona": "Budget Hawk"
+   },
+   {
+    "tool_id": "lmn",
+    "concern": "At $97/mo for routing alone, it is expensive for one pain and has a learning curve that needs tech comfort of 3, above your current 2.",
+    "severity": "high",
+    "suggestion": "Veto. Routing gains don't justify the price or the training burden when Yardbook or Jobber cover routing too.",
+    "persona": "Budget Hawk"
+   },
+   {
+    "tool_id": "lmn",
+    "concern": "Requires tech comfort 3 and 6 setup hours, well above the owner's level of 2. Crew routing alone would be a heavy lift for a seasonal team that rotates in and out.",
+    "severity": "high",
+    "suggestion": "Veto LMN for this owner. Choose Yardbook or Jobber for routing so setup stays within a manageable window.",
+    "persona": "Ease-of-Use Coach"
+   },
+   {
+    "tool_id": "jobber",
+    "concern": "Five setup hours at comfort level 2 is feasible but tight, and route optimization is locked behind higher tiers that may exceed the $200 budget.",
+    "severity": "medium",
+    "suggestion": "Have someone help configure it once, limit the rollout to quoting and invoicing first, and confirm which tier includes routing before committing.",
+    "persona": "Ease-of-Use Coach"
+   },
+   {
+    "tool_id": "yardbook",
+    "concern": "Free and only 3 setup hours with comfort min 1 fits well, but the dated interface and light AI could make quoting feel slow to a hands-on owner.",
+    "severity": "low",
+    "suggestion": "Good fit for ease. Run a quick test quote with the owner before the spring rush to confirm the interface feels workable.",
+    "persona": "Ease-of-Use Coach"
+   },
+   {
+    "tool_id": "jobber",
+    "concern": "Jobber covers all three pains, which is convenient, but it only integrates with QuickBooks, Google Calendar, Mailchimp and NiceJob. Your spreadsheet and texting aren't on the list, so you'll be re-entering client and job data by hand at first.",
+    "severity": "medium",
+    "suggestion": "Import your client list from the spreadsheet once at setup, and confirm whether Jobber's text tools replace your current texting before you switch.",
+    "persona": "Integration Checker"
+   },
+   {
+    "tool_id": "housecall-pro",
+    "concern": "Housecall Pro only solves the quoting pain, yet costs about $149/mo, most of your $200 budget. It also needs QuickBooks for accounting sync, which you don't have.",
+    "severity": "medium",
+    "suggestion": "Drop it unless quoting turns out to be the only pain that matters; Jobber covers quoting plus two other pains for less.",
+    "persona": "Integration Checker"
+   },
+   {
+    "tool_id": "lmn",
+    "concern": "LMN needs tech comfort level 3, and you're at 2. It also covers only routing, and its QuickBooks link means it adds a dependency you don't have.",
+    "severity": "high",
+    "suggestion": "Veto for now. Routing is a small pain (about $381/mo) and this tool is too hard for your current skills.",
+    "persona": "Integration Checker"
+   },
+   {
+    "tool_id": "yardbook",
+    "concern": "Yardbook is free and fits your tech level, but its only accounting link is QuickBooks, and its routing and quoting features are light. Starting here may mean a second migration later.",
+    "severity": "low",
+    "suggestion": "Good free starting point if budget is tight, but confirm its routing covers 8 crew members before committing.",
+    "persona": "Integration Checker"
+   }
+  ],
+  "mesh": [
+   {
+    "persona": "Budget Hawk",
+    "key": "budget_hawk",
+    "headline": "Budget is $200/mo, so Jobber at $119 plus extras is tight, and Housecall Pro at $149 only fits if nothing else gets added; Yardbook is the cheapest path if the owner can live with its interface.",
+    "critiques": [
+     {
+      "tool_id": "housecall-pro",
+      "concern": "At $149/mo it covers only the quoting pain, and the AI add-ons cost extra. That could push the total past the $200 budget before any routing or payment tools are added.",
+      "severity": "high",
+      "suggestion": "Veto as the main pick unless the add-on costs are confirmed and fit under budget. Choose it only for quoting alone.",
+      "persona": "Budget Hawk"
+     },
+     {
+      "tool_id": "jobber",
+      "concern": "Typical price is $119/mo, and route optimization only works on higher tiers. The routing pain may not be solved at the price you can afford, and per-user pricing could raise the cost for 9 workers.",
+      "severity": "medium",
+      "suggestion": "Ask for the exact per-user price and confirm which tier includes routing. Negotiate or drop the routing feature if it pushes you over $200.",
+      "persona": "Budget Hawk"
+     },
+     {
+      "tool_id": "yardbook",
+      "concern": "Free at $0 and covers all three pains, but the dated interface and light AI could be hard for a tech comfort level of 2 to adopt. Low cost does not mean low setup time.",
+      "severity": "low",
+      "suggestion": "Good budget fit. Run a free trial with the crew before committing and check that the free tier includes what you need.",
+      "persona": "Budget Hawk"
+     },
+     {
+      "tool_id": "lmn",
+      "concern": "At $97/mo for routing alone, it is expensive for one pain and has a learning curve that needs tech comfort of 3, above your current 2.",
+      "severity": "high",
+      "suggestion": "Veto. Routing gains don't justify the price or the training burden when Yardbook or Jobber cover routing too.",
+      "persona": "Budget Hawk"
+     }
+    ]
+   },
+   {
+    "persona": "Ease-of-Use Coach",
+    "key": "ease_coach",
+    "headline": "Owner comfort is a 2 out of 5 and the crew is seasonal, so anything with a steep setup or a 3+ learning curve will likely be abandoned before spring.",
+    "critiques": [
+     {
+      "tool_id": "lmn",
+      "concern": "Requires tech comfort 3 and 6 setup hours, well above the owner's level of 2. Crew routing alone would be a heavy lift for a seasonal team that rotates in and out.",
+      "severity": "high",
+      "suggestion": "Veto LMN for this owner. Choose Yardbook or Jobber for routing so setup stays within a manageable window.",
+      "persona": "Ease-of-Use Coach"
+     },
+     {
+      "tool_id": "jobber",
+      "concern": "Five setup hours at comfort level 2 is feasible but tight, and route optimization is locked behind higher tiers that may exceed the $200 budget.",
+      "severity": "medium",
+      "suggestion": "Have someone help configure it once, limit the rollout to quoting and invoicing first, and confirm which tier includes routing before committing.",
+      "persona": "Ease-of-Use Coach"
+     },
+     {
+      "tool_id": "yardbook",
+      "concern": "Free and only 3 setup hours with comfort min 1 fits well, but the dated interface and light AI could make quoting feel slow to a hands-on owner.",
+      "severity": "low",
+      "suggestion": "Good fit for ease. Run a quick test quote with the owner before the spring rush to confirm the interface feels workable.",
+      "persona": "Ease-of-Use Coach"
+     }
+    ]
+   },
+   {
+    "persona": "Integration Checker",
+    "key": "integration_checker",
+    "headline": "Good news: you already live in a spreadsheet and text messages, so none of these tools should force you to retype data, but most of them want QuickBooks, which you don't use yet.",
+    "critiques": [
+     {
+      "tool_id": "jobber",
+      "concern": "Jobber covers all three pains, which is convenient, but it only integrates with QuickBooks, Google Calendar, Mailchimp and NiceJob. Your spreadsheet and texting aren't on the list, so you'll be re-entering client and job data by hand at first.",
+      "severity": "medium",
+      "suggestion": "Import your client list from the spreadsheet once at setup, and confirm whether Jobber's text tools replace your current texting before you switch.",
+      "persona": "Integration Checker"
+     },
+     {
+      "tool_id": "housecall-pro",
+      "concern": "Housecall Pro only solves the quoting pain, yet costs about $149/mo, most of your $200 budget. It also needs QuickBooks for accounting sync, which you don't have.",
+      "severity": "medium",
+      "suggestion": "Drop it unless quoting turns out to be the only pain that matters; Jobber covers quoting plus two other pains for less.",
+      "persona": "Integration Checker"
+     },
+     {
+      "tool_id": "lmn",
+      "concern": "LMN needs tech comfort level 3, and you're at 2. It also covers only routing, and its QuickBooks link means it adds a dependency you don't have.",
+      "severity": "high",
+      "suggestion": "Veto for now. Routing is a small pain (about $381/mo) and this tool is too hard for your current skills.",
+      "persona": "Integration Checker"
+     },
+     {
+      "tool_id": "yardbook",
+      "concern": "Yardbook is free and fits your tech level, but its only accounting link is QuickBooks, and its routing and quoting features are light. Starting here may mean a second migration later.",
+      "severity": "low",
+      "suggestion": "Good free starting point if budget is tight, but confirm its routing covers 8 crew members before committing.",
+      "persona": "Integration Checker"
+     }
+    ]
+   }
+  ],
+  "scored": [
+   {
+    "tool_id": "jobber",
+    "pain_id": "slow-quote-turnaround",
+    "monthly_cost": 119.0,
+    "hours_saved_per_month": 14.3,
+    "time_value_monthly": 714,
+    "revenue_recovered_monthly": 3600,
+    "monthly_value": 4314,
+    "net_monthly": 4195,
+    "setup_cost": 250,
+    "payback_days": 2.6,
+    "roi_multiple": 36.3,
+    "fit_score": 85,
+    "fit_breakdown": {
+     "value": 40,
+     "budget": 20,
+     "ease": 20,
+     "integration": 5,
+     "advisor_concerns": 0
+    },
+    "why_fit": "Jobber Copilot drafts quotes and replies with AI-written quotes and messages, and its quoting module fits a landscaper's estimate workflow, at a $119/mo typical price within the $200 budget and a tech_comfort_min of 2 that matches the owner.",
+    "estimate_reasoning": "AI-written quotes and messages can cut most of the hand-writing and driving-out overhead on the 6 hrs/wk pain, and faster quote delivery should recover most of the 5-6 lost jobs a month, since the response lag is the core driver. Estimated at roughly half to 60% given the owner still needs to review quotes and site visits remain manual.",
+    "pct_time_saved": 0.55,
+    "pct_revenue_recovered": 0.6
+   },
+   {
+    "tool_id": "yardbook",
+    "pain_id": "slow-quote-turnaround",
+    "monthly_cost": 0.0,
+    "hours_saved_per_month": 9.1,
+    "time_value_monthly": 455,
+    "revenue_recovered_monthly": 2400,
+    "monthly_value": 2855,
+    "net_monthly": 2855,
+    "setup_cost": 150,
+    "payback_days": 1.6,
+    "roi_multiple": null,
+    "fit_score": 89,
+    "fit_breakdown": {
+     "value": 40,
+     "budget": 20,
+     "ease": 20,
+     "integration": 5,
+     "advisor_concerns": 4
+    },
+    "why_fit": "Yardbook is a free landscaping-specific tool offering estimates and routing with a tech_comfort_min of 1, so it fits the $200 budget and owner's comfort level at $0/mo.",
+    "estimate_reasoning": "Built-in estimates and recurring scheduling reduce paperwork time, but it has light AI features and a dated interface, so it removes less of the quoting delay than Jobber. A free option with a moderate impact on both time and lost jobs.",
+    "pct_time_saved": 0.35,
+    "pct_revenue_recovered": 0.4
+   },
+   {
+    "tool_id": "housecall-pro",
+    "pain_id": "slow-quote-turnaround",
+    "monthly_cost": 149.0,
+    "hours_saved_per_month": 11.7,
+    "time_value_monthly": 585,
+    "revenue_recovered_monthly": 3000,
+    "monthly_value": 3585,
+    "net_monthly": 3436,
+    "setup_cost": 250,
+    "payback_days": 3.3,
+    "roi_multiple": 24.1,
+    "fit_score": 75,
+    "fit_breakdown": {
+     "value": 40,
+     "budget": 10,
+     "ease": 20,
+     "integration": 5,
+     "advisor_concerns": 0
+    },
+    "why_fit": "Housecall Pro provides AI-generated estimates and an AI CSR/voice agent for missed calls, which addresses slow response directly, at a $149/mo typical price that stays within the $200 budget.",
+    "estimate_reasoning": "AI-generated estimates speed up quote creation and the voice agent can answer calls immediately, which targets lost jobs, but AI add-ons carry extra cost that could push it past budget, and it is less landscaping-specific than alternatives, so the estimate is moderate.",
+    "pct_time_saved": 0.45,
+    "pct_revenue_recovered": 0.5
+   },
+   {
+    "tool_id": "yardbook",
+    "pain_id": "inefficient-crew-routing",
+    "monthly_cost": 0.0,
+    "hours_saved_per_month": 8.7,
+    "time_value_monthly": 191,
+    "revenue_recovered_monthly": 0,
+    "monthly_value": 191,
+    "net_monthly": 191,
+    "setup_cost": 66,
+    "payback_days": 10.4,
+    "roi_multiple": null,
+    "fit_score": 87,
+    "fit_breakdown": {
+     "value": 38,
+     "budget": 20,
+     "ease": 20,
+     "integration": 5,
+     "advisor_concerns": 4
+    },
+    "why_fit": "Yardbook's free tier includes route planning and recurring job scheduling, directly addressing the back-and-forth crew driving, and it fits the $200/mo budget at $0 with a low tech_comfort requirement of 1.",
+    "estimate_reasoning": "Route planning typically cuts unnecessary driving substantially, but the dated interface and light AI features limit how much of the routing waste it can eliminate, so I estimate about half of the 4 weekly hours of routing pain are removed.",
+    "pct_time_saved": 0.5,
+    "pct_revenue_recovered": 0.0
+   },
+   {
+    "tool_id": "jobber",
+    "pain_id": "inefficient-crew-routing",
+    "monthly_cost": 119.0,
+    "hours_saved_per_month": 10.4,
+    "time_value_monthly": 229,
+    "revenue_recovered_monthly": 0,
+    "monthly_value": 229,
+    "net_monthly": 110,
+    "setup_cost": 110,
+    "payback_days": 30.0,
+    "roi_multiple": 1.9,
+    "fit_score": 54,
+    "fit_breakdown": {
+     "value": 9,
+     "budget": 20,
+     "ease": 20,
+     "integration": 5,
+     "advisor_concerns": 0
+    },
+    "why_fit": "Jobber includes route optimization (on higher tiers) plus dispatch and scheduling, and its tech_comfort_min of 2 matches the owner's level, though the route optimization requires a higher-priced plan that may strain the $200 budget.",
+    "estimate_reasoning": "Automated route optimization combined with dispatch can remove a large share of daily driving inefficiency, but the cons note that optimization is limited to higher tiers, so I estimate a moderately high reduction of 0.6 of the routing hours.",
+    "pct_time_saved": 0.6,
+    "pct_revenue_recovered": 0.0
+   },
+   {
+    "tool_id": "lmn",
+    "pain_id": "inefficient-crew-routing",
+    "monthly_cost": 97.0,
+    "hours_saved_per_month": 6.9,
+    "time_value_monthly": 152,
+    "revenue_recovered_monthly": 0,
+    "monthly_value": 152,
+    "net_monthly": 55,
+    "setup_cost": 132,
+    "payback_days": 45.2,
+    "roi_multiple": 1.6,
+    "fit_score": 41,
+    "fit_breakdown": {
+     "value": 6,
+     "budget": 20,
+     "ease": 10,
+     "integration": 5,
+     "advisor_concerns": 0
+    },
+    "why_fit": "LMN offers landscape-specific crew time tracking and scheduling with a free tier, which can show where crew hours are lost each day, but its tech_comfort_min of 3 exceeds the owner's comfort level of 2, which is a real adoption risk.",
+    "estimate_reasoning": "Crew time tracking and scheduling help reduce wasted hours by improving daily planning, but the higher tech requirement and learning curve make realistic savings lower, around 0.4 of the routing pain.",
+    "pct_time_saved": 0.4,
+    "pct_revenue_recovered": 0.0
+   },
+   {
+    "tool_id": "yardbook",
+    "pain_id": "paid-by-check",
+    "monthly_cost": 0.0,
+    "hours_saved_per_month": 3.5,
+    "time_value_monthly": 173,
+    "revenue_recovered_monthly": 160,
+    "monthly_value": 333,
+    "net_monthly": 333,
+    "setup_cost": 150,
+    "payback_days": 13.5,
+    "roi_multiple": null,
+    "fit_score": 89,
+    "fit_breakdown": {
+     "value": 40,
+     "budget": 20,
+     "ease": 20,
+     "integration": 5,
+     "advisor_concerns": 4
+    },
+    "why_fit": "Yardbook is built specifically for landscaping and includes online invoicing and route planning, so checks can be replaced by payable invoices within a free plan that fits the $200/mo budget and the owner's low tech comfort.",
+    "estimate_reasoning": "Online invoicing and automated scheduling remove a meaningful share of manual check chasing and deposit trips, but the dated interface and light AI features limit how much of the 2 hrs/wk is eliminated, so a 40% time reduction is a realistic estimate. Recovering about 40% of the $400/mo at risk assumes faster digital payment reduces some late or lost payments on the roughly one job per month that gets delayed.",
+    "pct_time_saved": 0.4,
+    "pct_revenue_recovered": 0.4
+   },
+   {
+    "tool_id": "wave",
+    "pain_id": "paid-by-check",
+    "monthly_cost": 16.0,
+    "hours_saved_per_month": 3.0,
+    "time_value_monthly": 152,
+    "revenue_recovered_monthly": 140,
+    "monthly_value": 292,
+    "net_monthly": 276,
+    "setup_cost": 100,
+    "payback_days": 11.9,
+    "roi_multiple": 18.2,
+    "fit_score": 95,
+    "fit_breakdown": {
+     "value": 40,
+     "budget": 20,
+     "ease": 20,
+     "integration": 5,
+     "advisor_concerns": 10
+    },
+    "why_fit": "Wave is free for invoicing with invoice automation and integrates with PayPal and Stripe, letting the owner send invoices that customers can pay electronically instead of by mailed check.",
+    "estimate_reasoning": "Wave's invoice automation and card/PayPal payment links cut the back-and-forth of collecting checks, though it does not dispatch or route jobs and has fewer integrations, so the time reduction is moderate. The revenue recovery is somewhat lower than Yardbook's because Wave addresses payment collection without job-level scheduling that prevents slow invoicing.",
+    "pct_time_saved": 0.35,
+    "pct_revenue_recovered": 0.35
+   },
+   {
+    "tool_id": "jobber",
+    "pain_id": "paid-by-check",
+    "monthly_cost": 119.0,
+    "hours_saved_per_month": 4.8,
+    "time_value_monthly": 238,
+    "revenue_recovered_monthly": 200,
+    "monthly_value": 438,
+    "net_monthly": 319,
+    "setup_cost": 250,
+    "payback_days": 25.3,
+    "roi_multiple": 3.7,
+    "fit_score": 72,
+    "fit_breakdown": {
+     "value": 27,
+     "budget": 20,
+     "ease": 20,
+     "integration": 5,
+     "advisor_concerns": 0
+    },
+    "why_fit": "Jobber covers quoting, invoicing and payments in one platform for landscaping, and its AI-written messages can prompt customers to pay online, which fits the budget at roughly $119/mo but exceeds the owner's typical tooling.",
+    "estimate_reasoning": "Jobber's combined invoicing, customer follow-up and AI-drafted messages address the check chase directly and also reduce admin across the 9-person team, giving a higher time reduction than the free options. Its reminder and payment features plausibly recover half the revenue at risk, though the $119 price consumes most of the $200 budget and its setup effort may challenge the owner's tech comfort of 2.",
+    "pct_time_saved": 0.55,
+    "pct_revenue_recovered": 0.5
+   }
+  ],
+  "stack": {
+   "tool_ids": [
+    "jobber"
+   ],
+   "monthly_cost": 119,
+   "monthly_value": 4981,
+   "net_monthly": 4862,
+   "hours_saved_per_month": 29.5,
+   "within_budget": true,
+   "budget": 200.0,
+   "picks": {
+    "slow-quote-turnaround": "jobber",
+    "inefficient-crew-routing": "jobber",
+    "paid-by-check": "jobber"
+   }
+  },
+  "verdicts": {
+   "summary": "Jobber alone covers all three of your problems: it speeds up quotes, helps plan crew days, and makes it easier to get paid without waiting on checks. It costs $119 a month, well under your $200 budget, and the calculator estimates about 29.5 hours saved each month.",
+   "by_tool": {
+    "jobber": "Jobber should pay for its $250 setup in under 3 days (about 2.6) and brings in roughly $4,195 more than it costs each month, mostly from winning back jobs you lose to slow quotes. The main catch is that crew routing may only come with a higher-priced plan, so ask for the exact price per user and which plan includes routing before you sign, and plan to load your client list in from your spreadsheet once at the start."
+   }
+  },
+  "approved_tool_ids": [
+   "jobber"
+  ],
+  "plan": {
+   "first_step_today": "Go to getjobber.com and start the free trial with your business email (about 10 minutes), then text your office helper or a trusted crew lead to say you'll be setting up a new quoting tool this week.",
+   "weeks": [
+    {
+     "week": 1,
+     "theme": "Set up Jobber and send your first quotes faster",
+     "tasks": [
+      {
+       "tool_id": "jobber",
+       "text": "Start the Jobber trial, enter business name, logo, and phone number, and add your 5-6 most common services with prices (mowing, mulch, cleanup, planting, etc.) using your spreadsheet price list",
+       "owner": "Owner",
+       "minutes": 60
+      },
+      {
+       "tool_id": "jobber",
+       "text": "Import your customer list from the spreadsheet into Jobber using its CSV import (or have Jobber support help)",
+       "owner": "Owner",
+       "minutes": 30
+      },
+      {
+       "tool_id": "jobber",
+       "text": "Turn on Jobber's quote templates and email/text delivery, then send a real quote from your phone to a new lead the same day they call",
+       "owner": "Owner",
+       "minutes": 30
+      },
+      {
+       "tool_id": "jobber",
+       "text": "Download the Jobber app on your phone and practice creating one quote on-site from the driveway, with photos",
+       "owner": "Owner",
+       "minutes": 20
+      }
+     ]
+    },
+    {
+     "week": 2,
+     "theme": "Get paid faster: invoices and card payments",
+     "tasks": [
+      {
+       "tool_id": "jobber",
+       "text": "Connect Jobber Payments (card and bank payments) to your business bank account",
+       "owner": "Owner",
+       "minutes": 30
+      },
+      {
+       "tool_id": "jobber",
+       "text": "Send invoices through Jobber with a pay-online link for every finished job this week, and text customers that they can now pay by card or bank transfer",
+       "owner": "Owner",
+       "minutes": 30
+      },
+      {
+       "tool_id": "jobber",
+       "text": "Set up automatic invoice reminders for unpaid invoices so you stop chasing checks yourself",
+       "owner": "Owner",
+       "minutes": 20
+      },
+      {
+       "tool_id": null,
+       "text": "Ask your office helper or a crew lead to log which customers still pay by check so you can nudge them toward online payment",
+       "owner": "Crew lead",
+       "minutes": 15
+      }
+     ]
+    },
+    {
+     "week": 3,
+     "theme": "Bring the crew on board: scheduling and routes",
+     "tasks": [
+      {
+       "tool_id": "jobber",
+       "text": "Add each crew member as a user in Jobber with limited permissions so they see only their own jobs",
+       "owner": "Owner",
+       "minutes": 30
+      },
+      {
+       "tool_id": "jobber",
+       "text": "Schedule next week's jobs in Jobber the evening before and use the route/map view to group nearby stops in order",
+       "owner": "Owner",
+       "minutes": 40
+      },
+      {
+       "tool_id": "jobber",
+       "text": "Hold a 15-minute morning huddle showing crew leads how to open the app, see today's jobs, and mark them complete",
+       "owner": "Owner",
+       "minutes": 15
+      },
+      {
+       "tool_id": "jobber",
+       "text": "Keep texting the crew as a backup for the first week, and note any confusion to fix",
+       "owner": "Crew lead",
+       "minutes": 15
+      }
+     ]
+    },
+    {
+     "week": 4,
+     "theme": "Measure results and tighten up",
+     "tasks": [
+      {
+       "tool_id": "jobber",
+       "text": "Pull Jobber's reports: quotes sent, quotes approved, and average time from request to quote; compare to your old pace",
+       "owner": "Owner",
+       "minutes": 30
+      },
+      {
+       "tool_id": "jobber",
+       "text": "Count invoices paid online versus by check and total unpaid invoices over 14 days",
+       "owner": "Owner",
+       "minutes": 20
+      },
+      {
+       "tool_id": null,
+       "text": "Ask crew leads how drive time changed since using grouped routes and note one routing tweak to make",
+       "owner": "Owner",
+       "minutes": 20
+      },
+      {
+       "tool_id": "jobber",
+       "text": "Decide whether to keep the paid plan and which features (quote follow-ups, online booking) to add next",
+       "owner": "Owner",
+       "minutes": 30
+      }
+     ]
+    }
+   ],
+   "success_metrics": [
+    {
+     "metric": "Average time from quote request to quote sent",
+     "target": "Under 4 hours (same day), down from 1-2 days"
+    },
+    {
+     "metric": "Jobs lost to slow response per month",
+     "target": "Cut from 5-6 down to 2 or fewer"
+    },
+    {
+     "metric": "Invoices paid online or by card",
+     "target": "At least 40% of invoices by day 30"
+    },
+    {
+     "metric": "Owner hours per week on quotes and payment chasing",
+     "target": "Down from 8 hrs to 4 hrs"
+    }
+   ]
+  }
+ }
+}

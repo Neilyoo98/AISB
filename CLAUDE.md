@@ -13,6 +13,12 @@
 - **IP:** UMD owns all hack-a-thon submissions. Code copied from AUBI becomes part of a UMD-owned submission. Copy patterns, not large verbatim chunks, if that matters to you.
 - Commits are authored as `Neilyoo98 <194648525+Neilyoo98@users.noreply.github.com>`. No AI co-author lines.
 
+## Current status (Nov 8, 2026)
+
+Built and verified end to end locally: sample-business login → dashboard → War Room replay → approval → 30-day plan → memory writeback; register → onboard → **live** AI run. 10 backend tests pass (`pytest -q`). Sample-business recordings live in `backend/data/demo_runs/*.json`. Regenerate them with `python -m scripts.precompute_demos` after prompt or ROI changes, then call `seed.reset_demos()`.
+
+Stack selection (`roi.pick_stack`): per pain, pick the highest-net tool within 10 fit points of the best fit. Then consolidate: drop a tool whenever moving its pains onto tools already in the stack doesn't lower total net. Owners hate juggling apps. Scouts never recommend tools the owner already uses.
+
 ## 1. The problem and the pitch
 
 Mom-and-pop restaurants, coffee shops, HVAC techs and landscapers know "AI could help" but not **which tool fixes which problem, what it costs, or how to start.** Today's directories (There's An AI For That, G2) list thousands of tools with no fit to the business.
@@ -45,10 +51,10 @@ Business value line for the video: *"Show a plumber three tools that pay for the
 ## 3. Stack (same as AUBI)
 
 - **Frontend:** Next.js (App Router) + React + TypeScript + Tailwind + Framer Motion, on **Vercel**. A Next.js API route proxies to the backend, so the browser talks only to Vercel.
-- **Backend:** FastAPI + **LangGraph** + `langchain-openai` (`ChatOpenAI` pointed at OpenRouter), on **Railway**, **single worker** (the `MemorySaver` checkpointer holds paused approvals in process, as in AUBI).
-- **Vector memory:** **Qdrant Cloud** (free tier).
+- **Backend:** FastAPI + **LangGraph**, on **Railway**, **single worker** (the `MemorySaver` checkpointer holds paused approvals in process, as in AUBI). OpenRouter is called directly with `httpx` in `llm.py` (no LangChain wrapper), which gives exact per-call cost from `usage.cost`.
+- **Vector memory:** Qdrant. `QDRANT_URL` set → Qdrant Cloud (payload indexes are created for strict mode). Empty → embedded on-disk Qdrant at `QDRANT_PATH`, so no extra service is needed.
 - **Embeddings:** `fastembed` with `sentence-transformers/all-MiniLM-L6-v2` (384-d). This is the same model as AUBI, but ONNX instead of torch, so the Docker image stays small and Railway builds fast.
-- **Relational data:** **Railway Postgres** for users, businesses and saved plans. SQLAlchemy plus raw SQL migrations in `backend/db/schema.sql`. No Alembic, given the time.
+- **Relational data:** SQLAlchemy Core in `db.py` (`create_all`, no migrations). `DATABASE_URL` set → Postgres; empty → SQLite file. On Railway, either attach Postgres or mount a volume at `/data` and point SQLite/Qdrant there.
 - **Auth (keep it simple):** email + password, `passlib[bcrypt]` hashes, a JWT (7-day expiry) in an httpOnly `SameSite=Lax` cookie set by the Next.js proxy. No OAuth, email verification or password reset. A Next.js `middleware.ts` redirects unauthenticated users from app pages to `/login`. Demo logins are ordinary seeded users flagged `is_demo=true` (§7a).
 - **Streaming:** SSE from FastAPI → Next.js proxy → `useRunStream` hook.
 
@@ -115,7 +121,9 @@ Rules:
 ## 6. LLM and budget (`backend/llm.py`)
 
 - One `ChatOpenAI(base_url="https://openrouter.ai/api/v1", api_key=OPENROUTER_API_KEY, default_headers={"HTTP-Referer": APP_URL, "X-Title": "StackSmith"})` per tier.
-- Two tiers via env: `MODEL_FAST` (cheap, used for nodes 1, 3, 4, 5) and `MODEL_SMART` (nodes 6 verdict and 8). **Check exact slugs and prices on openrouter.ai/models before setting them.** Pick a fast model under ~$0.50/M input tokens with JSON/structured-output support.
+- Two tiers via env: `MODEL_FAST=anthropic/claude-haiku-5.5` ($0.10/$0.50 per M tokens; nodes 1, 3, 4, 5) and `MODEL_SMART=anthropic/claude-sonnet-5.5` ($2/$10; nodes 6 verdict and 8).
+- **Reasoning gotcha:** Haiku 5.5 thinks adaptively and hidden reasoning ate the JSON budget (empty/truncated output), so the fast tier sends `reasoning: {enabled: false}`. Sonnet 5.5 *requires* reasoning, so the smart tier sends `{effort: "low"}` with larger `max_tokens`. On `finish_reason == "length"` the retry gets 1.8x tokens.
+- Measured: a full live run costs about **$0.03** and takes about 17s.
 - Target cost per full run: **≤ $0.05.** At that rate $25 covers about 500 runs.
 - Guards:
   - `max_tokens` set on every call.

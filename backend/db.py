@@ -78,6 +78,8 @@ plan_tasks = Table(
     Column("minutes", Integer),
     Column("done", Boolean, default=False, nullable=False),
     Column("business_id", String(32)),  # set for setup tasks created by a manual adoption
+    Column("source", String(16)),  # null = plan/adoption task, "custom" = published by the owner/team
+    Column("suggestions_json", Text),  # tool suggestions for a published task [{tool_id, reason}]
 )
 
 llm_cache = Table(
@@ -255,11 +257,18 @@ def replace_plan_tasks(run_id, tasks):
             c.execute(insert(plan_tasks), [{"run_id": run_id, **t} for t in tasks])
 
 
+def _task_out(r):
+    t = row(r)
+    raw = t.pop("suggestions_json", None)
+    t["suggestions"] = json.loads(raw) if raw else []
+    return t
+
+
 def get_plan_tasks(run_id):
     with engine.begin() as c:
         rs = c.execute(select(plan_tasks).where(plan_tasks.c.run_id == run_id)
                        .order_by(plan_tasks.c.week, plan_tasks.c.id)).all()
-        return [row(r) for r in rs]
+        return [_task_out(r) for r in rs]
 
 
 def get_business_tasks(business_id, latest_run_id=None):
@@ -269,7 +278,33 @@ def get_business_tasks(business_id, latest_run_id=None):
         if latest_run_id:
             cond = cond | (plan_tasks.c.run_id == latest_run_id)
         rs = c.execute(select(plan_tasks).where(cond).order_by(plan_tasks.c.week, plan_tasks.c.id)).all()
-        return [row(r) for r in rs]
+        return [_task_out(r) for r in rs]
+
+
+def add_custom_task(business_id, run_id, text, week, owner) -> int:
+    with engine.begin() as c:
+        res = c.execute(insert(plan_tasks).values(run_id=run_id, business_id=business_id, week=week, text=text,
+                                                  owner=owner, minutes=None, done=False, source="custom"))
+        return int(res.inserted_primary_key[0])
+
+
+def set_task_suggestions(task_id, suggestions):
+    with engine.begin() as c:
+        c.execute(update(plan_tasks).where(plan_tasks.c.id == task_id)
+                  .values(suggestions_json=json.dumps(suggestions)))
+
+
+def get_task(task_id):
+    with engine.begin() as c:
+        r = c.execute(select(plan_tasks).where(plan_tasks.c.id == task_id)).first()
+        return _task_out(r) if r else None
+
+
+def delete_custom_task(task_id, business_id) -> bool:
+    with engine.begin() as c:
+        res = c.execute(delete(plan_tasks).where(plan_tasks.c.id == task_id, plan_tasks.c.business_id == business_id,
+                                                 plan_tasks.c.source == "custom"))
+        return res.rowcount > 0
 
 
 def add_business_tasks(business_id, run_id, tasks):
@@ -280,14 +315,19 @@ def add_business_tasks(business_id, run_id, tasks):
 
 
 def set_task_done(task_id, done, user_id):
-    """Only the owner of the run's business may toggle a task."""
+    """The run's owner, or anyone whose business (owner or team member) the task belongs to, may toggle it."""
     with engine.begin() as c:
         t = c.execute(select(plan_tasks.c.run_id).where(plan_tasks.c.id == task_id)).first()
         if not t:
             return False
-        r = c.execute(select(runs.c.user_id).where(runs.c.id == t.run_id)).first()
-        if not r or r.user_id != user_id:
+        r = c.execute(select(runs.c.user_id, runs.c.business_id).where(runs.c.id == t.run_id)).first()
+        if not r:
             return False
+    if r.user_id != user_id:
+        b = get_user_business(user_id)
+        if not b or b["id"] != r.business_id:
+            return False
+    with engine.begin() as c:
         c.execute(update(plan_tasks).where(plan_tasks.c.id == task_id).values(done=done))
         return True
 

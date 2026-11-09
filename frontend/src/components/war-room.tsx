@@ -75,7 +75,7 @@ export function Section({ title, eyebrow, children, id, help }: { title: string;
   );
 }
 
-export function ProfileCard({ profile, memory, facts }: { profile: Profile; memory?: RunView["memory"]; facts?: RunView["facts"] }) {
+export function ProfileCard({ profile, memory }: { profile: Profile; memory?: RunView["memory"]; facts?: RunView["facts"] }) {
   return (
     <div className="card p-5">
       <p className="text-stone-800">{profile.summary}</p>
@@ -109,16 +109,11 @@ export function ProfileCard({ profile, memory, facts }: { profile: Profile; memo
           ))}
         </div>
       )}
-      {memory && (
-        <div className="mt-4 rounded-xl bg-stone-50 p-3 text-sm text-stone-700">
-          <span className="font-semibold">Memory: </span>
-          {memory.prior_facts > 0 ? `recalled ${memory.prior_facts} facts from your Business Constitution` : "first visit, starting a new Business Constitution"}
-          {facts?.length ? `; learned ${facts.length} new facts` : ""}.
-          {memory.own_episodes?.length > 0 && <span> Previously adopted: {memory.own_episodes.map((e) => e.text.split(" adopted ")[1]?.split(" for ")[0]).filter(Boolean).join(", ")}.</span>}
-          {memory.similar_businesses?.length > 0 && (
-            <span> Similar businesses chose: {memory.similar_businesses.map((e) => e.text.split(" adopted ")[1]?.split(" for ")[0]).filter(Boolean).join(", ")}.</span>
-          )}
-        </div>
+      {memory && (memory.own_episodes?.length > 0 || memory.similar_businesses?.length > 0) && (
+        <p className="mt-4 rounded-xl bg-stone-50 p-3 text-sm text-stone-700">
+          {memory.own_episodes?.length > 0 && <>You already adopted {memory.own_episodes.map((e) => e.text.split(" adopted ")[1]?.split(" for ")[0]).filter(Boolean).join(", ")}. </>}
+          {memory.similar_businesses?.length > 0 && <>Similar businesses chose {memory.similar_businesses.map((e) => e.text.split(" adopted ")[1]?.split(" for ")[0]).filter(Boolean).join(", ")}.</>}
+        </p>
       )}
     </div>
   );
@@ -166,7 +161,6 @@ export function ScoutGrid({
               </div>
             ) : (
               <>
-                <div className="mt-1 text-xs text-stone-400">Compared {s.searched.length} verified tools</div>
                 <ul className="mt-3 space-y-2">
                   {s.picks.map((pk: Pick) => (
                     <li key={pk.tool_id} className="rounded-lg bg-stone-50 p-2.5">
@@ -177,19 +171,19 @@ export function ScoutGrid({
                 </ul>
                 {drop.length > 0 && (
                   <div className="mt-3 flex items-start gap-2 rounded-lg bg-amber-50 p-2 text-xs text-amber-900">
-                    <ShieldAlert size={14} className="mt-0.5 shrink-0" /> Blocked {drop.length} suggestion{drop.length > 1 ? "s" : ""} not in the verified catalog.
+                    <ShieldAlert size={14} className="mt-0.5 shrink-0" /> Skipped a suggestion that isn&apos;t in our verified catalog.
                   </div>
                 )}
                 {sec &&
                   (sec.unverified ? (
                     <div className="mt-3 flex items-start gap-2 rounded-lg bg-amber-50 p-2 text-xs text-amber-900">
                       <ShieldAlert size={14} className="mt-0.5 shrink-0" />
-                      {sec.required.join(" / ")}: no confirmed tools in our catalog yet. Picks are flagged; verify with the vendor.
+                      {sec.required.join(" / ")} not confirmed for these tools. Check with the vendor.
                     </div>
                   ) : (
                     <div className="mt-3 flex items-start gap-2 rounded-lg bg-emerald-50 p-2 text-xs text-emerald-900">
                       <ShieldCheck size={14} className="mt-0.5 shrink-0" />
-                      Kept {sec.confirmed.length} tool{sec.confirmed.length === 1 ? "" : "s"} that confirm {sec.required.join(" / ")}.
+                      Only tools that confirm {sec.required.join(" / ")}.
                     </div>
                   ))}
               </>
@@ -272,11 +266,10 @@ export function StackPanel({
   const critiques = mesh.flatMap((m) => m.critiques);
   return (
     <div className="space-y-4">
-      <div className="card grid grid-cols-2 gap-5 p-5 sm:grid-cols-4">
-        <Metric label="Net gain / month" value={money(stack.net_monthly, { sign: true })} good sub="value minus tool costs" />
-        <Metric label="Value / month" value={money(stack.monthly_value)} sub="time saved + revenue recovered" />
-        <Metric label="Tool cost / month" value={money(stack.monthly_cost)} sub={stack.within_budget ? `within your ${money(stack.budget)} budget` : `over your ${money(stack.budget)} budget`} />
-        <Metric label="Hours saved / month" value={`${Math.round(stack.hours_saved_per_month)} h`} sub="owner + staff time" />
+      <div className="card grid grid-cols-1 gap-5 p-5 sm:grid-cols-3">
+        <Metric label="You save / month" value={money(stack.net_monthly, { sign: true })} good sub="after tool costs" />
+        <Metric label="Tools cost / month" value={money(stack.monthly_cost)} sub={stack.within_budget ? `within your ${money(stack.budget)} budget` : `over your ${money(stack.budget)} budget`} />
+        <Metric label="Time back / month" value={`${Math.round(stack.hours_saved_per_month)} hours`} />
         {verdicts?.summary && <p className="col-span-full border-t border-stone-100 pt-4 text-sm leading-relaxed text-stone-700">{verdicts.summary}</p>}
       </div>
 
@@ -288,7 +281,7 @@ export function StackPanel({
             <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-stone-100 bg-stone-50/60 px-4 py-3">
               <h3 className="font-semibold">{p.title}</h3>
               <span className="flex items-center gap-3 text-xs text-stone-500">
-                this problem costs you ~{money(p.monthly_cost_of_pain)}/month
+                costs you ~{money(p.monthly_cost_of_pain)}/month
                 {compareIds.length >= 2 && (
                   <Link href={`/compare?ids=${compareIds.join(",")}`} className="font-semibold text-emerald-700 hover:underline">
                     Compare
@@ -302,10 +295,9 @@ export function StackPanel({
                   <tr className="text-left text-xs text-stone-500">
                     <th className="px-4 py-2 font-medium">Tool</th>
                     <th className="px-2 py-2 text-right font-medium">Price / month</th>
-                    <ColHead label="Value / month" tip="What this tool is worth to you each month: hours saved × your hourly cost, plus revenue it recovers." />
-                    <ColHead label="Net / month" tip="Value per month minus the tool's monthly price. Green means it pays for itself." />
-                    <ColHead label="Pays back in" tip="Days until the tool's value covers its first month's price plus your setup time." />
-                    <ColHead label="Fit score" tip="0–100. Combines value for money, budget fit, ease for your tech comfort, connection to tools you use, and advisor concerns. Expand a tool for the breakdown." left />
+                    <ColHead label="You save / month" tip="Time saved and revenue recovered, minus the tool's price." />
+                    <ColHead label="Pays for itself in" tip="Days until the savings cover the first month's price and your setup time." />
+                    <ColHead label="Fit" tip="How well it suits your budget, tech comfort and the tools you already use, after the advisors' concerns." left />
                   </tr>
                 </thead>
                 <tbody>
@@ -348,21 +340,15 @@ export function StackPanel({
                             )}
                           </td>
                           <td className="px-2 py-3 text-right tabular-nums">{s.monthly_cost === 0 ? "Free" : money(s.monthly_cost)}</td>
-                          <td className="px-2 py-3 text-right tabular-nums">{money(s.monthly_value)}</td>
                           <td className={cn("px-2 py-3 text-right font-semibold tabular-nums", s.net_monthly > 0 ? "text-emerald-700" : "text-red-700")}>{money(s.net_monthly, { sign: true })}</td>
                           <td className="px-2 py-3 text-right tabular-nums">{s.payback_days === null ? "—" : s.payback_days < 1 ? "<1 day" : `${Math.round(s.payback_days)} ${Math.round(s.payback_days) === 1 ? "day" : "days"}`}</td>
                           <td className="px-4 py-3">
-                            <div className="flex items-center gap-2">
-                              <div className="h-1.5 w-16 overflow-hidden rounded-full bg-stone-100">
-                                <div className={cn("h-full rounded-full", s.fit_score >= 80 ? "bg-emerald-600" : s.fit_score >= 60 ? "bg-amber-500" : "bg-stone-400")} style={{ width: `${s.fit_score}%` }} />
-                              </div>
-                              <span className="tabular-nums text-stone-600">{s.fit_score}<span className="text-stone-400">/100</span></span>
-                            </div>
+                            <FitBadge score={s.fit_score} />
                           </td>
                         </tr>
                         {open === key && (
                           <tr className="bg-stone-50/70">
-                            <td colSpan={6} className="px-4 pb-4 pt-1">
+                            <td colSpan={5} className="px-4 pb-4 pt-1">
                               <div className="grid gap-4 text-sm md:grid-cols-3">
                                 <div>
                                   <div className="eyebrow">Why this tool</div>
@@ -372,23 +358,13 @@ export function StackPanel({
                                 <div>
                                   <div className="eyebrow">How we estimated it</div>
                                   <p className="mt-1 text-stone-700">{s.estimate_reasoning}</p>
-                                  <p className="mt-2 text-xs text-stone-500">
-                                    Removes ~{Math.round(s.pct_time_saved * 100)}% of the time and ~{Math.round(s.pct_revenue_recovered * 100)}% of the lost revenue → {s.hours_saved_per_month}h +{" "}
-                                    {money(s.revenue_recovered_monthly)} a month. Setup ≈ {t?.setup_hours}h.
-                                  </p>
+                                  {t && <p className="mt-2 text-xs text-stone-500">Setup takes about {t.setup_hours} hours.</p>}
                                 </div>
                                 <div>
-                                  <div className="eyebrow">Fit score breakdown (points)</div>
-                                  <ul className="mt-1 space-y-0.5 text-xs text-stone-600">
-                                    {Object.entries(s.fit_breakdown).map(([k, v]) => (
-                                      <li key={k} className="flex justify-between gap-2">
-                                        <span className="capitalize">{k.replace("_", " ")}</span>
-                                        <span className="tabular-nums">{v}</span>
-                                      </li>
-                                    ))}
-                                  </ul>
+                                  <div className="eyebrow">Advisor notes</div>
+                                  {concerns.length === 0 && <p className="mt-1 text-xs text-stone-500">No concerns raised.</p>}
                                   {concerns.length > 0 && (
-                                    <ul className="mt-2 space-y-1 text-xs text-stone-600">
+                                    <ul className="mt-1 space-y-1 text-xs text-stone-600">
                                       {concerns.map((c, i) => (
                                         <li key={i}>
                                           <b>{c.persona}:</b> {c.concern}
@@ -398,7 +374,7 @@ export function StackPanel({
                                   )}
                                   {t && (
                                     <a href={t.url} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block text-xs font-semibold text-emerald-700 hover:underline">
-                                      Visit {t.name} ↗
+                                      Visit site ↗
                                     </a>
                                   )}
                                 </div>
@@ -416,13 +392,18 @@ export function StackPanel({
         );
       })}
       <p className="flex items-center gap-1.5 text-xs text-stone-500">
-        <ShieldCheck size={14} /> Numbers from a deterministic calculator
+        <ShieldCheck size={14} /> How we calculate
         <HelpTip>
-          Every number above comes from a deterministic calculator; the AI only estimates what share of each problem a tool removes. Prices are typical list prices as of Nov 2026. Verify before buying.
+          A fixed calculator does the math; the AI only estimates how much of each problem a tool removes. Prices are typical list prices as of Nov 2026. Check before buying.
         </HelpTip>
       </p>
     </div>
   );
+}
+
+function FitBadge({ score }: { score: number }) {
+  const [label, cls] = score >= 80 ? ["Strong", "bg-emerald-100 text-emerald-800"] : score >= 60 ? ["Good", "bg-amber-100 text-amber-800"] : ["Weak", "bg-stone-100 text-stone-600"];
+  return <span className={cn("rounded-full px-2 py-0.5 text-xs font-semibold", cls)}>{label}</span>;
 }
 
 function ColHead({ label, tip, left }: { label: string; tip: string; left?: boolean }) {
@@ -451,40 +432,59 @@ function Metric({ label, value, sub, good }: { label: string; value: string; sub
 }
 
 export function PlanView({ plan, catalog }: { plan: Plan; catalog: Record<string, Tool> }) {
+  const [openWeek, setOpenWeek] = useState<number | null>(plan.weeks[0]?.week ?? null);
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
         <div className="text-sm font-semibold text-emerald-900">Do this today</div>
         <p className="mt-1 text-emerald-950">{plan.first_step_today}</p>
       </div>
-      <div className="grid gap-3 md:grid-cols-2">
-        {plan.weeks.map((w) => (
-          <div key={w.week} className="card p-5">
-            <div className="eyebrow">Week {w.week}</div>
-            <h3 className="mt-0.5 font-semibold">{w.theme}</h3>
-            <ul className="mt-3 space-y-2.5">
-              {w.tasks.map((t, i) => (
-                <li key={i} className="flex gap-2.5 text-sm">
-                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-600" />
-                  <span>
-                    {t.text}
-                    <span className="mt-0.5 block text-xs text-stone-500">
-                      {t.owner} · {t.minutes} min{t.tool_id && catalog[t.tool_id] ? ` · ${catalog[t.tool_id].name}` : ""}
-                    </span>
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
+      <div className="card divide-y divide-stone-100">
+        {plan.weeks.map((w) => {
+          const open = openWeek === w.week;
+          return (
+            <div key={w.week}>
+              <button
+                onClick={() => setOpenWeek(open ? null : w.week)}
+                aria-expanded={open}
+                className="flex w-full items-center justify-between gap-3 px-5 py-3.5 text-left hover:bg-stone-50"
+              >
+                <span className="min-w-0">
+                  <span className="eyebrow mr-2">Week {w.week}</span>
+                  <span className="font-semibold">{w.theme}</span>
+                </span>
+                <ChevronDown size={16} className={cn("shrink-0 text-stone-400 transition-transform", open && "rotate-180")} />
+              </button>
+              {open && (
+                <ul className="space-y-2.5 px-5 pb-4">
+                  {w.tasks.map((t, i) => (
+                    <li key={i} className="flex gap-2.5 text-sm">
+                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-600" />
+                      <span>
+                        {t.text}
+                        <span className="mt-0.5 block text-xs text-stone-500">
+                          {t.owner}
+                          {t.tool_id && catalog[t.tool_id] ? ` · ${catalog[t.tool_id].name.replace(/ \(.*\)$/, "")}` : ""}
+                        </span>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          );
+        })}
       </div>
       {plan.success_metrics.length > 0 && (
         <div className="card p-5">
-          <div className="eyebrow">How you&apos;ll know it&apos;s working</div>
-          <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+          <div className="eyebrow">Check after 30 days</div>
+          <ul className="mt-2 space-y-1.5">
             {plan.success_metrics.map((m, i) => (
-              <li key={i} className="text-sm">
-                <span className="font-medium">{m.metric}</span> <span className="text-stone-500">→ {m.target}</span>
+              <li key={i} className="flex gap-2 text-sm">
+                <Check size={14} className="mt-0.5 shrink-0 text-emerald-600" />
+                <span>
+                  {m.metric}: <span className="text-stone-600">{m.target}</span>
+                </span>
               </li>
             ))}
           </ul>

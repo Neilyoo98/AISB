@@ -1,37 +1,93 @@
-// Advisor-team network: node layout + how each recorded run event becomes a message between agents.
+// Advisor team: who the agents are, how they are linked (and why), and how a recorded run
+// becomes a plain-language message log grouped by phase.
 import type { RunEvent } from "@/lib/types";
-import { money } from "@/lib/api";
 
-export type AgentNode = { id: string; label: string; sub: string; x: number; y: number; tone: "core" | "scout" | "persona" | "you" };
+export type AgentKind = "core" | "scout" | "advisor" | "you";
+export type AgentIcon = "intake" | "memory" | "diagnoser" | "scout" | "budget" | "ease" | "integration" | "roi" | "you" | "planner";
+export type AgentNode = { id: string; label: string; sub: string; x: number; y: number; kind: AgentKind; icon: AgentIcon };
 
-export const VIEW = { w: 980, h: 520 };
+export const VIEW = { w: 1000, h: 540 };
 
 export const AGENT_NODES: AgentNode[] = [
-  { id: "intake", label: "Intake Analyst", sub: "reads your story", x: 80, y: 260, tone: "core" },
-  { id: "memory", label: "Memory", sub: "Business Constitution", x: 210, y: 90, tone: "core" },
-  { id: "diagnoser", label: "Diagnostician", sub: "$ cost of each pain", x: 320, y: 260, tone: "core" },
-  { id: "scout0", label: "Scout 1", sub: "", x: 470, y: 120, tone: "scout" },
-  { id: "scout1", label: "Scout 2", sub: "", x: 470, y: 260, tone: "scout" },
-  { id: "scout2", label: "Scout 3", sub: "", x: 470, y: 400, tone: "scout" },
-  { id: "budget_hawk", label: "Budget Hawk", sub: "protects cash", x: 630, y: 120, tone: "persona" },
-  { id: "ease_coach", label: "Ease Coach", sub: "keeps it simple", x: 630, y: 260, tone: "persona" },
-  { id: "integration_checker", label: "Integration", sub: "no double entry", x: 630, y: 400, tone: "persona" },
-  { id: "roi", label: "ROI Calculator", sub: "deterministic math", x: 780, y: 260, tone: "core" },
-  { id: "you", label: "You", sub: "approve", x: 900, y: 140, tone: "you" },
-  { id: "planner", label: "Adoption Coach", sub: "30-day plan", x: 900, y: 400, tone: "core" },
+  { id: "intake", label: "Intake Analyst", sub: "Reads your story", x: 90, y: 270, kind: "core", icon: "intake" },
+  { id: "memory", label: "Memory", sub: "Remembers your business", x: 220, y: 90, kind: "core", icon: "memory" },
+  { id: "diagnoser", label: "Diagnostician", sub: "Prices each problem", x: 330, y: 270, kind: "core", icon: "diagnoser" },
+  { id: "scout0", label: "Scout 1", sub: "Finds tools", x: 485, y: 130, kind: "scout", icon: "scout" },
+  { id: "scout1", label: "Scout 2", sub: "Finds tools", x: 485, y: 270, kind: "scout", icon: "scout" },
+  { id: "scout2", label: "Scout 3", sub: "Finds tools", x: 485, y: 410, kind: "scout", icon: "scout" },
+  { id: "budget_hawk", label: "Budget Hawk", sub: "Protects your cash", x: 650, y: 130, kind: "advisor", icon: "budget" },
+  { id: "ease_coach", label: "Ease Coach", sub: "Keeps it simple", x: 650, y: 270, kind: "advisor", icon: "ease" },
+  { id: "integration_checker", label: "Integration", sub: "Avoids double entry", x: 650, y: 410, kind: "advisor", icon: "integration" },
+  { id: "roi", label: "ROI Calculator", sub: "Does the math", x: 800, y: 270, kind: "core", icon: "roi" },
+  { id: "you", label: "You", sub: "Approve the plan", x: 915, y: 130, kind: "you", icon: "you" },
+  { id: "planner", label: "Adoption Coach", sub: "Writes your plan", x: 915, y: 410, kind: "core", icon: "planner" },
 ];
 
-export const AGENT_EDGES: [string, string][] = [
-  ["intake", "memory"], ["memory", "diagnoser"],
-  ["diagnoser", "scout0"], ["diagnoser", "scout1"], ["diagnoser", "scout2"],
-  ...["scout0", "scout1", "scout2"].flatMap((s) => ["budget_hawk", "ease_coach", "integration_checker"].map((p) => [s, p] as [string, string])),
-  ["budget_hawk", "roi"], ["ease_coach", "roi"], ["integration_checker", "roi"],
-  ["roi", "you"], ["you", "planner"], ["planner", "memory"], ["you", "memory"],
+export const AGENT_LABEL: Record<string, string> = Object.fromEntries(AGENT_NODES.map((n) => [n.id, n.label]));
+
+/** Every link, with what flows along it and why the two agents are connected. */
+export type AgentLink = { from: string; to: string; label: string; why: string[] };
+
+const SCOUTS = ["scout0", "scout1", "scout2"];
+const ADVISORS = ["budget_hawk", "ease_coach", "integration_checker"];
+const ADVISOR_FOCUS: Record<string, string> = {
+  budget_hawk: "price, contracts and overlap",
+  ease_coach: "how hard it is to learn and set up",
+  integration_checker: "whether it connects to tools you already use",
+};
+
+export const AGENT_LINKS: AgentLink[] = [
+  { from: "intake", to: "memory", label: "Your business profile", why: ["The Intake Analyst turns what you wrote into facts (team, budget, tools).", "Memory stores them so you never repeat yourself."] },
+  { from: "memory", to: "diagnoser", label: "What we already know", why: ["Memory shares past visits and tools you adopted.", "So the Diagnostician doesn't re-solve problems you already fixed."] },
+  ...SCOUTS.map((s, i) => ({
+    from: "diagnoser",
+    to: s,
+    label: "One problem + what it costs you",
+    why: [`Each of your top problems gets its own Scout (this is problem ${i + 1}).`, "The Scout knows what the problem costs, so it looks for tools worth that money."],
+  })),
+  ...SCOUTS.flatMap((s) =>
+    ADVISORS.map((a) => ({
+      from: s,
+      to: a,
+      label: "Shortlist of tools",
+      why: ["Every shortlist is checked by all three advisors.", `This advisor looks at ${ADVISOR_FOCUS[a]}.`],
+    })),
+  ),
+  ...ADVISORS.map((a) => ({
+    from: a,
+    to: "roi",
+    label: "Concerns about each tool",
+    why: [`Flags problems with ${ADVISOR_FOCUS[a]}.`, "Serious concerns lower a tool's chance of being recommended."],
+  })),
+  { from: "roi", to: "you", label: "Recommended stack", why: ["Picks one tool per problem, within your budget.", "Prefers fewer apps when one tool covers several problems."] },
+  { from: "you", to: "planner", label: "Tools you approved", why: ["Nothing moves forward until you approve.", "Only the tools you approve get a rollout plan."] },
+  { from: "planner", to: "memory", label: "Your plan and choices", why: ["Your approved tools and plan are saved.", "Next time, the advisors start from here."] },
+  { from: "you", to: "memory", label: "Tools you adopted later", why: ["Tools you adopt from Discover are saved too.", "They show up in your plan and future advice."] },
 ];
 
-export type Hop = { from: string; to: string[]; text: string; tone?: "good" | "warn" };
+export const AGENT_EDGES: [string, string][] = AGENT_LINKS.map((l) => [l.from, l.to]);
 
-/** Turn a run's events into an ordered list of agent-to-agent messages. */
+export function linkInfo(from: string, to: string): AgentLink | undefined {
+  return AGENT_LINKS.find((l) => l.from === from && l.to === to);
+}
+
+/* ---------- message log ---------- */
+
+export type Phase = "understand" | "find" | "debate" | "decide" | "plan";
+export const PHASES: { id: Phase; label: string }[] = [
+  { id: "understand", label: "Understand your business" },
+  { id: "find", label: "Find tools" },
+  { id: "debate", label: "Debate" },
+  { id: "decide", label: "Decide" },
+  { id: "plan", label: "Plan" },
+];
+
+export type Hop = { from: string; to: string[]; text: string; phase: Phase; tone?: "good" | "warn" };
+
+const list = (xs: string[]) => (xs.length <= 1 ? xs.join("") : `${xs.slice(0, -1).join(", ")} and ${xs[xs.length - 1]}`);
+const short = (s: string, n = 140) => (s.length > n ? `${s.slice(0, n - 1).trimEnd()}…` : s);
+
+/** Turn a run's events into an ordered list of plain-language messages between agents. */
 export function hopsFromEvents(events: RunEvent[], names: Record<string, string>): Hop[] {
   const scoutIdx: Record<string, number> = {};
   const hops: Hop[] = [];
@@ -40,56 +96,56 @@ export function hopsFromEvents(events: RunEvent[], names: Record<string, string>
     const d = e.data || {};
     switch (e.type) {
       case "intake.done":
-        hops.push({ from: "intake", to: ["memory"], text: `Profile: ${d.profile?.summary ?? "business understood"}` });
+        hops.push({ from: "intake", to: ["memory"], phase: "understand", text: short(d.profile?.summary ? `Understood your business: ${d.profile.summary}` : "Understood your business.") });
         break;
       case "memory.recalled":
-        hops.push({ from: "memory", to: ["diagnoser"], text: d.prior_facts ? `Recalled ${d.prior_facts} facts from earlier visits` : "First visit, starting a new Constitution" });
+        hops.push({ from: "memory", to: ["diagnoser"], phase: "understand", text: d.prior_facts ? "Shared what we remember from your earlier visits." : "First visit, so it started a fresh profile." });
         break;
-      case "pain.ranked":
-        (d.pains || []).slice(0, 3).forEach((p: { id: string }, i: number) => (scoutIdx[p.id] = i));
-        hops.push({
-          from: "diagnoser",
-          to: (d.pains || []).slice(0, 3).map((_: unknown, i: number) => `scout${i}`),
-          text: (d.pains || []).slice(0, 3).map((p: { title: string; monthly_cost_of_pain: number }) => `${p.title} (${money(p.monthly_cost_of_pain)}/mo)`).join(" · "),
-        });
+      case "pain.ranked": {
+        const pains = (d.pains || []).slice(0, 3) as { id: string; title: string }[];
+        pains.forEach((p, i) => (scoutIdx[p.id] = i));
+        hops.push({ from: "diagnoser", to: pains.map((_, i) => `scout${i}`), phase: "find", text: short(`Picked your biggest problems: ${list(pains.map((p) => p.title))}.`, 180) });
         break;
+      }
       case "scout.result": {
         const i = scoutIdx[d.pain_id] ?? 0;
-        hops.push({ from: `scout${i}`, to: ["budget_hawk", "ease_coach", "integration_checker"], text: `Shortlist: ${(d.picks || []).map((p: { tool_id: string }) => nm(p.tool_id)).join(", ")}` });
+        const picks = (d.picks || []).map((p: { tool_id: string }) => nm(p.tool_id));
+        hops.push({ from: `scout${i}`, to: ADVISORS, phase: "find", text: picks.length ? `Suggested ${list(picks)}.` : "Found no good match for this problem." });
         break;
       }
       case "guard.dropped": {
         const i = scoutIdx[d.pain_id] ?? 0;
-        hops.push({ from: `scout${i}`, to: [], text: `Blocked ${d.tool_ids?.length ?? 0} tool(s) not in the verified catalog`, tone: "warn" });
+        hops.push({ from: `scout${i}`, to: [], phase: "find", tone: "warn", text: "Skipped a suggestion that isn't in our checked list of tools." });
         break;
       }
       case "guard.security": {
         const i = scoutIdx[d.pain_id] ?? 0;
-        hops.push({ from: `scout${i}`, to: [], text: d.unverified ? `${(d.required || []).join(", ")}: no confirmed tools; flagged for you to verify` : `${(d.required || []).join(", ")}: kept ${d.confirmed?.length} confirmed tools`, tone: "warn" });
+        const req = list(d.required || []);
+        hops.push({ from: `scout${i}`, to: [], phase: "find", tone: "warn", text: d.unverified ? `Couldn't confirm ${req} for these tools. Check with the vendor.` : `Kept only tools that confirm ${req}.` });
         break;
       }
       case "mesh.message": {
         const worst = (d.critiques || []).find((c: { severity: string }) => c.severity === "high");
-        hops.push({ from: d.key, to: ["roi"], text: worst ? `${d.headline} — flags ${nm(worst.tool_id)} (high)` : d.headline, tone: worst ? "warn" : undefined });
+        hops.push({ from: d.key, to: ["roi"], phase: "debate", tone: worst ? "warn" : undefined, text: short(worst ? `${d.headline} Strong concern about ${nm(worst.tool_id)}.` : d.headline) });
         break;
       }
       case "stack.scored":
-        hops.push({ from: "roi", to: ["you"], text: `Recommends ${(d.stack?.tool_ids || []).map(nm).join(" + ")}: ${money(d.stack?.net_monthly, { sign: true })}/mo net`, tone: "good" });
+        hops.push({ from: "roi", to: ["you"], phase: "decide", tone: "good", text: `Recommends ${list((d.stack?.tool_ids || []).map(nm))}.` });
         break;
       case "plan.ready":
-        hops.push({ from: "you", to: ["planner"], text: `Approved ${(d.approved_tool_ids || []).map(nm).join(" + ") || "nothing yet"}` });
+        hops.push({ from: "you", to: ["planner"], phase: "decide", text: (d.approved_tool_ids || []).length ? `You approved ${list((d.approved_tool_ids || []).map(nm))}.` : "You approved nothing yet." });
         break;
       case "memory.saved":
-        hops.push({ from: "planner", to: ["memory"], text: `30-day plan ready; saved ${d.facts} facts and ${d.episodes} adoption(s)`, tone: "good" });
+        hops.push({ from: "planner", to: ["memory"], phase: "plan", tone: "good", text: "Wrote your 30-day plan and saved your choices." });
         break;
     }
   }
   return hops;
 }
 
-/** Manual adoptions (adopted from Discover / War Room after the analysis) shown as extra hops in the replay. */
+/** Tools adopted after the analysis (from Discover or the War Room) appear at the end of the log. */
 export function adoptionHops(items: { tool_id: string; source: string }[], names: Record<string, string>): Hop[] {
   return items
     .filter((a) => a.source === "manual")
-    .map((a) => ({ from: "you", to: ["memory"], text: `You adopted ${names[a.tool_id] || a.tool_id}; saved to your Business Constitution`, tone: "good" as const }));
+    .map((a) => ({ from: "you", to: ["memory"], phase: "plan" as const, tone: "good" as const, text: `You adopted ${names[a.tool_id] || a.tool_id}. It's now part of your plan.` }));
 }

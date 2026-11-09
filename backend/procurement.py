@@ -26,6 +26,33 @@ def spend_summary(cap: float | None, committed: float) -> dict:
     }
 
 
+def request_impact(cap: float | None, committed: float, add_cost: float, already_adopted: bool = False) -> dict:
+    """What approving one request does to monthly AI spend: shown to the owner before deciding."""
+    add = 0.0 if already_adopted else max(0.0, float(add_cost or 0))
+    projected = round(float(committed) + add, 2)
+    has_cap = bool(cap) and cap > 0
+    return {"adds": round(add, 2), "projected": projected, "cap": round(cap, 2) if has_cap else None,
+            "over_cap": bool(has_cap and projected > cap)}
+
+
+INVITE_DAYS = 14
+
+
+def invite_status(invite: dict, now) -> str:
+    """valid | used | revoked | expired for an invite row ({used_by, revoked, expires_at})."""
+    if invite.get("revoked"):
+        return "revoked"
+    if invite.get("used_by"):
+        return "used"
+    exp = invite.get("expires_at")
+    if exp is not None:
+        if exp.tzinfo is None and now.tzinfo is not None:
+            exp = exp.replace(tzinfo=now.tzinfo)
+        if exp <= now:
+            return "expired"
+    return "valid"
+
+
 def check_approval(cap: float | None, committed: float, add_cost: float, override: bool) -> tuple[bool, str]:
     """May this request be approved? Exceeding the cap requires an explicit override."""
     if not cap or cap <= 0:

@@ -95,7 +95,7 @@ export default function Home() {
       </main>
 
       <footer className="border-t border-stone-200 px-4 py-8 text-center text-xs text-stone-500">
-        StackSmith prototype · AISB Hack-a-thon, University of Maryland · Tool prices as of Nov 2026, verify before buying · Photos from Unsplash
+        StackSmith prototype · AISB Hack-a-thon, University of Maryland · Prices as of Nov 2026 · Photos: Unsplash
       </footer>
     </div>
   );

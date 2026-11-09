@@ -20,10 +20,15 @@ export function pricePlain(t: Tool) {
   return `${base}, flat${t.free_tier ? " (free plan available)" : ""}`;
 }
 
+const TRUST_SHORT: Record<string, string> = {
+  soc2: "SOC 2", hipaa: "HIPAA", gdpr: "GDPR", iso27001: "ISO 27001", no_training_on_customer_data: "No training on your data",
+  retention: "Retention policy", data_residency: "Data location", opt_out: "Opt-out",
+};
+
 export function trustSnapshot(t: Tool) {
-  const facts = Object.values(t.trust || {});
-  const sourced = facts.filter((f) => f.status !== "unknown").length;
-  return { sourced, total: facts.length };
+  const entries = Object.entries(t.trust || {});
+  const sourcedKeys = entries.filter(([, f]) => f.status !== "unknown").map(([k]) => k);
+  return { sourced: sourcedKeys.length, total: entries.length, labels: sourcedKeys.map((k) => TRUST_SHORT[k] || k) };
 }
 
 export function ToolQuickView({ tool, onClose }: { tool: Tool | null; onClose: () => void }) {
@@ -95,7 +100,7 @@ export function ToolQuickView({ tool, onClose }: { tool: Tool | null; onClose: (
               <p className="text-base leading-relaxed text-stone-800">{tool.description}</p>
               {tool.reviews && (
                 <div className="flex items-center gap-1.5 text-xs text-stone-500">
-                  <Stars value={tool.reviews.overall} size={12} /> {tool.reviews.overall.toFixed(1)} out of 5 from {tool.reviews.count} review{tool.reviews.count > 1 ? "s" : ""}
+                  <Stars value={tool.reviews.overall} size={12} /> ({tool.reviews.count} review{tool.reviews.count > 1 ? "s" : ""})
                 </div>
               )}
               <section>
@@ -113,16 +118,16 @@ export function ToolQuickView({ tool, onClose }: { tool: Tool | null; onClose: (
                   <div className="flex justify-between gap-4 px-3.5 py-2.5"><dt className="text-stone-500">Works with</dt><dd className="text-right font-medium capitalize">{tool.integrates_with.join(", ").replace(/-/g, " ")}</dd></div>
                 )}
                 <div className="flex justify-between gap-4 px-3.5 py-2.5">
-                  <dt className="flex items-center gap-1 text-stone-500"><ShieldCheck size={13} /> Trust facts</dt>
+                  <dt className="flex items-center gap-1 text-stone-500"><ShieldCheck size={13} /> Security</dt>
                   <dd className="text-right font-medium">
                     {(() => {
                       const s = trustSnapshot(tool);
-                      return s.sourced ? `${s.sourced} of ${s.total} sourced from the vendor` : `Not yet verified (0 of ${s.total})`;
+                      return s.sourced ? s.labels.slice(0, 3).join(", ") : "Not verified yet";
                     })()}
                   </dd>
                 </div>
               </dl>
-              <p className="text-xs text-stone-500">Typical list price as of Nov 2026. Check the vendor&apos;s site before buying.</p>
+              <p className="text-xs text-stone-500">Prices as of Nov 2026.</p>
             </div>
 
             <div className="space-y-3 border-t border-stone-100 p-5">

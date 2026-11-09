@@ -2,7 +2,7 @@
 import { Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Check, Plus, Save, X } from "lucide-react";
+import { Check, ChevronDown, Plus, Save, X } from "lucide-react";
 import { api, cn, money } from "@/lib/api";
 import type { Business, Tool, User } from "@/lib/types";
 import { AppHeader, Ease, HelpTip, PageHeader, PageState, Stars, useTitle } from "@/components/ui";
@@ -41,6 +41,8 @@ function CompareInner() {
   const [horizon, setHorizon] = useState<12 | 36>(12);
   const [ev, setEv] = useState<Eval | null>(null);
   const [saved, setSaved] = useState(false);
+  const [details, setDetails] = useState(false);
+  const [customize, setCustomize] = useState(false);
 
   useEffect(() => {
     if (ids.length) api<Record<string, Tool>>(`/catalog?ids=${idKey}`).then(setTools);
@@ -89,7 +91,7 @@ function CompareInner() {
   const totals = list.map((i) => res[i]?.score.total ?? 0);
   const tcoKey = horizon === 12 ? "tco_12" : "tco_36";
   const tcos = list.map((i) => res[i]?.[tcoKey]?.total ?? 0);
-  const maxTco = Math.max(1, ...tcos);
+  const monthlies = list.map((i) => tools?.[i]?.price_monthly_typical ?? 0);
 
   return (
     <div className="min-h-dvh pb-16">
@@ -100,9 +102,8 @@ function CompareInner() {
           title="Side-by-side comparison"
           help={
             <>
-              Scores come from catalog facts and reviews through a fixed formula, not AI guesses. Move the sliders to weight what matters to you.
-              Weights are rebalanced to total 100%. Grey &ldquo;no data&rdquo; scores are neutral placeholders until we can verify the fact.
-              {ev?.personalized ? <> Personalized for <b>{ev.business_name}</b>.</> : <> Log in to personalize fit and cost to your business.</>}
+              Scores come from catalog facts and reviews through a fixed formula, not AI guesses. Pick what matters most on the left.
+              {ev?.personalized ? <> Personalized for <b>{ev.business_name}</b>.</> : <> Log in to personalize it to your business.</>}
             </>
           }
           actions={list.length < 4 && <Link href="/tools" className="btn-secondary"><Plus size={16} /> Add a tool</Link>}
@@ -112,15 +113,18 @@ function CompareInner() {
           <aside className="space-y-4 lg:sticky lg:top-20 lg:h-fit">
             <div className="card p-5">
               <div className="flex items-center justify-between">
-                <h2 className="text-sm font-semibold">What matters to you</h2>
-                <HelpTip align="right">Each criterion is scored 0–10. Your weights decide how much each one counts toward the overall score.</HelpTip>
+                <h2 className="text-sm font-semibold">What matters most?</h2>
+                <HelpTip align="right">Your choice decides how much cost, ease, fit, security, growth and support count toward the overall score.</HelpTip>
               </div>
               <div className="mt-3 flex flex-wrap gap-1.5">
                 {Object.keys(presets).map((k) => (
                   <button key={k} onClick={() => setWeights(presets[k])} className="rounded-full border border-stone-200 bg-white px-2.5 py-1 text-xs font-medium hover:border-stone-400">{PRESET_LABEL[k] || k}</button>
                 ))}
               </div>
-              <div className="mt-4 space-y-3">
+              <button onClick={() => setCustomize(!customize)} className="mt-3 flex items-center gap-1 text-xs font-semibold text-emerald-700 hover:underline" aria-expanded={customize}>
+                Customize <ChevronDown size={13} className={cn("transition-transform", customize && "rotate-180")} />
+              </button>
+              {customize && <div className="mt-3 space-y-3">
                 {criteria.map((c) => (
                   <label key={c} className="block">
                     <span className="flex justify-between text-xs font-medium text-stone-700">
@@ -129,15 +133,15 @@ function CompareInner() {
                     <input type="range" min={0} max={100} step={5} value={weights?.[c] ?? 0} onChange={(e) => setWeights({ ...(weights || {}), [c]: Number(e.target.value) })} className="mt-1 w-full accent-emerald-700" />
                   </label>
                 ))}
-              </div>
-              {me?.business && (
+              </div>}
+              {customize && me?.business && (
                 <button onClick={saveWeights} className="btn-secondary mt-4 w-full py-2 text-xs">{saved ? <><Check size={14} /> Saved</> : <><Save size={14} /> Save as my default</>}</button>
               )}
             </div>
             <div className="card p-5">
               <div className="flex items-center justify-between">
-                <h2 className="text-sm font-semibold">Total cost of ownership</h2>
-                <HelpTip align="right">Subscription (plus extra seats or usage beyond the plan) + one-time setup time at {money(ev?.hourly_cost ?? 25)}/hour. Prices are typical list prices as of Nov 2026; verify before buying.</HelpTip>
+                <h2 className="text-sm font-semibold">Cost period</h2>
+                <HelpTip align="right">Total cost = subscription, plus extra users or usage, plus your setup time. Prices are typical list prices as of Nov 2026; check before buying.</HelpTip>
               </div>
               <div className="mt-3 grid grid-cols-2 rounded-lg bg-stone-100 p-1 text-xs font-semibold">
                 {([12, 36] as const).map((h) => (
@@ -185,13 +189,97 @@ function CompareInner() {
                   </tr>
                 </thead>
                 <tbody>
-                  <Row label="Overall score" help="Weighted average of the six criteria below, out of 10.">
+                  <Row label="Overall score" help="Out of 10, weighted by what matters most to you. Open score details to see each part.">
                     {list.map((i, k) => (
                       <td key={i} className={cell(totals[k] === best(totals))}>
                         <span className="font-display text-2xl font-bold tabular-nums">{res[i]?.score.total.toFixed(1)}</span><span className="text-xs text-stone-500"> /10</span>
                       </td>
                     ))}
                   </Row>
+                  <Row label="Monthly cost">
+                    {list.map((i, k) => {
+                      const t = tools[i];
+                      return (
+                        <td key={i} className={cell(monthlies[k] === best(monthlies, false))}>
+                          <span className="font-semibold tabular-nums">{t.price_monthly_typical === 0 ? "Free" : `${money(t.price_monthly_typical)}/month`}</span>
+                          {t.pricing_model !== "flat" && (
+                            <div className="text-xs text-stone-500">
+                              {t.pricing_model === "per_seat" ? `+ $${(t.unit_price ?? 0).toFixed(2)} per extra user` : `${t.units_included} ${t.unit}s included, then $${(t.unit_price ?? 0).toFixed(2)} each`}
+                            </div>
+                          )}
+                        </td>
+                      );
+                    })}
+                  </Row>
+                  <Row label={`Cost over ${horizon} months`} help="Subscription, plus extra users or usage, plus your one-time setup time.">
+                    {list.map((i, k) => (
+                      <td key={i} className={cell(tcos[k] === best(tcos, false))}>
+                        <span className="font-semibold tabular-nums">{money(res[i]?.[tcoKey]?.total)}</span>
+                      </td>
+                    ))}
+                  </Row>
+                  <Row label="Works with your tools" help="Native = built-in connection. Via Zapier/Make = possible with an automation tool. Missing = you'd re-type data.">
+                    {list.map((i) => {
+                      const g = res[i]?.score.integration;
+                      return (
+                        <td key={i} className={cell(false)}>
+                          {!g || g.total === 0 ? (
+                            <span className="text-xs text-stone-400">{ev.personalized ? "No current tools on file" : "Log in to check"}</span>
+                          ) : (
+                            <>
+                              <span className={cn("chip", g.none === 0 ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-amber-200 bg-amber-50 text-amber-800")}>works with {g.native} of {g.total}</span>
+                              <ul className="mt-1.5 space-y-0.5 text-xs">
+                                {g.links.map((l) => (
+                                  <li key={l.tool} className={l.status === "native" ? "text-emerald-800" : l.status === "none" ? "text-stone-400" : "text-amber-800"}>
+                                    {l.status === "native" ? "✓" : l.status === "none" ? "✗" : "~"} {l.tool.replace(/-/g, " ")}
+                                  </li>
+                                ))}
+                              </ul>
+                            </>
+                          )}
+                        </td>
+                      );
+                    })}
+                  </Row>
+                  {list.some((i) => tools[i].reviews) && <Row label="Reviews">
+                    {list.map((i) => {
+                      const r = tools[i].reviews;
+                      return <td key={i} className={cell(false)}>{r ? <span className="flex items-center gap-1.5"><Stars value={r.overall} size={12} /> <span className="text-xs text-stone-500">{r.overall.toFixed(1)} out of 5 · {r.count} review{r.count > 1 ? "s" : ""}</span></span> : <span className="text-xs text-stone-400">none yet</span>}</td>;
+                    })}
+                  </Row>}
+                  <Row label="Trust" help="Shown only when sourced from the vendor's own documents. “Unknown” means we haven't verified it yet, not that it's false.">
+                    {list.map((i) => {
+                      const facts = Object.entries(tools[i].trust || {});
+                      const sourced = facts.filter(([, v]) => v.status !== "unknown");
+                      const unknown = facts.length - sourced.length;
+                      return (
+                        <td key={i} className={cell(false)}>
+                          <ul className="space-y-0.5 text-xs">
+                            {sourced.map(([k, v]) => (
+                              <li key={k} className="text-emerald-800">
+                                ✓ {TRUST_LABEL[k] || k}{" "}
+                                {v.source_url && <a href={v.source_url} target="_blank" rel="noopener noreferrer" className="underline">source</a>}
+                              </li>
+                            ))}
+                          </ul>
+                          {sourced.length === 0 && <div className="text-xs text-stone-400">Not verified yet</div>}
+                          {sourced.length > 0 && unknown > 0 && <div className="mt-0.5 text-xs text-stone-400">Others not verified yet</div>}
+                        </td>
+                      );
+                    })}
+                  </Row>
+                  <Row label="Watch out">
+                    {list.map((i) => <td key={i} className={cell(false)}><ul className="space-y-0.5 text-xs text-amber-800">{tools[i].cons.map((c) => <li key={c}>− {c}</li>)}</ul></td>)}
+                  </Row>
+                  <tr className="border-t border-stone-100">
+                    <td colSpan={list.length + 1} className="px-5 py-3">
+                      <button onClick={() => setDetails(!details)} aria-expanded={details} className="flex items-center gap-1 text-xs font-semibold text-emerald-700 hover:underline">
+                        {details ? "Hide score details" : "Show score details"} <ChevronDown size={13} className={cn("transition-transform", details && "rotate-180")} />
+                      </button>
+                    </td>
+                  </tr>
+                  {details && (
+                    <>
                   {criteria.map((c) => {
                     const vals = list.map((i) => res[i]?.score.criteria[c]?.score ?? 0);
                     return (
@@ -211,95 +299,14 @@ function CompareInner() {
                       </Row>
                     );
                   })}
-                  <Row label={`Cost over ${horizon} months`} help="Subscription + extra seats/usage + one-time setup time.">
-                    {list.map((i, k) => {
-                      const t = res[i]?.[tcoKey];
-                      return (
-                        <td key={i} className={cell(tcos[k] === best(tcos, false))}>
-                          <div className="font-semibold tabular-nums">{money(t?.total)} <span className="text-xs font-normal text-stone-500">total</span></div>
-                          <div className="text-xs text-stone-500">≈ {money(t?.monthly)} per month</div>
-                          <div className="mt-1.5 flex h-2 w-full max-w-[160px] overflow-hidden rounded-full bg-stone-100" aria-hidden>
-                            <span className="bg-emerald-600" style={{ width: `${((t?.subscription ?? 0) / maxTco) * 100}%` }} />
-                            <span className="bg-amber-500" style={{ width: `${((t?.usage ?? 0) / maxTco) * 100}%` }} />
-                            <span className="bg-sky-400" style={{ width: `${((t?.setup ?? 0) / maxTco) * 100}%` }} />
-                          </div>
-                          <div className="mt-1 text-[11px] text-stone-500">{money(t?.subscription)} subscription{t?.usage ? ` · ${money(t.usage)} extra usage` : ""} · {money(t?.setup)} setup time</div>
-                        </td>
-                      );
-                    })}
-                  </Row>
-                  <Row label="Price">
-                    {list.map((i) => {
-                      const t = tools[i];
-                      return (
-                        <td key={i} className={cell(false)}>
-                          {t.price_monthly_typical === 0 ? "Free" : `${money(t.price_monthly_typical)} per month`}
-                          <div className="text-xs text-stone-500">
-                            {t.pricing_model === "per_seat" ? `$${(t.unit_price ?? 0).toFixed(2)} per extra user` : t.pricing_model === "usage" ? `${t.units_included} ${t.unit}s included, then $${(t.unit_price ?? 0).toFixed(2)} per ${t.unit}` : "flat price"}
-                            {t.free_tier ? " · free plan" : ""}
-                          </div>
-                        </td>
-                      );
-                    })}
-                  </Row>
-                  <Row label="Works with your tools" help="Native = built-in connection. Via Zapier/Make = possible with an automation tool. Missing = you'd re-type data.">
-                    {list.map((i) => {
-                      const g = res[i]?.score.integration;
-                      return (
-                        <td key={i} className={cell(false)}>
-                          {!g || g.total === 0 ? (
-                            <span className="text-xs text-stone-400">{ev.personalized ? "No current tools on file" : "Log in to check"}</span>
-                          ) : (
-                            <>
-                              <span className={cn("chip", g.none === 0 ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-amber-200 bg-amber-50 text-amber-800")}>connects to {g.native} of your {g.total} tools</span>
-                              <ul className="mt-1.5 space-y-0.5 text-xs">
-                                {g.links.map((l) => (
-                                  <li key={l.tool} className={l.status === "native" ? "text-emerald-800" : l.status === "none" ? "text-stone-400" : "text-amber-800"}>
-                                    {l.status === "native" ? "✓" : l.status === "none" ? "✗" : "~"} {l.tool.replace(/-/g, " ")}
-                                  </li>
-                                ))}
-                              </ul>
-                            </>
-                          )}
-                        </td>
-                      );
-                    })}
-                  </Row>
-                  <Row label="Reviews">
-                    {list.map((i) => {
-                      const r = tools[i].reviews;
-                      return <td key={i} className={cell(false)}>{r ? <span className="flex items-center gap-1.5"><Stars value={r.overall} size={12} /> <span className="text-xs text-stone-500">{r.overall.toFixed(1)} out of 5 · {r.count} review{r.count > 1 ? "s" : ""}</span></span> : <span className="text-xs text-stone-400">none yet</span>}</td>;
-                    })}
-                  </Row>
-                  <Row label="Trust" help="Shown only when sourced from the vendor's own documents. “Unknown” means we haven't verified it yet, not that it's false.">
-                    {list.map((i) => {
-                      const facts = Object.entries(tools[i].trust || {});
-                      const sourced = facts.filter(([, v]) => v.status !== "unknown");
-                      const unknown = facts.length - sourced.length;
-                      return (
-                        <td key={i} className={cell(false)}>
-                          <ul className="space-y-0.5 text-xs">
-                            {sourced.map(([k, v]) => (
-                              <li key={k} className="text-emerald-800">
-                                ✓ {TRUST_LABEL[k] || k}{" "}
-                                {v.source_url && <a href={v.source_url} target="_blank" rel="noopener noreferrer" className="underline">source</a>}
-                              </li>
-                            ))}
-                          </ul>
-                          {unknown > 0 && <div className="mt-0.5 text-xs text-stone-400">{unknown} of {facts.length} facts not yet verified</div>}
-                        </td>
-                      );
-                    })}
-                  </Row>
                   <Row label="Setup & ease">
                     {list.map((i) => <td key={i} className={cell(false)}><div className="flex items-center gap-2">about {tools[i].setup_hours} hour{tools[i].setup_hours === 1 ? "" : "s"} <Ease n={tools[i].tech_comfort_min} /></div></td>)}
                   </Row>
                   <Row label="Hosting · API">
                     {list.map((i) => <td key={i} className={cell(false)}>{tools[i].deployment === "saas" ? "Cloud" : tools[i].deployment === "vpc" ? "Private cloud" : "On-premises"} · {tools[i].api_available ? "API available" : "no public API"}</td>)}
                   </Row>
-                  <Row label="Watch out">
-                    {list.map((i) => <td key={i} className={cell(false)}><ul className="space-y-0.5 text-xs text-amber-800">{tools[i].cons.map((c) => <li key={c}>− {c}</li>)}</ul></td>)}
-                  </Row>
+                    </>
+                  )}
                 </tbody>
               </table>
               <p className="border-t border-stone-100 px-5 py-3 text-xs text-stone-500">Green = best in this comparison.</p>

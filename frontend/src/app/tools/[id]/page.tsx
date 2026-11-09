@@ -8,7 +8,7 @@ import type { Business, ReviewAgg, Risk, RiskLevel, Tool, TrustFact, User } from
 import { CATEGORY_LABEL, isForAnyBusiness, toolCategories } from "@/lib/categories";
 import { CAPABILITY_LABEL, ToolIcon, toolType } from "@/lib/tool-icons";
 import { AdoptButton } from "@/components/adopt-button";
-import { pricePlain, trustSnapshot } from "@/components/tool-quickview";
+import { pricePlain } from "@/components/tool-quickview";
 import { AppHeader, Ease, HelpTip, PAIN_LABEL, PageState, Spinner, Stars, useTitle } from "@/components/ui";
 
 type Review = { id: number; role: string; output_quality: number; reliability: number; support: number; text: string; verified_use: boolean; is_demo: boolean; business_name: string | null; vertical: string | null; created_at: string };
@@ -62,7 +62,6 @@ export default function ToolPage() {
   }, [id]);
 
   const t = d?.tool;
-  const ts = t ? trustSnapshot(t) : null;
   return (
     <div className="min-h-dvh pb-16">
       {me !== undefined && <AppHeader loggedOut={!me} businessName={me?.business?.name} isDemo={me?.user.is_demo} />}
@@ -88,7 +87,7 @@ export default function ToolPage() {
                       {t.capability && <span className="chip">{CAPABILITY_LABEL[t.capability] || t.capability}</span>}
                       {t.free_tier && <span className="chip border-emerald-200 bg-emerald-50 text-emerald-800">Free plan</span>}
                       {d.aggregate && (
-                        <span className="flex items-center gap-1 text-stone-600"><Stars value={d.aggregate.overall} size={13} /> {d.aggregate.overall.toFixed(1)} out of 5 ({d.aggregate.count})</span>
+                        <span className="flex items-center gap-1 text-stone-600"><Stars value={d.aggregate.overall} size={13} /> ({d.aggregate.count})</span>
                       )}
                     </div>
                   </div>
@@ -165,7 +164,6 @@ export default function ToolPage() {
                 <section>
                   <div className="flex items-center gap-2">
                     <h2 className="font-semibold">Security & privacy facts</h2>
-                    <span className="text-sm text-stone-500">{ts?.sourced} of {ts?.total} sourced</span>
                     <HelpTip>We only mark a fact when it comes from the vendor&apos;s own documents, with a link and date. &ldquo;Unknown&rdquo; means we haven&apos;t verified it yet, not that the vendor fails it.</HelpTip>
                   </div>
                   <div className="card mt-3 divide-y divide-stone-100">
@@ -188,7 +186,6 @@ export default function ToolPage() {
                             <span className={cn("chip capitalize", LEVEL_STYLE[r.level])}>{r.level.replace("_", " ")}</span>
                           </div>
                           <p className="mt-2 text-sm text-stone-700">{r.reason}</p>
-                          <p className="mt-1 text-xs text-stone-500">Based on: {r.basis}</p>
                         </div>
                       ))}
                     </div>
@@ -253,7 +250,7 @@ function Reviews({ d, onPosted }: { d: Detail; onPosted: () => void }) {
           <div className="card p-5">
             <div className="font-display text-4xl font-bold">{a.overall.toFixed(1)}<span className="text-base font-normal text-stone-500"> / 5</span></div>
             <Stars value={a.overall} />
-            <div className="mt-1 text-xs text-stone-500">{a.count} review{a.count > 1 ? "s" : ""}, {a.verified} from verified users</div>
+            <div className="mt-1 text-xs text-stone-500">{a.count} review{a.count > 1 ? "s" : ""}</div>
             <dl className="mt-4 space-y-1.5 text-sm">
               {([["Output quality", a.output_quality], ["Reliability", a.reliability], ["Support", a.support]] as const).map(([k, v]) => (
                 <div key={k} className="flex items-center justify-between"><dt className="text-stone-600">{k}</dt><dd className="flex items-center gap-1.5"><Stars value={v} size={12} /> {v.toFixed(1)}</dd></div>
@@ -303,7 +300,7 @@ function Reviews({ d, onPosted }: { d: Detail; onPosted: () => void }) {
             </div>
             {r.text && <p className="mt-2 text-sm leading-relaxed text-stone-700">{r.text}</p>}
             <div className="mt-2 text-xs text-stone-400">
-              Quality {r.output_quality}/5 · Reliability {r.reliability}/5 · Support {r.support}/5 · {new Date(r.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+              {new Date(r.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
             </div>
           </article>
         ))}

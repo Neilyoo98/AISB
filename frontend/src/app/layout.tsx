@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Fraunces } from "next/font/google";
 import "./globals.css";
+import { Assistant } from "@/components/assistant";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 const display = Fraunces({ subsets: ["latin"], variable: "--font-display", weight: ["600", "700"] });
@@ -15,7 +16,10 @@ export const viewport: Viewport = { themeColor: "#fafaf7", width: "device-width"
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${display.variable} font-sans antialiased`}>{children}</body>
+      <body className={`${inter.variable} ${display.variable} font-sans antialiased`}>
+        {children}
+        <Assistant />
+      </body>
     </html>
   );
 }

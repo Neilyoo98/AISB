@@ -3,10 +3,10 @@
 The business owner is implicitly the admin. Members belong to one business (db.get_user_business resolves it).
 """
 import secrets
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Request
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, Field
 from sqlalchemy import Boolean, Column, DateTime, Float, Integer, String, Table, Text, delete, insert, select, update
 
 import adoptions
@@ -58,6 +58,19 @@ licenses = Table(
     Column("seats_bought", Integer, nullable=False, default=1),
     Column("seats_assigned", Integer, nullable=False, default=0),
     Column("renewal_date", String(10)),  # YYYY-MM-DD
+    Column("created_at", DateTime(timezone=True), default=_now),
+)
+
+invites = Table(
+    "team_invites", meta,
+    Column("code", String(32), primary_key=True),
+    Column("business_id", String(32), nullable=False, index=True),
+    Column("name", String(100)),  # who the owner meant to invite (display only)
+    Column("role", String(16), nullable=False, default="member"),
+    Column("created_by", String(32), nullable=False),
+    Column("expires_at", DateTime(timezone=True), nullable=False),
+    Column("used_by", String(32)),
+    Column("revoked", Boolean, default=False, nullable=False),
     Column("created_at", DateTime(timezone=True), default=_now),
 )
 
@@ -132,8 +145,7 @@ def _match_catalog(name: str) -> str | None:
 
 # ---------------- models ----------------
 
-class MemberIn(BaseModel):
-    email: EmailStr
+class InviteIn(BaseModel):
     name: str = Field(default="", max_length=100)
     role: str = Field(default="member", pattern="^(admin|member)$")
 
@@ -195,15 +207,32 @@ def get_team(user=Depends(current_user)):
         u = db.get_user(m["user_id"])
         if u:
             members.append({"user_id": u["id"], "name": u["name"], "email": u["email"], "role": m["role"], "owner": False})
+    spend = _spend(b)
+    adopted = set(_adopted_tool_ids(b["id"]))
+    if role != "admin":  # members only see their own requests
+        reqs = [r for r in reqs if r["requester_id"] == user["id"]]
+    pending_invites = []
+    if role == "admin":
+        now = _now()
+        with engine.begin() as c:
+            inv = _rows(c, select(invites).where(invites.c.business_id == b["id"]).order_by(invites.c.created_at.desc()))
+        pending_invites = [{"code": i["code"], "name": i["name"], "role": i["role"], "url": f"/join/{i['code']}",
+                            "expires_at": _iso(i["expires_at"])} for i in inv if pr.invite_status(i, now) == "valid"]
     return {
         "role": role,
         "business_name": b["name"],
         "me": user["id"],
         "members": members,
+        "invites": pending_invites,
         "requests": [{**{k: r[k] for k in ("id", "tool_id", "reason", "seats", "est_monthly_cost", "status", "override", "source")},
                       "tool_name": cat.get(r["tool_id"], {}).get("name", r["tool_id"]),
+                      "category": cat.get(r["tool_id"], {}).get("category"),
+                      "mine": r["requester_id"] == user["id"],
                       "requester": uname(r["requester_id"]), "decided_by": uname(r["decided_by"]) if r["decided_by"] else None,
-                      "decided_at": _iso(r["decided_at"]), "created_at": _iso(r["created_at"])} for r in reqs],
+                      "decided_at": _iso(r["decided_at"]), "created_at": _iso(r["created_at"]),
+                      "impact": pr.request_impact(spend["cap"], spend["committed_monthly"], r["est_monthly_cost"],
+                                                  r["tool_id"] in adopted) if r["status"] == "pending" else None}
+                     for r in reqs],
         "licenses": [{"id": l["id"], "tool_id": l["tool_id"], "name": cat.get(l["tool_id"], {}).get("name", l["tool_id"]),
                       "seats_bought": l["seats_bought"], "seats_assigned": l["seats_assigned"], "renewal_date": l["renewal_date"],
                       "monthly_cost": ev.tco(cat[l["tool_id"]], l["seats_bought"], 1, hourly_cost=0)["monthly"] if l["tool_id"] in cat else None}
@@ -211,32 +240,88 @@ def get_team(user=Depends(current_user)):
         "shadow": [{"id": s["id"], "tool_name": s["tool_name"], "note": s["note"], "status": s["status"],
                     "user": uname(s["user_id"]), "catalog_id": _match_catalog(s["tool_name"]), "created_at": _iso(s["created_at"])}
                    for s in shadow],
-        "adopted": _adopted_tool_ids(b["id"]),
-        "spend": _spend(b),
+        "adopted": sorted(adopted),
+        "spend": spend,
     }
 
 
-@router.post("/members")
-def add_member(body: MemberIn, request: Request, user=Depends(current_user)):
-    rate_limit(request, "team_member", 20)
-    b = _admin(user)
-    email = body.email.lower()
-    invite_password = None
-    u = db.get_user_by_email(email)
-    if u:
-        if u["id"] == b["user_id"]:
-            raise HTTPException(409, "That's the owner")
-        if db.get_user_business(u["id"]):
-            raise HTTPException(409, "That person already belongs to a business")
-        uid = u["id"]
-    else:
-        invite_password = secrets.token_urlsafe(9)
-        uid = db.create_user(email, body.name.strip() or email.split("@")[0], hash_password(invite_password),
-                             is_demo=bool(user["is_demo"]))
+@router.get("/me")
+def team_me(user=Depends(current_user)):
+    """Lightweight role lookup for buttons across the app (Adopt for owners, Request for members)."""
+    b = db.get_user_business(user["id"])
+    if not b:
+        return {"role": None, "business_name": None, "pending_requests": 0, "my_pending_tool_ids": []}
+    _, role = _context(user)
     with engine.begin() as c:
-        c.execute(insert(org_members).values(business_id=b["id"], user_id=uid, role=body.role))
-    return {"ok": True, "user_id": uid, "invite_password": invite_password,
-            "note": "Share this one-time password with your teammate; it is not shown again." if invite_password else None}
+        rows = c.execute(select(tool_requests.c.tool_id, tool_requests.c.requester_id).where(
+            tool_requests.c.business_id == b["id"], tool_requests.c.status == "pending")).all()
+    mine = sorted({r.tool_id for r in rows if r.requester_id == user["id"]})
+    pending = len(rows) if role == "admin" else len([r for r in rows if r.requester_id == user["id"]])
+    return {"role": role, "business_name": b["name"], "pending_requests": pending, "my_pending_tool_ids": mine}
+
+
+# ---------------- invites (shareable link) ----------------
+
+@router.post("/invites")
+def create_invite(body: InviteIn, request: Request, user=Depends(current_user)):
+    rate_limit(request, "team_invite", 20)
+    b = _admin(user)
+    code = secrets.token_urlsafe(9)
+    with engine.begin() as c:
+        c.execute(insert(invites).values(code=code, business_id=b["id"], name=body.name.strip() or None, role=body.role,
+                                         created_by=user["id"], expires_at=_now() + timedelta(days=pr.INVITE_DAYS)))
+    return {"code": code, "url": f"/join/{code}", "expires_in_days": pr.INVITE_DAYS}
+
+
+@router.delete("/invites/{code}")
+def revoke_invite(code: str, user=Depends(current_user)):
+    b = _admin(user)
+    with engine.begin() as c:
+        c.execute(update(invites).where(invites.c.code == code, invites.c.business_id == b["id"]).values(revoked=True))
+    return {"ok": True}
+
+
+def _invite(code: str) -> dict:
+    with engine.begin() as c:
+        r = c.execute(select(invites).where(invites.c.code == code)).first()
+    if not r:
+        raise HTTPException(404, "This invite link isn't valid. Ask the owner for a new one.")
+    return dict(r._mapping)
+
+
+_INVITE_MSG = {"expired": "This invite link has expired. Ask the owner for a new one.",
+               "used": "This invite link has already been used. Ask the owner for a new one.",
+               "revoked": "This invite link was cancelled. Ask the owner for a new one."}
+
+
+@router.get("/invite/{code}")
+def invite_info(code: str):
+    """Public: what the join page shows before the employee signs up."""
+    inv = _invite(code)
+    b = db.get_business(inv["business_id"])
+    owner = db.get_user(b["user_id"]) if b else None
+    status = pr.invite_status(inv, _now())
+    return {"business_name": b["name"] if b else None, "invited_by": owner["name"] if owner else None,
+            "name": inv["name"], "role": inv["role"], "status": status, "message": _INVITE_MSG.get(status)}
+
+
+@router.post("/join/{code}")
+def join_team(code: str, request: Request, user=Depends(current_user)):
+    rate_limit(request, "team_join", 10)
+    inv = _invite(code)
+    status = pr.invite_status(inv, _now())
+    if status != "valid":
+        raise HTTPException(410, _INVITE_MSG[status])
+    current = db.get_user_business(user["id"])
+    if current and current["id"] == inv["business_id"]:
+        return {"ok": True, "business_name": current["name"], "already_member": True}
+    if current:
+        raise HTTPException(409, f"You already belong to {current['name']}. Use a different account to join this team.")
+    with engine.begin() as c:
+        c.execute(insert(org_members).values(business_id=inv["business_id"], user_id=user["id"], role=inv["role"]))
+        c.execute(update(invites).where(invites.c.code == code).values(used_by=user["id"]))
+    b = db.get_business(inv["business_id"])
+    return {"ok": True, "business_name": b["name"] if b else None}
 
 
 @router.delete("/members/{user_id}")
@@ -398,5 +483,5 @@ def delete_team_rows(business_ids: list[str]):
     if not business_ids:
         return
     with engine.begin() as c:
-        for t in (org_members, tool_requests, licenses, shadow_tools):
+        for t in (org_members, tool_requests, licenses, shadow_tools, invites):
             c.execute(delete(t).where(t.c.business_id.in_(business_ids)))

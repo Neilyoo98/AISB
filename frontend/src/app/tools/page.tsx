@@ -3,7 +3,7 @@ import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight, Check, Clock, Scale, Search, X } from "lucide-react";
+import { ArrowRight, Check, Scale, Search, X } from "lucide-react";
 import { api, cn, money } from "@/lib/api";
 import type { Business, Tool, User } from "@/lib/types";
 import { CATEGORIES, categoryOfVertical, toolCategories } from "@/lib/categories";
@@ -102,8 +102,7 @@ function DiscoverInner() {
           title="Find AI tools for your business"
           help={
             <>
-              Every tool here is a real product we checked by hand. Search in plain words (we match by meaning, not keywords), narrow down with the filters, then tick up to 4 tools to
-              compare, or adopt one straight into your workflow.{profile && <> Tools that fit <b>{me?.business?.name}</b>&apos;s budget and comfort level are listed first.</>}
+              Real products we checked by hand. Search in plain words, then compare up to 4 or adopt one into your workflow.{profile && <> Tools that fit <b>{me?.business?.name}</b> come first.</>}
             </>
           }
         />
@@ -152,7 +151,7 @@ function DiscoverInner() {
         </div>
 
         <div className="mt-6 flex items-center justify-between text-sm text-stone-500" aria-live="polite">
-          <span>{searching ? "Searching…" : `${shown.length} tool${shown.length === 1 ? "" : "s"}${ranked ? " · best matches first" : ""}`}</span>
+          <span>{searching ? "Searching…" : ranked ? "Best matches first" : `${shown.length} tool${shown.length === 1 ? "" : "s"}`}</span>
           {anyFilter && (
             <button className="text-xs font-semibold text-emerald-700 hover:underline" onClick={() => { setBiz(null); setType(null); setHelps(null); setPrice("any"); }}>
               Clear filters
@@ -186,18 +185,16 @@ function DiscoverInner() {
                   <div className="mt-3 flex flex-wrap gap-1">
                     {t.capability && <span className="chip">{CAPABILITY_LABEL[t.capability] || t.capability}</span>}
                     {t.free_tier && <span className="chip border-emerald-200 bg-emerald-50 text-emerald-800">Free plan</span>}
-                    {t.api_available && <span className="chip">API</span>}
                     {goodFit(t) && <span className="chip border-emerald-200 bg-emerald-50 text-emerald-800">Fits your budget</span>}
                   </div>
                   {t.reviews && (
                     <div className="mt-2 flex items-center gap-1.5 text-xs text-stone-500">
-                      <Stars value={t.reviews.overall} size={12} /> {t.reviews.overall.toFixed(1)} out of 5 · {t.reviews.count} review{t.reviews.count > 1 ? "s" : ""}
+                      <Stars value={t.reviews.overall} size={12} /> ({t.reviews.count})
                     </div>
                   )}
                   <div className="mt-auto flex items-center justify-between gap-2 pt-4 text-xs text-stone-500">
-                    <span className="flex items-center gap-1" title="Typical setup time"><Clock size={12} /> ~{t.setup_hours}h setup</span>
+                    <button onClick={() => setQuick(t)} className="btn-ghost px-2 py-1 text-xs">Details</button>
                     <span className="flex items-center gap-1">
-                      <button onClick={() => setQuick(t)} className="btn-ghost px-2 py-1 text-xs">Details</button>
                       <button onClick={() => toggle(t.id)} disabled={!on && picked.length >= 4} aria-pressed={on}
                         className={cn("btn px-2 py-1 text-xs", on ? "bg-stone-900 text-white" : "text-stone-600 hover:bg-stone-100")} title="Add to comparison">
                         {on ? <Check size={13} /> : <Scale size={13} />} {on ? "Comparing" : "Compare"}

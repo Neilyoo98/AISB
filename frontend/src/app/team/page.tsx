@@ -1,27 +1,34 @@
 "use client";
 import { useEffect, useState } from "react";
-import { AlertTriangle, Check, Plus, ShieldAlert, UserPlus, X } from "lucide-react";
+import Link from "next/link";
+import { AlertTriangle, Check, Copy, Link2, Send, ShieldAlert, UserPlus, X } from "lucide-react";
 import { api, cn, money } from "@/lib/api";
 import { AppHeader, HelpTip, PageHeader, PageState, Spinner, useTitle } from "@/components/ui";
 
 type Member = { user_id: string; name: string; email: string; role: "admin" | "member"; owner: boolean };
-type Req = { id: number; tool_id: string; tool_name: string; reason: string; seats: number; est_monthly_cost: number; status: "pending" | "approved" | "denied"; override: boolean; source: string; requester: string; decided_by: string | null; decided_at: string | null; created_at: string };
+type Impact = { adds: number; projected: number; cap: number | null; over_cap: boolean };
+type Req = {
+  id: number; tool_id: string; tool_name: string; reason: string; seats: number; est_monthly_cost: number;
+  status: "pending" | "approved" | "denied"; override: boolean; source: string; requester: string; mine: boolean;
+  decided_by: string | null; decided_at: string | null; created_at: string; impact: Impact | null;
+};
 type License = { id: number; tool_id: string; name: string; seats_bought: number; seats_assigned: number; renewal_date: string | null; monthly_cost: number | null };
-type Shadow = { id: number; tool_name: string; note: string; status: "open" | "converted"; user: string; catalog_id: string | null; created_at: string };
+type Shadow = { id: number; tool_name: string; note: string; status: "open" | "converted"; user: string; catalog_id: string | null };
 type Spend = { cap: number | null; committed_monthly: number; headroom: number | null; over_cap: boolean; pct: number | null };
-type Team = { role: "admin" | "member"; business_name: string; me: string; members: Member[]; requests: Req[]; licenses: License[]; shadow: Shadow[]; adopted: string[]; spend: Spend };
-type CatalogTool = { id: string; name: string; price_monthly_typical: number };
+type Invite = { code: string; name: string | null; role: string; url: string; expires_at: string };
+type Team = { role: "admin" | "member"; business_name: string; members: Member[]; invites: Invite[]; requests: Req[]; licenses: License[]; shadow: Shadow[]; spend: Spend };
 
 const short = (n: string) => n.replace(/ \(.*\)$/, "");
-const date = (s: string | null) => (s ? new Date(s).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "—");
+const day = (s: string | null) => (s ? new Date(s).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "");
+const HOWTO_KEY = "ss_team_howto_dismissed";
 
 export default function TeamPage() {
   useTitle("Team");
   const [t, setT] = useState<Team | null>(null);
   const [err, setErr] = useState<string | null>(null);
-  const [tools, setTools] = useState<CatalogTool[]>([]);
-  const [flash, setFlash] = useState<string | null>(null);
+  const [flash, setFlash] = useState<{ ok: boolean; text: string } | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
+  const [showHowto, setShowHowto] = useState(false);
 
   const load = () => {
     setErr(null);
@@ -29,7 +36,11 @@ export default function TeamPage() {
   };
   useEffect(() => {
     load();
-    api<CatalogTool[]>("/catalog").then(setTools).catch(() => {});
+    try {
+      setShowHowto(localStorage.getItem(HOWTO_KEY) !== "1");
+    } catch {
+      setShowHowto(true);
+    }
   }, []);
 
   const act = async (key: string, fn: () => Promise<unknown>, ok?: string) => {
@@ -37,108 +48,58 @@ export default function TeamPage() {
     setFlash(null);
     try {
       await fn();
-      if (ok) setFlash(ok);
+      if (ok) setFlash({ ok: true, text: ok });
       load();
     } catch (e) {
-      setFlash((e as Error).message);
+      setFlash({ ok: false, text: (e as Error).message });
     }
     setBusy(null);
   };
 
+  const dismissHowto = () => {
+    setShowHowto(false);
+    try {
+      localStorage.setItem(HOWTO_KEY, "1");
+    } catch {}
+  };
+
   const admin = t?.role === "admin";
-  const pending = t?.requests.filter((r) => r.status === "pending") || [];
-  const decided = t?.requests.filter((r) => r.status !== "pending") || [];
-  const openShadow = t?.shadow.filter((s) => s.status === "open") || [];
 
   return (
     <div className="min-h-dvh pb-16">
       <AppHeader businessName={t?.business_name} />
-      <main className="mx-auto max-w-6xl space-y-6 px-4 pt-8">
+      <main className="mx-auto max-w-5xl space-y-6 px-4 pt-8">
         <PageHeader
           eyebrow="Team"
-          title="AI tools across your team"
+          title={admin || !t ? "Your team" : `Your team at ${t.business_name}`}
           help={
-            <>
-              Teammates request tools, and the admin approves them against a monthly AI spend cap. Approved tools are adopted into your workflow and show up in the
-              Dashboard, War Room and Agents pages. Licenses track seats you pay for; &ldquo;unapproved in use&rdquo; lists tools people already use on their own.
-            </>
+            admin ? (
+              <>Invite employees with a link. They browse Discover and press <b>Request</b> on any tool; you approve or decline here. Approved tools are added to your stack everywhere in StackSmith.</>
+            ) : (
+              <>Find a tool in Discover and press <b>Request</b>. Your owner approves it here, then it appears in your team&apos;s stack.</>
+            )
           }
+          actions={!admin && t ? <Link href="/tools" className="btn-primary"><Send size={16} /> Find a tool to request</Link> : undefined}
         />
+
+        {showHowto && t && <HowItWorks admin={!!admin} onClose={dismissHowto} />}
+
         {flash && (
-          <div role="status" className="flex items-start justify-between gap-3 rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm shadow-sm">
-            <span>{flash}</span>
-            <button onClick={() => setFlash(null)} aria-label="Dismiss" className="text-stone-400 hover:text-stone-700"><X size={16} /></button>
+          <div role="status" className={cn("flex items-start justify-between gap-3 rounded-xl border px-4 py-3 text-sm", flash.ok ? "border-emerald-200 bg-emerald-50 text-emerald-900" : "border-red-200 bg-red-50 text-red-900")}>
+            <span>{flash.text}</span>
+            <button onClick={() => setFlash(null)} aria-label="Dismiss" className="opacity-60 hover:opacity-100"><X size={16} /></button>
           </div>
         )}
+
         {err ? (
           <PageState kind="error" message={err} onRetry={load} />
         ) : !t ? (
           <PageState kind="loading" />
         ) : (
           <>
-            <SpendCard spend={t.spend} admin={admin} onSave={(cap) => act("cap", () => api("/team/spend-cap", { method: "PUT", json: { monthly_cap: cap } }), "Spend cap saved.")} busy={busy === "cap"} />
-
-            <div className="grid gap-6 lg:grid-cols-[1.3fr_1fr]">
-              <section className="card p-5">
-                <div className="flex items-center gap-1">
-                  <h2 className="font-semibold">Approval queue</h2>
-                  <HelpTip>Approving adds the tool to your stack. If it would push monthly AI spend over the cap, you&apos;ll be asked to confirm an override.</HelpTip>
-                  <span className="ml-auto text-xs text-stone-500">{pending.length} pending</span>
-                </div>
-                {pending.length === 0 ? (
-                  <p className="mt-4 text-sm text-stone-500">Nothing waiting.</p>
-                ) : (
-                  <ul className="mt-3 divide-y divide-stone-100">
-                    {pending.map((r) => (
-                      <RequestRow key={r.id} r={r} admin={admin} spend={t.spend} busy={busy === `r${r.id}`}
-                        onDecide={(approve, override) =>
-                          act(`r${r.id}`, () => api(`/team/requests/${r.id}/decide`, { method: "POST", json: { approve, override } }), approve ? `${short(r.tool_name)} approved and added to your stack.` : `${short(r.tool_name)} request denied.`)
-                        } />
-                    ))}
-                  </ul>
-                )}
-                {decided.length > 0 && (
-                  <details className="mt-4 text-sm">
-                    <summary className="cursor-pointer text-stone-500">History ({decided.length})</summary>
-                    <ul className="mt-2 space-y-1.5">
-                      {decided.map((r) => (
-                        <li key={r.id} className="flex flex-wrap items-center gap-2 text-xs text-stone-600">
-                          <span className={cn("chip", r.status === "approved" ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "text-stone-500")}>{r.status}</span>
-                          <b>{short(r.tool_name)}</b> for {r.requester}, decided by {r.decided_by} on {date(r.decided_at)}
-                          {r.override && <span className="chip border-amber-200 bg-amber-50 text-amber-800">over cap</span>}
-                        </li>
-                      ))}
-                    </ul>
-                  </details>
-                )}
-              </section>
-
-              <RequestForm tools={tools} adopted={t.adopted} busy={busy === "req"}
-                onSubmit={(body) => act("req", () => api("/team/requests", { method: "POST", json: body }), "Request sent to your admin.")} />
-            </div>
-
-            <div className="grid gap-6 lg:grid-cols-2">
-              <LicensesCard licenses={t.licenses} admin={admin} tools={tools} busy={busy}
-                onAssign={(id, n) => act(`l${id}`, () => api(`/team/licenses/${id}`, { method: "PATCH", json: { seats_assigned: n } }))}
-                onAdd={(body) => act("lic", () => api("/team/licenses", { method: "POST", json: body }), "License added.")} />
-              <ShadowCard items={openShadow} admin={admin} busy={busy}
-                onDeclare={(body) => act("sh", () => api("/team/shadow", { method: "POST", json: body }), "Thanks, your admin can now see it.")}
-                onConvert={(id) => act(`s${id}`, () => api(`/team/shadow/${id}/approve`, { method: "POST" }), "Moved to the approval queue.")} />
-            </div>
-
-            <MembersCard members={t.members} admin={admin} busy={busy === "mem"}
-              onAdd={async (body) => {
-                setBusy("mem");
-                setFlash(null);
-                try {
-                  const r = await api<{ invite_password: string | null }>("/team/members", { method: "POST", json: body });
-                  setFlash(r.invite_password ? `Added. One-time password for ${body.email}: ${r.invite_password} (shown only once).` : "Added to your team.");
-                  load();
-                } catch (e) {
-                  setFlash((e as Error).message);
-                }
-                setBusy(null);
-              }} />
+            <Requests t={t} admin={!!admin} busy={busy} act={act} />
+            <TeamMembers t={t} admin={!!admin} busy={busy} act={act} />
+            {admin && <Spending t={t} busy={busy} act={act} />}
           </>
         )}
       </main>
@@ -146,235 +107,310 @@ export default function TeamPage() {
   );
 }
 
-function SpendCard({ spend, admin, onSave, busy }: { spend: Spend; admin: boolean; onSave: (cap: number | null) => void; busy: boolean }) {
-  const [edit, setEdit] = useState(false);
-  const [val, setVal] = useState(spend.cap?.toString() || "");
-  const pct = spend.pct ?? 0;
-  return (
-    <section className="card p-5">
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-        <h2 className="font-semibold">Monthly AI spend</h2>
-        <HelpTip>Committed = typical monthly price of every adopted tool, plus extra seats on licenses. Prices are typical list prices; check your invoices.</HelpTip>
-        <div className="ml-auto flex items-center gap-2 text-sm">
-          {edit ? (
-            <>
-              <span className="text-stone-500">Cap $</span>
-              <input className="input w-28 py-1.5" type="number" min={0} value={val} onChange={(e) => setVal(e.target.value)} aria-label="Monthly cap in dollars" />
-              <button className="btn-primary py-1.5" disabled={busy} onClick={() => { onSave(val ? Number(val) : null); setEdit(false); }}>Save</button>
-              <button className="btn-ghost py-1.5" onClick={() => setEdit(false)}>Cancel</button>
-            </>
-          ) : (
-            admin && <button className="btn-secondary py-1.5" onClick={() => { setVal(spend.cap?.toString() || ""); setEdit(true); }}>{spend.cap ? "Edit cap" : "Set a cap"}</button>
-          )}
-        </div>
-      </div>
-      <div className="mt-4 flex flex-wrap items-baseline gap-x-2">
-        <span className={cn("font-display text-3xl font-bold tabular-nums", spend.over_cap && "text-red-700")}>{money(spend.committed_monthly)}</span>
-        <span className="text-sm text-stone-500">{spend.cap ? `of ${money(spend.cap)} cap per month` : "per month · no cap set"}</span>
-      </div>
-      {spend.cap && (
-        <>
-          <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-stone-100" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}>
-            <div className={cn("h-full rounded-full transition-[width] duration-500", spend.over_cap ? "bg-red-600" : pct > 85 ? "bg-amber-500" : "bg-emerald-600")} style={{ width: `${pct}%` }} />
-          </div>
-          <div className={cn("mt-1.5 text-xs", spend.over_cap ? "text-red-700" : "text-stone-500")}>
-            {spend.over_cap ? `${money(-(spend.headroom ?? 0))} over the cap` : `${money(spend.headroom)} left this month`}
-          </div>
-        </>
-      )}
-    </section>
-  );
-}
+/* ---------- How it works (dismissible) ---------- */
 
-function RequestRow({ r, admin, spend, busy, onDecide }: { r: Req; admin: boolean; spend: Spend; busy: boolean; onDecide: (approve: boolean, override: boolean) => void }) {
-  const over = !!spend.cap && spend.committed_monthly + r.est_monthly_cost > spend.cap;
-  const [confirm, setConfirm] = useState(false);
+function HowItWorks({ admin, onClose }: { admin: boolean; onClose: () => void }) {
+  const steps = admin
+    ? [["Invite", "Send an employee your invite link."], ["They request", "They press Request on a tool in Discover."], ["You approve", "Approve here and it joins your stack."]]
+    : [["Find a tool", "Browse Discover."], ["Request it", "Press Request and say what it's for."], ["Owner approves", "It then joins your team's stack."]];
   return (
-    <li className="py-3">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="font-medium">{short(r.tool_name)}</span>
-            {r.source === "shadow" && <span className="chip border-amber-200 bg-amber-50 text-amber-800">already in use</span>}
-            {over && <span className="chip border-red-200 bg-red-50 text-red-800">over cap</span>}
-          </div>
-          <div className="mt-0.5 text-xs text-stone-500">
-            {r.requester} · {r.seats} seat{r.seats > 1 ? "s" : ""} · ~{money(r.est_monthly_cost)}/mo · {date(r.created_at)}
-          </div>
-          {r.reason && <p className="mt-1 text-sm text-stone-700">&ldquo;{r.reason}&rdquo;</p>}
-        </div>
-        {admin && !confirm && (
-          <div className="flex shrink-0 gap-1.5">
-            <button className="btn-ghost px-2.5 py-1.5 text-xs" disabled={busy} onClick={() => onDecide(false, false)}>Deny</button>
-            <button className="btn-primary px-3 py-1.5 text-xs" disabled={busy} onClick={() => (over ? setConfirm(true) : onDecide(true, false))}>
-              {busy ? <Spinner /> : <Check size={14} />} Approve
-            </button>
-          </div>
-        )}
-      </div>
-      {confirm && (
-        <div role="alertdialog" className="mt-2 flex flex-wrap items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-900">
-          <AlertTriangle size={16} /> This pushes spend to {money(spend.committed_monthly + r.est_monthly_cost)}/mo, over your {money(spend.cap)} cap.
-          <span className="ml-auto flex gap-1.5">
-            <button className="btn-ghost px-2.5 py-1 text-xs" onClick={() => setConfirm(false)}>Cancel</button>
-            <button className="btn px-2.5 py-1 text-xs bg-red-700 text-white hover:bg-red-800" onClick={() => { setConfirm(false); onDecide(true, true); }}>Approve anyway</button>
-          </span>
-        </div>
-      )}
-    </li>
-  );
-}
-
-function RequestForm({ tools, adopted, busy, onSubmit }: { tools: CatalogTool[]; adopted: string[]; busy: boolean; onSubmit: (b: { tool_id: string; reason: string; seats: number }) => void }) {
-  const [f, setF] = useState({ tool_id: "", reason: "", seats: 1 });
-  const choices = tools.filter((x) => !adopted.includes(x.id)).sort((a, b) => a.name.localeCompare(b.name));
-  return (
-    <section className="card p-5">
-      <h2 className="font-semibold">Request a tool</h2>
-      <form className="mt-3 space-y-3" onSubmit={(e) => { e.preventDefault(); if (f.tool_id) { onSubmit(f); setF({ tool_id: "", reason: "", seats: 1 }); } }}>
-        <div>
-          <label className="label text-xs" htmlFor="rq-tool">Tool</label>
-          <select id="rq-tool" className="input" required value={f.tool_id} onChange={(e) => setF({ ...f, tool_id: e.target.value })}>
-            <option value="">Choose a tool…</option>
-            {choices.map((x) => <option key={x.id} value={x.id}>{short(x.name)} ({x.price_monthly_typical ? `${money(x.price_monthly_typical)}/mo` : "free"})</option>)}
-          </select>
-        </div>
-        <div className="grid grid-cols-[1fr_90px] gap-3">
+    <div className="card relative grid gap-4 p-5 sm:grid-cols-3">
+      <button onClick={onClose} className="absolute right-3 top-3 text-stone-400 hover:text-stone-700" aria-label="Hide how it works"><X size={16} /></button>
+      {steps.map(([title, body], i) => (
+        <div key={title} className="flex items-start gap-3">
+          <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-emerald-700 text-sm font-bold text-white">{i + 1}</span>
           <div>
-            <label className="label text-xs" htmlFor="rq-why">Why do you need it?</label>
-            <input id="rq-why" className="input" maxLength={600} value={f.reason} onChange={(e) => setF({ ...f, reason: e.target.value })} placeholder="e.g. answer calls during lunch rush" />
-          </div>
-          <div>
-            <label className="label text-xs" htmlFor="rq-seats">Seats</label>
-            <input id="rq-seats" className="input" type="number" min={1} max={500} value={f.seats} onChange={(e) => setF({ ...f, seats: Math.max(1, Number(e.target.value) || 1) })} />
+            <div className="text-sm font-semibold">{title}</div>
+            <div className="text-sm text-stone-600">{body}</div>
           </div>
         </div>
-        <button className="btn-primary w-full" disabled={busy || !f.tool_id}>{busy ? <Spinner /> : <Plus size={16} />} Send request</button>
-      </form>
-    </section>
+      ))}
+    </div>
   );
 }
 
-function LicensesCard({ licenses, admin, tools, busy, onAssign, onAdd }: { licenses: License[]; admin: boolean; tools: CatalogTool[]; busy: string | null; onAssign: (id: number, n: number) => void; onAdd: (b: { tool_id: string; seats_bought: number; renewal_date: string | null }) => void }) {
-  const [adding, setAdding] = useState(false);
-  const [f, setF] = useState({ tool_id: "", seats_bought: 1, renewal_date: "" });
-  return (
-    <section className="card p-5">
-      <div className="flex items-center gap-1">
-        <h2 className="font-semibold">Licenses</h2>
-        <HelpTip>Seats you pay for vs. seats actually given to someone. Unassigned seats are money you could save at renewal.</HelpTip>
-        {admin && !adding && <button className="btn-ghost ml-auto px-2.5 py-1 text-xs" onClick={() => setAdding(true)}><Plus size={14} /> Add</button>}
-      </div>
-      {licenses.length === 0 && !adding && <p className="mt-4 text-sm text-stone-500">No licenses tracked yet.</p>}
-      <ul className="mt-3 divide-y divide-stone-100">
-        {licenses.map((l) => {
-          const idle = l.seats_bought - l.seats_assigned;
-          return (
-            <li key={l.id} className="flex flex-wrap items-center justify-between gap-3 py-3 text-sm">
-              <div className="min-w-0">
-                <div className="font-medium">{short(l.name)}</div>
-                <div className="text-xs text-stone-500">Renews {date(l.renewal_date)}{l.monthly_cost != null && ` · ${money(l.monthly_cost)}/mo`}</div>
-              </div>
-              <div className="flex items-center gap-2">
-                {admin ? (
-                  <input type="number" min={0} max={l.seats_bought} defaultValue={l.seats_assigned} aria-label={`Seats assigned for ${l.name}`} disabled={busy === `l${l.id}`}
-                    className="input w-16 py-1 text-center" onBlur={(e) => { const n = Number(e.target.value); if (n !== l.seats_assigned) onAssign(l.id, n); }} />
-                ) : (
-                  <span className="tabular-nums">{l.seats_assigned}</span>
-                )}
-                <span className="text-xs text-stone-500">of {l.seats_bought} seats used</span>
-                {idle > 0 && <span className="chip border-amber-200 bg-amber-50 text-amber-800">{idle} idle</span>}
-              </div>
-            </li>
-          );
-        })}
-      </ul>
-      {adding && (
-        <form className="mt-3 grid gap-2 sm:grid-cols-[1fr_80px_140px_auto]" onSubmit={(e) => { e.preventDefault(); if (f.tool_id) { onAdd({ ...f, renewal_date: f.renewal_date || null }); setAdding(false); setF({ tool_id: "", seats_bought: 1, renewal_date: "" }); } }}>
-          <select className="input" required aria-label="Tool" value={f.tool_id} onChange={(e) => setF({ ...f, tool_id: e.target.value })}>
-            <option value="">Tool…</option>
-            {[...tools].sort((a, b) => a.name.localeCompare(b.name)).map((x) => <option key={x.id} value={x.id}>{short(x.name)}</option>)}
-          </select>
-          <input className="input" type="number" min={1} aria-label="Seats bought" value={f.seats_bought} onChange={(e) => setF({ ...f, seats_bought: Math.max(1, Number(e.target.value) || 1) })} />
-          <input className="input" type="date" aria-label="Renewal date" value={f.renewal_date} onChange={(e) => setF({ ...f, renewal_date: e.target.value })} />
-          <span className="flex gap-1">
-            <button className="btn-primary px-3" disabled={busy === "lic"}>Add</button>
-            <button type="button" className="btn-ghost px-2" onClick={() => setAdding(false)} aria-label="Cancel"><X size={16} /></button>
-          </span>
-        </form>
-      )}
-    </section>
-  );
-}
+type Act = (key: string, fn: () => Promise<unknown>, ok?: string) => Promise<void>;
 
-function ShadowCard({ items, admin, busy, onDeclare, onConvert }: { items: Shadow[]; admin: boolean; busy: string | null; onDeclare: (b: { tool_name: string; note: string }) => void; onConvert: (id: number) => void }) {
-  const [f, setF] = useState({ tool_name: "", note: "" });
+/* ---------- Tool requests ---------- */
+
+function Requests({ t, admin, busy, act }: { t: Team; admin: boolean; busy: string | null; act: Act }) {
+  const pending = t.requests.filter((r) => r.status === "pending");
+  const decided = t.requests.filter((r) => r.status !== "pending").slice(0, 6);
+  const decide = (r: Req, approve: boolean) => {
+    if (approve && r.impact?.over_cap) {
+      const ok = window.confirm(`Approving ${short(r.tool_name)} brings monthly AI spend to ${money(r.impact.projected)}, over your ${money(r.impact.cap)} limit. Approve anyway?`);
+      if (!ok) return;
+    }
+    act(`req-${r.id}`, () => api(`/team/requests/${r.id}/decide`, { method: "POST", json: { approve, override: approve && !!r.impact?.over_cap } }),
+      approve ? `${short(r.tool_name)} approved and added to your stack.` : `${short(r.tool_name)} declined.`);
+  };
   return (
-    <section className="card p-5">
-      <div className="flex items-center gap-1">
-        <h2 className="font-semibold">Unapproved in use</h2>
-        <HelpTip>Tools people already use on their own (&ldquo;shadow AI&rdquo;). Declaring them is safe and helps the admin check what data goes where.</HelpTip>
-      </div>
-      {items.length === 0 ? (
-        <p className="mt-4 text-sm text-stone-500">Nothing declared.</p>
+    <section className="card p-6">
+      <h2 className="font-display text-xl font-bold">{admin ? "Tool requests" : "My requests"}</h2>
+      <p className="mt-0.5 text-sm text-stone-600">{admin ? "Employees ask for tools here. Approve to add them to your stack." : "Tools you asked for and what your owner decided."}</p>
+
+      {pending.length === 0 ? (
+        <p className="mt-4 rounded-xl bg-stone-50 px-4 py-3 text-sm text-stone-600">
+          {admin ? "No requests waiting." : <>Nothing waiting. <Link href="/tools" className="font-semibold text-emerald-700 hover:underline">Find a tool to request</Link>.</>}
+        </p>
       ) : (
-        <ul className="mt-3 divide-y divide-stone-100">
-          {items.map((s) => (
-            <li key={s.id} className="flex flex-wrap items-start justify-between gap-3 py-3 text-sm">
-              <div className="min-w-0">
-                <div className="flex items-center gap-2 font-medium"><ShieldAlert size={14} className="text-amber-600" /> {s.tool_name}</div>
-                <div className="text-xs text-stone-500">{s.user}{s.note && ` · ${s.note}`}</div>
+        <ul className="mt-4 space-y-3">
+          {pending.map((r) => (
+            <li key={r.id} className="rounded-xl border border-stone-200 p-4">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div className="min-w-0">
+                  <div className="font-semibold">
+                    <Link href={`/tools/${r.tool_id}`} className="hover:underline">{short(r.tool_name)}</Link>
+                    <span className="font-normal text-stone-500"> · {money(r.est_monthly_cost)} per month{r.seats > 1 ? ` for ${r.seats} people` : ""}</span>
+                  </div>
+                  <div className="mt-0.5 text-sm text-stone-600">
+                    {admin ? <><b className="font-medium text-stone-800">{r.requester}</b> asked {day(r.created_at)}</> : <>Asked {day(r.created_at)}, waiting for your owner</>}
+                    {r.source === "shadow" && " · already using it"}
+                  </div>
+                  {r.reason && <p className="mt-1 text-sm text-stone-700">&ldquo;{r.reason}&rdquo;</p>}
+                  {admin && r.impact && (
+                    <p className={cn("mt-2 flex items-center gap-1.5 text-sm", r.impact.over_cap ? "text-amber-800" : "text-stone-600")}>
+                      {r.impact.over_cap && <AlertTriangle size={14} />}
+                      {r.impact.adds === 0
+                        ? "Already in your stack, so no extra cost."
+                        : r.impact.cap
+                          ? `This brings monthly AI spend to ${money(r.impact.projected)} of your ${money(r.impact.cap)} limit.`
+                          : `This brings monthly AI spend to ${money(r.impact.projected)}.`}
+                    </p>
+                  )}
+                </div>
+                {admin && (
+                  <div className="flex shrink-0 gap-2">
+                    <button className="btn-secondary" disabled={busy === `req-${r.id}`} onClick={() => decide(r, false)}>Decline</button>
+                    <button className="btn-primary" disabled={busy === `req-${r.id}`} onClick={() => decide(r, true)}>
+                      {busy === `req-${r.id}` ? <Spinner /> : <Check size={16} />} Approve
+                    </button>
+                  </div>
+                )}
               </div>
-              {admin && (
-                s.catalog_id ? (
-                  <button className="btn-secondary px-2.5 py-1 text-xs" disabled={busy === `s${s.id}`} onClick={() => onConvert(s.id)}>Review for approval</button>
-                ) : (
-                  <span className="text-xs text-stone-400">Not in our catalog</span>
-                )
-              )}
             </li>
           ))}
         </ul>
       )}
-      <form className="mt-3 flex flex-wrap gap-2 border-t border-stone-100 pt-3" onSubmit={(e) => { e.preventDefault(); if (f.tool_name.trim()) { onDeclare(f); setF({ tool_name: "", note: "" }); } }}>
-        <input className="input min-w-0 flex-1 py-2" placeholder="Tool you use, e.g. ChatGPT" maxLength={120} value={f.tool_name} onChange={(e) => setF({ ...f, tool_name: e.target.value })} aria-label="Tool name" />
-        <input className="input min-w-0 flex-1 py-2" placeholder="What for? (optional)" maxLength={600} value={f.note} onChange={(e) => setF({ ...f, note: e.target.value })} aria-label="What for" />
-        <button className="btn-secondary py-2" disabled={busy === "sh" || !f.tool_name.trim()}>Declare</button>
-      </form>
+
+      {!admin && <DeclareTool busy={busy} act={act} />}
+
+      {decided.length > 0 && (
+        <div className="mt-5 border-t border-stone-100 pt-4">
+          <h3 className="text-sm font-semibold text-stone-500">Recently decided</h3>
+          <ul className="mt-2 space-y-1.5 text-sm">
+            {decided.map((r) => (
+              <li key={r.id} className="flex flex-wrap items-center gap-2">
+                <span className={cn("chip", r.status === "approved" ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "text-stone-500")}>{r.status === "approved" ? "Approved" : "Declined"}</span>
+                <span className="font-medium">{short(r.tool_name)}</span>
+                <span className="text-stone-500">{admin ? `for ${r.requester}` : ""}{r.decided_at ? ` · ${day(r.decided_at)}` : ""}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </section>
   );
 }
 
-function MembersCard({ members, admin, busy, onAdd }: { members: Member[]; admin: boolean; busy: boolean; onAdd: (b: { email: string; name: string; role: string }) => void }) {
-  const [f, setF] = useState({ email: "", name: "", role: "member" });
+function DeclareTool({ busy, act }: { busy: string | null; act: Act }) {
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState("");
+  const [note, setNote] = useState("");
+  if (!open)
+    return (
+      <button className="mt-4 text-sm font-semibold text-emerald-700 hover:underline" onClick={() => setOpen(true)}>
+        Already using an AI tool on your own? Let your owner know
+      </button>
+    );
   return (
-    <section className="card p-5">
-      <div className="flex items-center gap-1">
-        <h2 className="font-semibold">Members</h2>
-        <HelpTip>Members can request tools and declare tools they already use. Admins approve requests, manage licenses and set the spend cap.</HelpTip>
-        <span className="ml-auto text-xs text-stone-500">{members.length} people</span>
+    <form
+      className="mt-4 flex flex-col gap-2 rounded-xl bg-stone-50 p-3 sm:flex-row"
+      onSubmit={(e) => {
+        e.preventDefault();
+        act("declare", () => api("/team/shadow", { method: "POST", json: { tool_name: name, note } }), "Thanks. Your owner will review it.").then(() => {
+          setOpen(false);
+          setName("");
+          setNote("");
+        });
+      }}
+    >
+      <input className="input" required maxLength={120} placeholder="Tool name, e.g. ChatGPT" value={name} onChange={(e) => setName(e.target.value)} aria-label="Tool name" />
+      <input className="input" maxLength={300} placeholder="What you use it for (optional)" value={note} onChange={(e) => setNote(e.target.value)} aria-label="What you use it for" />
+      <button className="btn-primary shrink-0" disabled={busy === "declare"}>Tell owner</button>
+    </form>
+  );
+}
+
+/* ---------- Members + invites ---------- */
+
+function TeamMembers({ t, admin, busy, act }: { t: Team; admin: boolean; busy: string | null; act: Act }) {
+  const [inviteName, setInviteName] = useState("");
+  const [newLink, setNewLink] = useState<string | null>(null);
+  const [copied, setCopied] = useState<string | null>(null);
+
+  const full = (url: string) => (typeof window !== "undefined" ? `${window.location.origin}${url}` : url);
+  const copy = async (url: string) => {
+    try {
+      await navigator.clipboard.writeText(full(url));
+      setCopied(url);
+      setTimeout(() => setCopied(null), 1800);
+    } catch {}
+  };
+  const createInvite = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await act("invite", async () => {
+      const r = await api<{ url: string }>("/team/invites", { method: "POST", json: { name: inviteName.trim(), role: "member" } });
+      setNewLink(r.url);
+      setInviteName("");
+    });
+  };
+
+  return (
+    <section className="card p-6">
+      <div className="flex items-center gap-2">
+        <h2 className="font-display text-xl font-bold">People</h2>
+        {admin && <HelpTip>Each invite link works once and expires after 14 days. Anyone with the link can join, so send it straight to the person.</HelpTip>}
       </div>
-      <ul className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-        {members.map((m) => (
-          <li key={m.user_id} className="flex items-center gap-3 rounded-xl border border-stone-200 p-3">
-            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-stone-100 text-sm font-semibold text-stone-700">{m.name.slice(0, 1).toUpperCase()}</span>
-            <span className="min-w-0">
-              <span className="block truncate text-sm font-medium">{m.name}</span>
-              <span className="block truncate text-xs text-stone-500">{m.owner ? "Owner · admin" : m.role}</span>
+      <p className="mt-0.5 text-sm text-stone-600">{admin ? "Invite employees so they can request tools." : "Who's on your team."}</p>
+
+      <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+        {t.members.map((m) => (
+          <li key={m.user_id} className="flex items-center justify-between gap-3 rounded-xl border border-stone-200 px-4 py-3">
+            <span className="flex min-w-0 items-center gap-3">
+              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-stone-100 text-sm font-bold text-stone-600">{m.name.slice(0, 1).toUpperCase()}</span>
+              <span className="min-w-0">
+                <span className="block truncate font-medium">{m.name}</span>
+                <span className="block text-xs text-stone-500">{m.owner ? "Owner" : m.role === "admin" ? "Admin" : "Employee"}</span>
+              </span>
             </span>
+            {admin && !m.owner && (
+              <button className="text-xs text-stone-400 hover:text-red-700" onClick={() => window.confirm(`Remove ${m.name} from the team?`) && act(`rm-${m.user_id}`, () => api(`/team/members/${m.user_id}`, { method: "DELETE" }), `${m.name} removed.`)}>
+                Remove
+              </button>
+            )}
           </li>
         ))}
       </ul>
+
       {admin && (
-        <form className="mt-4 grid gap-2 border-t border-stone-100 pt-4 sm:grid-cols-[1fr_1fr_120px_auto]" onSubmit={(e) => { e.preventDefault(); if (f.email) { onAdd(f); setF({ email: "", name: "", role: "member" }); } }}>
-          <input className="input py-2" type="email" required placeholder="Email" value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} aria-label="Email" />
-          <input className="input py-2" placeholder="Name (optional)" maxLength={100} value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} aria-label="Name" />
-          <select className="input py-2" value={f.role} onChange={(e) => setF({ ...f, role: e.target.value })} aria-label="Role">
-            <option value="member">Member</option>
-            <option value="admin">Admin</option>
-          </select>
-          <button className="btn-primary py-2" disabled={busy}>{busy ? <Spinner /> : <UserPlus size={16} />} Add</button>
-        </form>
+        <div className="mt-5 border-t border-stone-100 pt-5">
+          <form onSubmit={createInvite} className="flex flex-col gap-2 sm:flex-row">
+            <input className="input" placeholder="Employee's name (optional)" maxLength={100} value={inviteName} onChange={(e) => setInviteName(e.target.value)} aria-label="Employee's name" />
+            <button className="btn-primary shrink-0" disabled={busy === "invite"}>{busy === "invite" ? <Spinner /> : <UserPlus size={16} />} Create invite link</button>
+          </form>
+          {newLink && (
+            <div className="mt-3 flex flex-col gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-3 sm:flex-row sm:items-center">
+              <Link2 size={16} className="shrink-0 text-emerald-700" />
+              <code className="min-w-0 flex-1 truncate text-sm text-emerald-900">{full(newLink)}</code>
+              <button className="btn-secondary shrink-0 py-1.5 text-xs" onClick={() => copy(newLink)}>{copied === newLink ? <><Check size={14} /> Copied</> : <><Copy size={14} /> Copy link</>}</button>
+            </div>
+          )}
+          {t.invites.length > 0 && (
+            <div className="mt-4">
+              <h3 className="text-sm font-semibold text-stone-500">Waiting to join</h3>
+              <ul className="mt-2 space-y-1.5">
+                {t.invites.map((i) => (
+                  <li key={i.code} className="flex flex-wrap items-center justify-between gap-2 text-sm">
+                    <span>{i.name || "Unnamed invite"} <span className="text-stone-500">· link expires {day(i.expires_at)}</span></span>
+                    <span className="flex gap-1">
+                      <button className="btn-ghost px-2 py-1 text-xs" onClick={() => copy(i.url)}>{copied === i.url ? "Copied" : "Copy link"}</button>
+                      <button className="btn-ghost px-2 py-1 text-xs text-stone-500" onClick={() => act(`rv-${i.code}`, () => api(`/team/invites/${i.code}`, { method: "DELETE" }), "Invite cancelled.")}>Cancel</button>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
+    </section>
+  );
+}
+
+/* ---------- Spending & licenses (owner only) ---------- */
+
+function Spending({ t, busy, act }: { t: Team; busy: string | null; act: Act }) {
+  const s = t.spend;
+  const [editing, setEditing] = useState(false);
+  const [cap, setCap] = useState(String(s.cap ?? ""));
+  const openShadow = t.shadow.filter((x) => x.status === "open");
+  return (
+    <section className="card p-6">
+      <div className="flex items-center gap-2">
+        <h2 className="font-display text-xl font-bold">Spending & licenses</h2>
+        <HelpTip>Monthly AI spend adds up the typical price of every tool in your stack plus any extra seats you bought. Set a limit and you&apos;ll be warned before approving something that goes over it.</HelpTip>
+      </div>
+      <p className="mt-0.5 text-sm text-stone-600">What your AI tools cost each month.</p>
+
+      <div className="mt-4 rounded-xl bg-stone-50 p-4">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <div>
+            <span className="font-display text-2xl font-bold tabular-nums">{money(s.committed_monthly)}</span>
+            <span className="text-sm text-stone-600"> per month{s.cap ? ` of your ${money(s.cap)} limit` : ""}</span>
+          </div>
+          {!editing ? (
+            <button className="btn-ghost px-2.5 py-1 text-sm" onClick={() => { setCap(String(s.cap ?? "")); setEditing(true); }}>{s.cap ? "Change limit" : "Set a limit"}</button>
+          ) : (
+            <form className="flex items-center gap-2" onSubmit={(e) => { e.preventDefault(); act("cap", () => api("/team/spend-cap", { method: "PUT", json: { monthly_cap: cap ? Number(cap) : null } }), "Limit saved.").then(() => setEditing(false)); }}>
+              <span className="text-sm text-stone-500">$</span>
+              <input type="number" min={0} className="input w-28 py-1.5" value={cap} onChange={(e) => setCap(e.target.value)} aria-label="Monthly limit in dollars" autoFocus />
+              <button className="btn-primary py-1.5 text-sm" disabled={busy === "cap"}>Save</button>
+              <button type="button" className="btn-ghost py-1.5 text-sm" onClick={() => setEditing(false)}>Cancel</button>
+            </form>
+          )}
+        </div>
+        {s.cap && (
+          <div className="mt-3 h-2 overflow-hidden rounded-full bg-stone-200">
+            <div className={cn("h-full rounded-full", s.over_cap ? "bg-amber-500" : "bg-emerald-600")} style={{ width: `${Math.min(100, s.pct ?? 0)}%` }} />
+          </div>
+        )}
+      </div>
+
+      {t.licenses.length > 0 && (
+        <div className="mt-5">
+          <h3 className="text-sm font-semibold text-stone-500">Paid seats</h3>
+          <ul className="mt-2 divide-y divide-stone-100">
+            {t.licenses.map((l) => {
+              const idle = l.seats_bought - l.seats_assigned;
+              return (
+                <li key={l.id} className="flex flex-wrap items-center justify-between gap-2 py-2.5 text-sm">
+                  <span>
+                    <Link href={`/tools/${l.tool_id}`} className="font-medium hover:underline">{short(l.name)}</Link>
+                    <span className="text-stone-500"> · {l.seats_assigned} of {l.seats_bought} seats in use{l.renewal_date ? ` · renews ${day(l.renewal_date)}` : ""}</span>
+                  </span>
+                  {idle > 0 && <span className="chip border-amber-200 bg-amber-50 text-amber-800">{idle} unused {idle === 1 ? "seat" : "seats"}</span>}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
+
+      {openShadow.length > 0 && (
+        <div className="mt-5">
+          <h3 className="flex items-center gap-1.5 text-sm font-semibold text-stone-500">
+            Used without approval
+            <HelpTip>Employees told us they already use these on their own. Review them so customer data stays in tools you trust.</HelpTip>
+          </h3>
+          <ul className="mt-2 space-y-2">
+            {openShadow.map((x) => (
+              <li key={x.id} className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-amber-200 bg-amber-50/60 px-4 py-3 text-sm">
+                <span className="flex items-start gap-2">
+                  <ShieldAlert size={16} className="mt-0.5 shrink-0 text-amber-700" />
+                  <span><b className="font-semibold">{x.tool_name}</b> <span className="text-stone-600">· {x.user}{x.note ? `: ${x.note}` : ""}</span></span>
+                </span>
+                {x.catalog_id ? (
+                  <button className="btn-secondary py-1.5 text-xs" disabled={busy === `sh-${x.id}`} onClick={() => act(`sh-${x.id}`, () => api(`/team/shadow/${x.id}/approve`, { method: "POST" }), `${x.tool_name} moved to Tool requests for your decision.`)}>
+                    Review as a request
+                  </button>
+                ) : (
+                  <span className="text-xs text-stone-500">Not in our catalog yet</span>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
     </section>
   );

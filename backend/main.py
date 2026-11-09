@@ -507,3 +507,5 @@ from routers.adoption import router as adoption_router  # noqa: E402  (adopt too
 app.include_router(adoption_router)
 from routers.profile import router as profile_router  # noqa: E402  (edit business profile)
 app.include_router(profile_router)
+from routers.assistant import router as assistant_router  # noqa: E402  (Ask StackSmith + published tasks)
+app.include_router(assistant_router)

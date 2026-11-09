@@ -24,7 +24,6 @@ export default function WarRoom() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [approving, setApproving] = useState(false);
   const [approveErr, setApproveErr] = useState<string | null>(null);
-  const [elapsed, setElapsed] = useState(0);
   const { adopted } = useAdoptions();
 
   useEffect(() => {
@@ -35,15 +34,6 @@ export default function WarRoom() {
   useEffect(() => {
     if (view.stack) setSelected(new Set(view.stack.tool_ids));
   }, [view.stack]);
-
-  // elapsed timer while agents work
-  useEffect(() => {
-    if (view.status !== "running") return;
-    const start = Date.now() - elapsed * 1000;
-    const id = setInterval(() => setElapsed(Math.floor((Date.now() - start) / 1000)), 500);
-    return () => clearInterval(id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [view.status]);
 
   // follow the newest section while the run is streaming
   const sectionCount = [view.profile, view.pains.length, view.meshStarted, view.stack, view.plan].filter(Boolean).length;
@@ -112,7 +102,6 @@ export default function WarRoom() {
                 ) : view.mode === "replay" ? (
                   <span className="chip">Sample replay</span>
                 ) : null}
-                {(view.status === "running" || elapsed > 0) && <span className="tabular-nums text-stone-500">{elapsed}s elapsed</span>}
               </div>
             </div>
           </div>
@@ -153,13 +142,13 @@ export default function WarRoom() {
           </div>
 
           {view.profile && (
-            <Section id="s-profile" eyebrow="Intake Analyst · Memory" title="What we heard">
+            <Section id="s-profile" eyebrow="Step 1" title="What we heard">
               <ProfileCard profile={view.profile} memory={view.memory} facts={view.facts} />
             </Section>
           )}
 
           {view.pains.length > 0 && (
-            <Section id="s-pains" eyebrow="Pain Diagnostician · Tool Scouts" title="What it's costing you, and what could fix it">
+            <Section id="s-pains" eyebrow="Step 2" title="What's costing you money" help="Each card shows what the problem costs you per month, with the math. Below, scouts shortlist tools from our verified catalog.">
               <PainCards pains={view.pains} />
               <div className="mt-4">
                 <ScoutGrid pains={view.pains} scouts={view.scouts} dropped={view.dropped} security={view.security} catalog={catalog} />
@@ -168,7 +157,7 @@ export default function WarRoom() {
           )}
 
           {view.meshStarted && (
-            <Section id="s-mesh" eyebrow="Advisor Panel" title="Your advisors challenge the shortlist">
+            <Section id="s-mesh" eyebrow="Step 3" title="Advisors check the shortlist" help="Three advisors look at cost, ease of use, and fit with the tools you already use.">
               <MeshPanel mesh={view.mesh} catalog={catalog} waiting={!view.stack} />
             </Section>
           )}
@@ -176,9 +165,9 @@ export default function WarRoom() {
           {view.stack && (
             <Section
               id="s-stack"
-              eyebrow="ROI Calculator"
-              title="Recommended stack"
-              help="Tools are compared per problem. Value = hours saved x hourly cost + revenue recovered. Net = value minus the tool's monthly price. Expand a tool to see how we estimated it."
+              eyebrow="Step 4"
+              title="Recommended tools"
+              help="Tools are compared per problem. Expand a tool to see why it was picked and how we estimated the savings."
             >
               <StackPanel
                 pains={view.pains}
@@ -206,7 +195,7 @@ export default function WarRoom() {
                 <div className="text-sm">
                   <div className="font-semibold">You&apos;re in control.</div>
                   <div className="text-stone-600">
-                    {selected.size} tool{selected.size === 1 ? "" : "s"} selected · {money(selCost)}/mo. Tick or untick tools in the table, then approve.
+                    {selected.size} tool{selected.size === 1 ? "" : "s"} · {money(selCost)}/month. Untick anything you don&apos;t want.
                   </div>
                   {approveErr && <div className="mt-1 text-red-700">{approveErr}</div>}
                 </div>
@@ -226,24 +215,23 @@ export default function WarRoom() {
           {view.plan && (view.plan.scenarios?.length ?? 0) > 0 && (
             <Section
               id="s-flow"
-              eyebrow="Stack in action"
-              title="Your AI tools, working together"
-              help="A typical day after adoption: watch the new AI tools hand work to each other and to the tools you already use."
+              eyebrow="A typical day"
+              title="Your tools, working together"
+              help="How your new tools hand work to each other and to the tools you already use."
             >
               <ToolsGraph scenarios={view.plan.scenarios!} catalog={catalog} approved={view.approved || []} />
             </Section>
           )}
 
           {view.plan && (
-            <Section id="s-plan" eyebrow="Adoption Coach" title="Your 30-day adoption plan">
+            <Section id="s-plan" eyebrow="Your plan" title="Your 30-day plan">
               <PlanView plan={view.plan} catalog={catalog} />
               {view.memorySaved && (
                 <div className="mt-4 flex flex-col gap-3 rounded-2xl bg-stone-900 p-5 text-white sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex items-start gap-3 text-sm">
                     <BrainCircuit size={20} className="mt-0.5 shrink-0 text-emerald-400" />
                     <span>
-                      Saved to your Business Constitution: {view.memorySaved.facts} facts and {view.memorySaved.episodes} adoption
-                      {view.memorySaved.episodes === 1 ? "" : "s"}. Next time, your advisors start from here.
+                      Saved to your profile. Next time, your advisors start from here.
                     </span>
                   </div>
                   <div className="flex shrink-0 flex-col gap-2 sm:flex-row">

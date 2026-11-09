@@ -231,7 +231,7 @@ export function BusinessForm({
     e.preventDefault();
     if (readOnly) return;
     if (!value.name.trim()) return setLocalErr("Please add your business name.");
-    if (tooShort) return setLocalErr("Tell us a little more: a sentence or two about what slows you down (or pick an example / fill in the quick details).");
+    if (tooShort) return setLocalErr("Add a sentence about what slows you down, or pick an example.");
     setLocalErr(null);
     onSubmit(payload);
   };

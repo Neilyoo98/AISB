@@ -1,236 +1,269 @@
 "use client";
-import { useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
-import {
-  BadgeDollarSign, BookOpen, BrainCircuit, Calculator, ClipboardList, Hand, PiggyBank, Plug, Search, Smile,
-} from "lucide-react";
-import { api, cn } from "@/lib/api";
-import type { Business, RunEvent, Scenario, Tool, User as UserT } from "@/lib/types";
-import { AGENT_LABEL, AGENT_LINKS, AGENT_NODES, PHASES, VIEW, adoptionHops, hopsFromEvents, type AgentIcon, type Hop } from "@/lib/agents";
-import { Graph, PlayerControls, ToolsGraph, TourCallouts, usePlayer, type MeshNode } from "@/components/agent-graph";
-import { useAdoptions, type Adoption } from "@/hooks/useAdoptions";
-import { AppHeader, PageHeader, PageState, useTitle } from "@/components/ui";
+// Coworkers: every employee gets an AI coworker that knows their skills, customers and tools.
+// Give the team a task; the right coworkers share context (covering for anyone who's off),
+// plan it with your AI tools, write drafts, and wait for your OK.
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Plus, UserPlus } from "lucide-react";
+import { api } from "@/lib/api";
+import type { Business, Tool, User } from "@/lib/types";
+import { useAdoptions } from "@/hooks/useAdoptions";
+import { useCoworkerTask } from "@/hooks/useCoworkerTask";
+import { AppHeader, HelpTip, PageHeader, PageState, Spinner, useTitle } from "@/components/ui";
+import { EmployeeCard } from "@/components/coworkers/EmployeeCard";
+import { EmployeeDrawer } from "@/components/coworkers/EmployeeDrawer";
+import { ConstitutionDrawer } from "@/components/coworkers/ConstitutionDrawer";
+import { PastTasks, TaskBox, TaskStatusChip } from "@/components/coworkers/TaskBox";
+import { CoworkerMesh } from "@/components/coworkers/CoworkerMesh";
+import { WorkflowMap } from "@/components/coworkers/WorkflowMap";
+import { DraftCards } from "@/components/coworkers/DraftCards";
+import { ApproveBar, AssignedTasks } from "@/components/coworkers/ApproveBar";
+import { SendLog } from "@/components/coworkers/SendLog";
+import type { CoworkerTask, Employee, EmployeeStatus } from "@/components/coworkers/types";
 
-type Dash = {
-  user: UserT;
-  business: Business | null;
-  latest: null | { run_id: string; scenarios: Scenario[]; approved: { id: string }[] };
-};
+type Me = { user: User; business: Business | null };
 
-const ICONS: Record<AgentIcon, typeof Search> = {
-  intake: BookOpen,
-  memory: BrainCircuit,
-  diagnoser: BadgeDollarSign,
-  scout: Search,
-  budget: PiggyBank,
-  ease: Smile,
-  integration: Plug,
-  roi: Calculator,
-  you: Hand,
-  planner: ClipboardList,
-};
-const iconFor = (id: string) => ICONS[AGENT_NODES.find((n) => n.id === id)?.icon || "intake"];
-
-const MESH_NODES: MeshNode[] = AGENT_NODES.map((n) => {
-  const Icon = ICONS[n.icon];
-  return { id: n.id, label: n.label, sub: n.sub, x: n.x, y: n.y, kind: n.kind, icon: <Icon size={14} /> };
-});
-
-function who(h: Hop) {
-  const from = AGENT_LABEL[h.from] || h.from;
-  if (!h.to.length) return from;
-  const scouts = h.to.filter((t) => t.startsWith("scout"));
-  const to = scouts.length > 1 ? "Scouts" : h.to.length === 3 && h.to.every((t) => ["budget_hawk", "ease_coach", "integration_checker"].includes(t)) ? "Advisors" : h.to.map((t) => AGENT_LABEL[t] || t).join(", ");
-  return `${from} → ${to}`;
-}
-
-function AdvisorTeam({ runId, catalog, adoptions }: { runId: string; catalog: Record<string, Tool>; adoptions: Adoption[] }) {
-  const [events, setEvents] = useState<RunEvent[] | null>(null);
-  useEffect(() => {
-    api<{ events: RunEvent[] }>(`/runs/${runId}`).then((r) => setEvents(r.events)).catch(() => setEvents([]));
-  }, [runId]);
-  const names = useMemo(() => Object.fromEntries(Object.values(catalog).map((t) => [t.id, t.name.replace(/ \(.*\)$/, "")])), [catalog]);
-  const hops: Hop[] = useMemo(() => (events ? [...hopsFromEvents(events, names), ...adoptionHops(adoptions, names)] : []), [events, names, adoptions]);
-  const p = usePlayer(hops.length, 2200);
-  const logRef = useRef<HTMLOListElement>(null);
-
-  // keep the current step visible in the log
-  useEffect(() => {
-    logRef.current?.querySelector<HTMLElement>(`[data-step="${p.i}"]`)?.scrollIntoView({ block: "nearest" });
-  }, [p.i]);
-
-  if (!events) return <PageState kind="loading" />;
-  const cur = hops[p.i];
-  const phaseNow = cur?.phase;
-
-  return (
-    <div className="grid gap-4 lg:grid-cols-[1fr_340px]">
-      <div className="space-y-3">
-        <Graph
-          nodes={MESH_NODES}
-          links={AGENT_LINKS}
-          from={cur?.from}
-          to={cur?.to || []}
-          step={p.i}
-          w={VIEW.w}
-          h={VIEW.h}
-          title="Advisor team"
-          status={p.playing ? "Replaying your analysis" : undefined}
-          legend={[
-            { kind: "core", label: "Agent" },
-            { kind: "scout", label: "Scout" },
-            { kind: "advisor", label: "Advisor" },
-            { kind: "you", label: "You" },
-          ]}
-          overlay={
-            <TourCallouts
-              storageKey="ss_agents_tour_v1"
-              items={[
-                { x: 14, y: 30, text: "Your story goes in here. The Intake Analyst and Memory learn your business." },
-                { x: 57, y: 50, text: "Scouts look for tools for each problem. Advisors push back on price, ease and fit." },
-                { x: 84, y: 72, text: "You approve; the Adoption Coach writes your 30-day plan." },
-              ]}
-            />
-          }
-          label="StackSmith advisor agents"
-        />
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <PlayerControls p={p} n={hops.length} />
-          <Link href={`/war-room/${runId}`} className="text-sm font-semibold text-emerald-700 hover:underline">
-            Open this analysis in the War Room →
-          </Link>
-        </div>
-      </div>
-
-      <section className="card flex max-h-[640px] flex-col p-4" aria-label="What the agents said">
-        <h2 className="text-sm font-semibold">What happened, step by step</h2>
-        <ol ref={logRef} className="mt-3 flex-1 space-y-3 overflow-y-auto pr-1">
-          {PHASES.map((ph) => {
-            const rows = hops.map((h, k) => ({ h, k })).filter(({ h }) => h.phase === ph.id);
-            if (!rows.length) return null;
-            return (
-              <li key={ph.id}>
-                <p className={cn("eyebrow mb-1.5", phaseNow === ph.id && "text-emerald-700")}>{ph.label}</p>
-                <ol className="space-y-1">
-                  {rows.map(({ h, k }) => {
-                    const Icon = iconFor(h.from);
-                    const isCur = k === p.i;
-                    const future = k > p.i;
-                    return (
-                      <li key={k} data-step={k}>
-                        <button
-                          onClick={() => {
-                            p.setI(k);
-                            p.setPlaying(false);
-                          }}
-                          aria-current={isCur ? "step" : undefined}
-                          className={cn(
-                            "flex w-full gap-2.5 rounded-lg px-2.5 py-2 text-left transition-colors",
-                            isCur ? "bg-emerald-50 ring-1 ring-emerald-200" : "hover:bg-stone-50",
-                            future && "opacity-45",
-                          )}
-                        >
-                          <span className={cn("mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-md", isCur ? "bg-emerald-700 text-white" : "bg-stone-100 text-stone-600")}>
-                            <Icon size={13} />
-                          </span>
-                          <span className="min-w-0">
-                            <span className="block text-xs font-semibold text-stone-800">{who(h)}</span>
-                            <span className={cn("block text-[13px] leading-snug", h.tone === "warn" ? "text-amber-800" : h.tone === "good" ? "text-emerald-800" : "text-stone-600")}>{h.text}</span>
-                          </span>
-                        </button>
-                      </li>
-                    );
-                  })}
-                </ol>
-              </li>
-            );
-          })}
-        </ol>
-      </section>
-    </div>
-  );
-}
-
-export default function AgentsPage() {
-  useTitle("Agents");
-  const [d, setD] = useState<Dash | null>(null);
-  const [err, setErr] = useState<string | null>(null);
+export default function CoworkersPage() {
+  useTitle("Coworkers");
+  const [me, setMe] = useState<Me | null>(null);
+  const [role, setRole] = useState<"admin" | "member">("admin");
+  const [employees, setEmployees] = useState<Employee[] | null>(null);
+  const [tasks, setTasks] = useState<CoworkerTask[]>([]);
+  const [examples, setExamples] = useState<string[]>([]);
   const [catalog, setCatalog] = useState<Record<string, Tool>>({});
-  const [tab, setTab] = useState<"advisors" | "tools">("advisors");
-  const { data: adoptions, adopted } = useAdoptions();
+  const [err, setErr] = useState<string | null>(null);
+  const [openEmp, setOpenEmp] = useState<Employee | null>(null);
+  const [editing, setEditing] = useState<Employee | null>(null);
+  const [formOpen, setFormOpen] = useState(false);
+  const [statusBusy, setStatusBusy] = useState<string | null>(null);
+  const [taskId, setTaskId] = useState<string | null>(null);
+  const runRef = useRef<HTMLDivElement>(null);
+  const { adopted } = useAdoptions();
 
-  const load = () => {
+  const loadEmployees = useCallback(() => api<Employee[]>("/employees").then(setEmployees), []);
+  const loadTasks = useCallback(
+    () =>
+      api<CoworkerTask[]>("/coworker-tasks")
+        .then((ts) => {
+          setTasks(ts);
+          setTaskId((cur) => cur ?? ts[0]?.id ?? null);
+        })
+        .catch(() => setTasks([])),
+    [],
+  );
+
+  const load = useCallback(() => {
     setErr(null);
-    api<Dash>("/dashboard").then(setD).catch((e) => setErr(e.message));
-  };
+    Promise.all([api<Me>("/me").then(setMe), loadEmployees(), loadTasks()]).catch((e) => setErr((e as Error).message));
+    api<string[]>("/coworker-tasks/examples").then(setExamples).catch(() => setExamples([]));
+    api<{ role: "admin" | "member" }>("/team/me").then((t) => setRole(t.role)).catch(() => {});
+  }, [loadEmployees, loadTasks]);
+
   useEffect(() => {
     load();
-    api<Tool[]>("/catalog").then((ts) => setCatalog(Object.fromEntries(ts.map((t) => [t.id, t]))));
-  }, []);
+    api<Tool[]>("/catalog").then((ts) => setCatalog(Object.fromEntries(ts.map((t) => [t.id, t])))).catch(() => {});
+  }, [load]);
 
-  const latest = d?.latest;
-  // Prefer the business-level scenarios (refreshed whenever a tool is adopted); fall back to the latest plan's.
-  const scenarios = adoptions?.scenarios?.length ? adoptions.scenarios : latest?.scenarios || [];
-  const approvedIds = adopted.size ? [...adopted] : latest?.approved.map((a) => a.id) || [];
-  const updating = adoptions?.scenarios_status === "updating";
+  const { view, decide } = useCoworkerTask(taskId, loadTasks);
+  const canEdit = role !== "member";
+  const emps = useMemo(() => employees || [], [employees]);
+
+  const setStatus = async (e: Employee, status: EmployeeStatus) => {
+    setStatusBusy(e.id);
+    setEmployees((list) => list && list.map((x) => (x.id === e.id ? { ...x, status } : x)));
+    try {
+      await api(`/employees/${e.id}/status`, { method: "PATCH", json: { status } });
+    } catch {
+      setEmployees((list) => list && list.map((x) => (x.id === e.id ? { ...x, status: e.status } : x)));
+    }
+    setStatusBusy(null);
+  };
+
+  const startTask = (id: string) => {
+    setTaskId(id);
+    loadTasks();
+    setTimeout(() => runRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 80);
+  };
+
+  const current = tasks.find((t) => t.id === taskId);
+  const ownerId = view.route?.owner_id;
+  const needTwo = emps.length < 2;
 
   return (
-    <div className="min-h-dvh pb-16">
-      <AppHeader businessName={d?.business?.name} isDemo={d?.user.is_demo} />
+    <div className="min-h-dvh pb-24">
+      <AppHeader businessName={me?.business?.name} isDemo={me?.user.is_demo} />
       <main className="mx-auto max-w-6xl space-y-6 px-4 pt-8">
         <PageHeader
-          eyebrow="Agents"
-          title="See the agents work together"
+          eyebrow="Coworkers"
+          title="Your AI coworkers"
           help={
             <>
-              <b>Advisor team</b> replays how StackSmith&apos;s agents passed your analysis along. <b>Your AI tools</b> shows how the tools you adopted hand work to each other during a
-              typical day. Tap any line to see what it carries.
+              Each employee gets an AI coworker that knows their skills, customers and tools. Give the team a task: the coworker who knows it best takes the lead, others share
+              what they know, and if someone is off today their coworker still answers for them. You get a plan that uses your AI tools, drafts ready to copy, and nothing
+              happens until you approve.
             </>
           }
-          actions={latest && <Link href={`/war-room/${latest.run_id}`} className="btn-secondary">Open War Room</Link>}
+          actions={
+            canEdit && (
+              <button
+                className="btn-primary"
+                onClick={() => {
+                  setEditing(null);
+                  setFormOpen(true);
+                }}
+              >
+                <UserPlus size={16} /> Add employee
+              </button>
+            )
+          }
         />
+
         {err ? (
           <PageState kind="error" message={err} onRetry={load} />
-        ) : !d ? (
+        ) : !employees ? (
           <PageState kind="loading" />
-        ) : !latest && !adopted.size ? (
-          <PageState kind="empty" message="Run your first analysis, or adopt a tool from Discover, to see your agents in action.">
-            <div className="mt-4 flex justify-center gap-2">
-              <Link href="/onboard" className="btn-primary">Start an analysis</Link>
-              <Link href="/tools" className="btn-secondary">Discover tools</Link>
-            </div>
-          </PageState>
         ) : (
           <>
-            <div role="tablist" className="inline-grid grid-cols-2 rounded-xl bg-stone-100 p-1 text-sm font-semibold">
-              {([["advisors", "Advisor team"], ["tools", "Your AI tools"]] as const).map(([k, l]) => (
-                <button
-                  key={k}
-                  role="tab"
-                  aria-selected={tab === k}
-                  onClick={() => setTab(k)}
-                  className={cn("rounded-lg px-4 py-2 transition-colors", tab === k ? "bg-white text-stone-900 shadow-sm" : "text-stone-500 hover:text-stone-800")}
-                >
-                  {l}
-                </button>
-              ))}
-            </div>
-            {tab === "advisors" ? (
-              latest ? (
-                <AdvisorTeam runId={latest.run_id} catalog={catalog} adoptions={adoptions?.items || []} />
+            {/* 1. Coworkers */}
+            <section aria-label="Your team's coworkers">
+              {emps.length === 0 ? (
+                <div className="card p-8 text-center">
+                  <h2 className="font-display text-xl font-bold">Add your first two people</h2>
+                  <p className="mx-auto mt-1 max-w-md text-sm text-stone-600">Tell us what each person does. Their AI coworkers will work together on tasks you hand them.</p>
+                  {canEdit && (
+                    <button
+                      className="btn-primary mt-4"
+                      onClick={() => {
+                        setEditing(null);
+                        setFormOpen(true);
+                      }}
+                    >
+                      <Plus size={16} /> Add employee
+                    </button>
+                  )}
+                </div>
               ) : (
-                <PageState kind="empty" message="The advisor team appears after your first analysis.">
-                  <Link href="/onboard" className="btn-primary mt-4">Start an analysis</Link>
-                </PageState>
-              )
-            ) : scenarios.length ? (
-              <ToolsGraph key={scenarios.map((s) => s.title).join("|")} scenarios={scenarios} approved={approvedIds} catalog={catalog} note={updating ? "Updating with your new tool…" : null} />
-            ) : (
-              <PageState kind="empty" message={updating ? "Updating with your new tool…" : "Approve a stack or adopt a tool to see your tools working together."} />
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                  {emps.map((e) => (
+                    <EmployeeCard
+                      key={e.id}
+                      e={e}
+                      catalog={catalog}
+                      onOpen={() => setOpenEmp(e)}
+                      onStatus={(s) => setStatus(e, s)}
+                      busy={statusBusy === e.id}
+                      canEdit={canEdit || e.user_id === me?.user.id}
+                      highlight={!!ownerId && ownerId === e.id && view.status !== "approved"}
+                    />
+                  ))}
+                </div>
+              )}
+            </section>
+
+            {/* 2. Task */}
+            <TaskBox
+              examples={examples}
+              onStarted={startTask}
+              disabled={needTwo ? (emps.length === 0 ? "Add your team first, then hand them a task." : "Add one more person so coworkers can share context.") : null}
+            />
+
+            {/* 3. The run */}
+            {taskId && (
+              <div ref={runRef} className="scroll-mt-20 space-y-6">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="eyebrow">Task</p>
+                    <h2 className="mt-0.5 font-display text-xl font-bold leading-snug sm:text-2xl">{view.text || current?.text || "…"}</h2>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {view.mode === "replay" && <span className="chip">Sample replay</span>}
+                    <TaskStatusChip status={view.status} />
+                  </div>
+                </div>
+
+                {view.loading ? (
+                  <PageState kind="loading" />
+                ) : view.status === "error" ? (
+                  <PageState kind="error" message={view.error || "This task didn't finish."} onRetry={() => setTaskId(taskId)} />
+                ) : (
+                  <>
+                    <section className="space-y-2">
+                      <h3 className="flex items-center gap-1 font-semibold">
+                        How your coworkers handled it
+                        <HelpTip>
+                          Green cards are AI coworkers. The highlighted one knows this task best. A dashed amber line means someone is off today: their coworker shares what they
+                          know and a colleague does the hands-on part. Tap any line to see what was passed along.
+                        </HelpTip>
+                      </h3>
+                      <CoworkerMesh view={view} employees={emps} catalog={catalog} />
+                    </section>
+
+                    {view.workflow.length > 0 ? (
+                      <WorkflowMap view={view} employees={emps} catalog={catalog} />
+                    ) : (
+                      view.status === "running" && (
+                        <div className="card flex items-center gap-3 p-5 text-sm text-stone-600">
+                          <Spinner className="text-emerald-700" /> Building the workflow with your AI tools…
+                        </div>
+                      )
+                    )}
+
+                    <DraftCards drafts={view.drafts} />
+
+                    {view.status === "awaiting_approval" && canEdit && <ApproveBar onDecide={decide} />}
+                    {view.status === "awaiting_approval" && !canEdit && (
+                      <p className="rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-900">Waiting for the owner to approve this plan.</p>
+                    )}
+
+                    {view.status === "approved" && (
+                      <>
+                        <AssignedTasks tasks={view.assigned} employees={emps} />
+                        <SendLog entries={view.sendLog} catalog={catalog} />
+                      </>
+                    )}
+                    {view.status === "rejected" && <p className="rounded-xl bg-stone-100 px-4 py-3 text-sm text-stone-700">You rejected this plan. Nothing was assigned.</p>}
+                  </>
+                )}
+              </div>
             )}
+
+            <PastTasks tasks={tasks} current={taskId} onOpen={startTask} />
           </>
         )}
       </main>
+
+      <EmployeeDrawer
+        open={formOpen}
+        onClose={() => setFormOpen(false)}
+        editing={editing}
+        catalog={catalog}
+        adoptedIds={[...adopted]}
+        onSaved={(e) => {
+          setFormOpen(false);
+          setEmployees((list) => {
+            const l = list || [];
+            return l.some((x) => x.id === e.id) ? l.map((x) => (x.id === e.id ? e : x)) : [...l, e];
+          });
+          setOpenEmp((o) => (o && o.id === e.id ? e : o));
+        }}
+      />
+      <ConstitutionDrawer
+        employee={openEmp}
+        catalog={catalog}
+        canEdit={canEdit}
+        onClose={() => setOpenEmp(null)}
+        onEdit={() => {
+          setEditing(openEmp);
+          setOpenEmp(null);
+          setFormOpen(true);
+        }}
+        onDelete={async () => {
+          if (!openEmp) return;
+          const id = openEmp.id;
+          setOpenEmp(null);
+          await api(`/employees/${id}`, { method: "DELETE" }).catch(() => {});
+          loadEmployees();
+        }}
+      />
     </div>
   );
 }

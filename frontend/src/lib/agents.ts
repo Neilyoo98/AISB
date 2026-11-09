@@ -149,3 +149,209 @@ export function adoptionHops(items: { tool_id: string; source: string }[], names
     .filter((a) => a.source === "manual")
     .map((a) => ({ from: "you", to: ["memory"], phase: "plan" as const, tone: "good" as const, text: `You adopted ${names[a.tool_id] || a.tool_id}. It's now part of your plan.` }));
 }
+
+/* ------------------------------------------------------------------ */
+/* Coworker mesh (employees' AI coworkers working a task together)     */
+/* ------------------------------------------------------------------ */
+
+export type CwNodeKind = "coworker" | "off" | "new" | "person";
+export type CwNode = { id: string; label: string; sub?: string; x: number; y: number; kind: CwNodeKind; role: "employee" | "tool" | "customer"; refId: string | null };
+export type CwLink = { from: string; to: string; label: string; why: string[] };
+export type CwPhase = "understand" | "route" | "share" | "plan" | "decide";
+/** One "beat" of the run: a hand-off to animate plus a plain-language log line. */
+export type CwBeat = { from?: string; to: string[]; who: string; text: string; tone?: "good" | "warn"; phase: CwPhase };
+export const CW_PHASES: { id: CwPhase; label: string }[] = [
+  { id: "understand", label: "Understand the task" },
+  { id: "route", label: "Pick who handles it" },
+  { id: "share", label: "Coworkers share context" },
+  { id: "plan", label: "Plan with your AI tools" },
+  { id: "decide", label: "Your decision" },
+];
+
+type CwEmployee = { id: string; name: string; role: string; status: "available" | "busy" | "off" };
+type CwStep = { n: number; actor_type: "employee" | "tool" | "customer"; actor_id: string | null; action: string; tool_id: string | null; handoff_to: string | null; gap: boolean };
+type CwMesh = { from_id: string; to_id: string; context_shared: string; should_check: string };
+type CwRoute = { owner_id: string; human_id: string; substituted: boolean; substitution_note: string | null; owner_reason: string };
+
+export const cwId = {
+  emp: (id: string) => `e:${id}`,
+  tool: (id: string) => `t:${id}`,
+  customer: "customer",
+};
+
+const shortText = (s: string, n = 40) => (s.length > n ? `${s.slice(0, n - 1).trimEnd()}…` : s);
+const firstName = (name: string) => (name || "").split(" ")[0];
+
+/** Layout: coworkers across the top row, AI tools along the bottom row, the customer on the left. */
+export function buildCoworkerMesh(args: {
+  employees: CwEmployee[];
+  route: CwRoute | null;
+  mesh: CwMesh[];
+  workflow: CwStep[];
+  toolName: (id: string) => string;
+}): { nodes: CwNode[]; links: CwLink[]; w: number; h: number } {
+  const { employees, route, mesh, workflow, toolName } = args;
+  const byId: Record<string, CwEmployee> = Object.fromEntries(employees.map((e) => [e.id, e]));
+  const involved: string[] = [];
+  const add = (id?: string | null) => {
+    if (id && byId[id] && !involved.includes(id)) involved.push(id);
+  };
+  add(route?.owner_id);
+  add(route?.human_id);
+  mesh.forEach((m) => {
+    add(m.from_id);
+    add(m.to_id);
+  });
+  workflow.forEach((s) => {
+    if (s.actor_type === "employee") add(s.actor_id);
+    add(s.handoff_to);
+  });
+  if (!involved.length) employees.slice(0, 4).forEach((e) => add(e.id));
+
+  const tools: string[] = [];
+  const addTool = (t?: string | null) => {
+    if (t && !byId[t] && t !== "customer" && !tools.includes(t)) tools.push(t);
+  };
+  workflow.forEach((s) => {
+    addTool(s.tool_id);
+    if (s.actor_type === "tool") addTool(s.actor_id);
+    addTool(s.handoff_to);
+  });
+  const toolSet = new Set(tools);
+  const hasCustomer = workflow.some((s) => s.actor_type === "customer" || s.handoff_to === "customer");
+
+  const w = 1000;
+  const h = tools.length ? 440 : 300;
+  const spread = (n: number, i: number, lo: number, hi: number) => (n === 1 ? (lo + hi) / 2 : lo + ((hi - lo) * i) / (n - 1));
+  const left = hasCustomer ? 320 : 160;
+  const nodes: CwNode[] = [
+    ...involved.map((id, i): CwNode => {
+      const e = byId[id];
+      return {
+        id: cwId.emp(id), label: e.name, sub: e.role, x: spread(involved.length, i, left, 860), y: 150,
+        kind: e.status === "off" ? "off" : "coworker", role: "employee", refId: id,
+      };
+    }),
+    ...tools.map((t, i): CwNode => ({ id: cwId.tool(t), label: toolName(t), sub: "AI tool", x: spread(tools.length, i, left, 860), y: 350, kind: "new", role: "tool", refId: t })),
+  ];
+  if (hasCustomer) nodes.push({ id: cwId.customer, label: "Customer", sub: "the person you serve", x: 120, y: tools.length ? 250 : 150, kind: "person", role: "customer", refId: null });
+
+  const ref = (r: string | null): string | null => {
+    if (!r) return null;
+    if (r === "customer") return hasCustomer ? cwId.customer : null;
+    if (byId[r]) return cwId.emp(r);
+    if (toolSet.has(r)) return cwId.tool(r);
+    return null;
+  };
+  const links = new Map<string, CwLink>();
+  const put = (from: string, to: string, label: string, why: string) => {
+    if (from === to) return;
+    const k = `${from}>${to}`;
+    const cur = links.get(k);
+    if (cur) cur.why.push(why);
+    else links.set(k, { from, to, label: shortText(label), why: [why] });
+  };
+  mesh.forEach((m) => {
+    if (!byId[m.from_id] || !byId[m.to_id]) return;
+    put(cwId.emp(m.from_id), cwId.emp(m.to_id), m.context_shared, `${firstName(byId[m.from_id].name)}'s coworker shared: ${m.context_shared}${m.should_check ? ` Check: ${m.should_check}` : ""}`);
+  });
+  workflow.forEach((s) => {
+    const actor = s.actor_type === "customer" ? ref("customer") : ref(s.actor_id);
+    const tool = s.tool_id ? cwId.tool(s.tool_id) : null;
+    const next = ref(s.handoff_to);
+    if (actor && tool && actor !== tool) put(actor, tool, s.action, `Step ${s.n}: ${s.action}`);
+    const src = tool ?? actor;
+    if (src && next) put(src, next, s.action, `Step ${s.n}: ${s.action}`);
+  });
+  return { nodes, links: [...links.values()], w, h };
+}
+
+/** Turn coworker-task events into animated beats with plain-language log lines. */
+export function coworkerBeats(
+  events: RunEvent[],
+  ctx: { name: (employeeId: string) => string; toolName: (id: string) => string; toolIds: Set<string>; employeeIds: Set<string> },
+): CwBeat[] {
+  const beats: CwBeat[] = [];
+  const nodeOf = (r: string | null): string | null => {
+    if (!r) return null;
+    if (r === "customer") return cwId.customer;
+    if (ctx.employeeIds.has(r)) return cwId.emp(r);
+    if (ctx.toolIds.has(r)) return cwId.tool(r);
+    return null;
+  };
+  const coworker = (id: string) => `${firstName(ctx.name(id))}'s coworker`;
+  for (const e of events) {
+    const d = e.data || {};
+    switch (e.type) {
+      case "task.read":
+        beats.push({ to: [], who: "StackSmith", text: d.intent ? `Understood the task: ${d.intent}` : "Read the task.", phase: "understand" });
+        break;
+      case "route.chosen": {
+        const r = d.route || d;
+        if (!r.owner_id) break;
+        beats.push({ from: cwId.emp(r.owner_id), to: [], who: coworker(r.owner_id), text: r.owner_reason || `${firstName(ctx.name(r.owner_id))} knows this area best.`, phase: "route" });
+        break;
+      }
+      case "route.substituted":
+        beats.push({
+          from: cwId.emp(d.owner_id),
+          to: d.human_id ? [cwId.emp(d.human_id)] : [],
+          who: `${coworker(d.owner_id)} → ${firstName(ctx.name(d.human_id))}`,
+          text: d.note || `${firstName(ctx.name(d.owner_id))} is off today, so ${firstName(ctx.name(d.human_id))} takes the human step.`,
+          tone: "warn",
+          phase: "route",
+        });
+        break;
+      case "mesh.message":
+        if (!d.from_id || !d.to_id) break;
+        beats.push({
+          from: cwId.emp(d.from_id),
+          to: [cwId.emp(d.to_id)],
+          who: `${coworker(d.from_id)} → ${coworker(d.to_id)}`,
+          text: d.should_check ? `${d.context_shared} Check: ${d.should_check}` : d.context_shared,
+          phase: "share",
+        });
+        break;
+      case "workflow.ready":
+        for (const s of (d.workflow || []) as CwStep[]) {
+          const actor = s.actor_type === "customer" ? cwId.customer : nodeOf(s.actor_id);
+          const tool = s.tool_id ? cwId.tool(s.tool_id) : null;
+          const next = nodeOf(s.handoff_to);
+          const actorName = s.actor_type === "customer" ? "Customer" : s.actor_type === "tool" ? ctx.toolName(s.actor_id || "") : firstName(ctx.name(s.actor_id || ""));
+          const to = [tool && tool !== actor ? tool : null, next].filter((x): x is string => !!x && x !== actor);
+          beats.push({
+            from: actor ?? undefined,
+            to,
+            who: tool && actor !== tool && s.tool_id ? `${actorName} + ${ctx.toolName(s.tool_id)}` : actorName,
+            text: s.action,
+            tone: s.gap ? "warn" : undefined,
+            phase: "plan",
+          });
+        }
+        break;
+      case "gap.found":
+        beats.push({ to: [], who: "StackSmith", text: `None of your tools covers "${d.capability}" yet. See the suggestions below.`, tone: "warn", phase: "plan" });
+        break;
+      case "drafts.ready": {
+        const titles = ((d.drafts || []) as { title: string }[]).map((x) => x.title).join(", ");
+        beats.push({ to: [], who: "StackSmith", text: titles ? `Wrote drafts: ${titles}.` : "Wrote drafts ready to copy.", tone: "good", phase: "plan" });
+        break;
+      }
+      case "approval.waiting":
+        beats.push({ to: [], who: "You", text: "Waiting for your OK before anything is assigned.", phase: "decide" });
+        break;
+      case "task.approved":
+        beats.push({ to: [], who: "You", text: "Approved. Steps were assigned to your team.", tone: "good", phase: "decide" });
+        break;
+      case "task.rejected":
+        beats.push({ to: [], who: "You", text: "Rejected. Nothing was assigned.", phase: "decide" });
+        break;
+      case "memory.saved": {
+        const who = ((d.employees || []) as string[]).map((id) => `${firstName(ctx.name(id))}'s`).join(", ");
+        beats.push({ to: [], who: "Memory", text: `Saved what happened to ${who || "your team's"} coworker notes.`, tone: "good", phase: "decide" });
+        break;
+      }
+    }
+  }
+  return beats;
+}

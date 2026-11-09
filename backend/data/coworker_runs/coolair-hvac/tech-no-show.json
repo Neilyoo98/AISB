@@ -1,0 +1,531 @@
+{
+ "persona": "coolair-hvac",
+ "slug": "tech-no-show",
+ "text": "Customer says the tech never showed up for her 2pm appointment",
+ "employees": [
+  {
+   "id": "a07eaa702d214d6b",
+   "name": "Maria Okafor"
+  },
+  {
+   "id": "b0d4739faf3240e4",
+   "name": "Luis Ortega"
+  },
+  {
+   "id": "2e509b41eb5547d7",
+   "name": "Dana Brooks"
+  },
+  {
+   "id": "d8add97e03234285",
+   "name": "Kevin Park"
+  }
+ ],
+ "events": [
+  {
+   "seq": 0,
+   "t": 0,
+   "type": "task.start",
+   "agent": null,
+   "data": {
+    "mode": "live"
+   }
+  },
+  {
+   "seq": 1,
+   "t": 0,
+   "type": "task.read",
+   "agent": "reader",
+   "data": {
+    "intent": "Respond to a customer whose technician missed her 2pm appointment and resolve the no-show.",
+    "customer_facing": true,
+    "urgency": "high",
+    "needed_skills": [
+     "customer service",
+     "scheduling",
+     "dispatch coordination",
+     "HVAC repair"
+    ],
+    "needed_capabilities": [
+     "send customer texts",
+     "reschedule appointments",
+     "answer calls"
+    ]
+   }
+  },
+  {
+   "seq": 2,
+   "t": 0,
+   "type": "route.chosen",
+   "agent": "router",
+   "data": {
+    "route": {
+     "owner_id": "a07eaa702d214d6b",
+     "owner_reason": "Maria Okafor knows this best (dispatch, scheduling).",
+     "substituted": true,
+     "human_id": "b0d4739faf3240e4",
+     "substitution_note": "Maria Okafor is off today, so their coworker answered from their notes and Luis Ortega takes the hands-on step.",
+     "scores": [
+      {
+       "employee_id": "a07eaa702d214d6b",
+       "score": 12.0
+      },
+      {
+       "employee_id": "b0d4739faf3240e4",
+       "score": 7.0
+      },
+      {
+       "employee_id": "2e509b41eb5547d7",
+       "score": 4.0
+      },
+      {
+       "employee_id": "d8add97e03234285",
+       "score": 2.0
+      }
+     ]
+    }
+   }
+  },
+  {
+   "seq": 3,
+   "t": 0,
+   "type": "route.substituted",
+   "agent": "router",
+   "data": {
+    "owner_id": "a07eaa702d214d6b",
+    "human_id": "b0d4739faf3240e4",
+    "note": "Maria Okafor is off today, so their coworker answered from their notes and Luis Ortega takes the hands-on step."
+   }
+  },
+  {
+   "seq": 4,
+   "t": 1562,
+   "type": "mesh.message",
+   "agent": "coworker:2e509b41eb5547d7",
+   "data": {
+    "from_id": "2e509b41eb5547d7",
+    "to_id": "a07eaa702d214d6b",
+    "context_shared": "Dana handles customer follow-up and answers the office phone when Maria is out, and tracks appointments in Jobber and Google Calendar. She can check the 2pm booking and rebook quickly there.",
+    "should_check": "Confirm in Jobber whether the tech was dispatched and the 2pm slot was correctly booked before promising a new time. Dana may not know dispatch or technician details.",
+    "confidence": "medium"
+   }
+  },
+  {
+   "seq": 5,
+   "t": 1703,
+   "type": "mesh.message",
+   "agent": "coworker:b0d4739faf3240e4",
+   "data": {
+    "from_id": "b0d4739faf3240e4",
+    "to_id": "a07eaa702d214d6b",
+    "context_shared": "Luis runs repair jobs and does on-site AC sizing and installs, and uses Jobber for scheduling. He is the lead tech who handles these appointments, so a missed 2pm slot likely falls on his calendar.",
+    "should_check": "Check Jobber for Luis's 2pm job: confirm whether it was scheduled, dispatched, or was double-booked, and whether he has any logged delay before contacting the customer.",
+    "confidence": "medium"
+   }
+  },
+  {
+   "seq": 6,
+   "t": 1969,
+   "type": "mesh.message",
+   "agent": "coworker:a07eaa702d214d6b",
+   "data": {
+    "from_id": "a07eaa702d214d6b",
+    "to_id": "b0d4739faf3240e4",
+    "context_shared": "Maria books every job and assigns techs in Jobber and Google Calendar; she handles customer call-backs on complaints. Check Jobber for the 2pm assignment and whether it was dispatched.",
+    "should_check": "Verify in Jobber which tech was assigned to the 2pm slot and whether they were marked en route, before calling the customer back or promising a new time.",
+    "confidence": "medium"
+   }
+  },
+  {
+   "seq": 7,
+   "t": 6078,
+   "type": "workflow.ready",
+   "agent": "builder",
+   "data": {
+    "workflow": [
+     {
+      "actor_type": "tool",
+      "actor_id": "rosie",
+      "action": "Answer the customer's complaint call and log a transcript with her name, address and the missed 2pm visit.",
+      "tool_id": "rosie",
+      "manual_before": "Staff picked up the phone and jotted notes on paper",
+      "handoff_to": "b0d4739faf3240e4",
+      "gap": false,
+      "gap_capability": null,
+      "n": 1,
+      "recommendations": []
+     },
+     {
+      "actor_type": "employee",
+      "actor_id": "b0d4739faf3240e4",
+      "action": "Check Jobber for the 2pm assignment, whether it was dispatched, and any logged delay or double-booking.",
+      "tool_id": "jobber",
+      "manual_before": null,
+      "handoff_to": "jobber",
+      "gap": false,
+      "gap_capability": null,
+      "n": 2,
+      "recommendations": []
+     },
+     {
+      "actor_type": "tool",
+      "actor_id": "jobber",
+      "action": "Use Copilot to draft an apology message with the next open time slots from the schedule.",
+      "tool_id": "jobber",
+      "manual_before": "Maria wrote apology messages by hand and hunted for open slots",
+      "handoff_to": "b0d4739faf3240e4",
+      "gap": false,
+      "gap_capability": null,
+      "n": 3,
+      "recommendations": []
+     },
+     {
+      "actor_type": "employee",
+      "actor_id": "b0d4739faf3240e4",
+      "action": "Review the draft, then call the customer to apologize, explain what happened and offer the new times.",
+      "tool_id": null,
+      "manual_before": null,
+      "handoff_to": "customer",
+      "gap": false,
+      "gap_capability": null,
+      "n": 4,
+      "recommendations": []
+     },
+     {
+      "actor_type": "customer",
+      "actor_id": null,
+      "action": "Choose a new appointment time that works for her.",
+      "tool_id": null,
+      "manual_before": null,
+      "handoff_to": "b0d4739faf3240e4",
+      "gap": false,
+      "gap_capability": null,
+      "n": 5,
+      "recommendations": []
+     },
+     {
+      "actor_type": "employee",
+      "actor_id": "b0d4739faf3240e4",
+      "action": "Rebook the visit in Jobber, assign the tech, and confirm it shows on Google Calendar.",
+      "tool_id": "jobber",
+      "manual_before": null,
+      "handoff_to": null,
+      "gap": false,
+      "gap_capability": null,
+      "n": 6,
+      "recommendations": []
+     }
+    ]
+   }
+  },
+  {
+   "seq": 8,
+   "t": 9156,
+   "type": "drafts.ready",
+   "agent": "drafter",
+   "data": {
+    "drafts": [
+     {
+      "kind": "customer_reply",
+      "title": "Apology and rebooking offer for missed 2pm visit",
+      "to": "Customer (missed 2pm appointment)",
+      "body": "Hi [Customer Name], this is Luis from CoolAir HVAC. I'm truly sorry our technician didn't make your 2pm appointment, and I understand how frustrating that is, especially when you were counting on us. I've looked into what happened and I'm working to make it right. I'd like to get someone out to you as soon as possible. Our next open times are [Slot 1], [Slot 2], or [Slot 3]. Which one works best for you? Thank you for your patience, and I appreciate you giving us another chance."
+     },
+     {
+      "kind": "staff_message",
+      "title": "Internal note on missed 2pm appointment",
+      "to": "Technician assigned to 2pm visit",
+      "body": "Hi [Tech Name], the 2pm visit at [Customer Address] was missed. Please check your dispatch and calendar for any conflicting or delayed jobs and reply to me with what you saw. Once we have the rebooked time, I'll confirm it with you in Jobber and on Google Calendar. Thanks, Luis"
+     },
+     {
+      "kind": "other",
+      "title": "Jobber log entry for missed appointment",
+      "to": "Jobber job record",
+      "body": "Customer reported technician did not arrive for 2pm appointment on [Date]. Verified dispatch status: [Assigned/Not dispatched/Delayed/Double-booked]. Apology sent and new time options offered: [Slot 1], [Slot 2], [Slot 3]. Customer selected: [Chosen Time]. Visit rebooked, tech assigned, and confirmed on Google Calendar."
+     }
+    ]
+   }
+  },
+  {
+   "seq": 9,
+   "t": 9172,
+   "type": "approval.waiting",
+   "agent": null,
+   "data": {}
+  },
+  {
+   "seq": 10,
+   "t": 9203,
+   "type": "task.approved",
+   "agent": "you",
+   "data": {
+    "assigned_tasks": [
+     {
+      "task_id": 655,
+      "assignee_id": "b0d4739faf3240e4",
+      "text": "Check Jobber for the 2pm assignment, whether it was dispatched, and any logged delay or double-booking."
+     },
+     {
+      "task_id": 656,
+      "assignee_id": "b0d4739faf3240e4",
+      "text": "Review the draft, then call the customer to apologize, explain what happened and offer the new times."
+     },
+     {
+      "task_id": 657,
+      "assignee_id": "b0d4739faf3240e4",
+      "text": "Rebook the visit in Jobber, assign the tech, and confirm it shows on Google Calendar."
+     }
+    ],
+    "send_log": [
+     {
+      "channel": "Phone / text",
+      "via_tool_id": "rosie",
+      "to": "Luis Ortega",
+      "summary": "Answer the customer's complaint call and log a transcript with her name, address and the missed 2pm visit.",
+      "simulated": true,
+      "label": "Simulated — nothing was sent"
+     },
+     {
+      "channel": "Job & quote",
+      "via_tool_id": "jobber",
+      "to": "Jobber",
+      "summary": "Check Jobber for the 2pm assignment, whether it was dispatched, and any logged delay or double-booking.",
+      "simulated": true,
+      "label": "Simulated — nothing was sent"
+     },
+     {
+      "channel": "Job & quote",
+      "via_tool_id": "jobber",
+      "to": "Luis Ortega",
+      "summary": "Use Copilot to draft an apology message with the next open time slots from the schedule.",
+      "simulated": true,
+      "label": "Simulated — nothing was sent"
+     },
+     {
+      "channel": "Job & quote",
+      "via_tool_id": "jobber",
+      "to": "Team",
+      "summary": "Rebook the visit in Jobber, assign the tech, and confirm it shows on Google Calendar.",
+      "simulated": true,
+      "label": "Simulated — nothing was sent"
+     }
+    ]
+   }
+  },
+  {
+   "seq": 11,
+   "t": 9281,
+   "type": "memory.saved",
+   "agent": "memory",
+   "data": {
+    "employees": [
+     "a07eaa702d214d6b",
+     "b0d4739faf3240e4"
+    ]
+   }
+  },
+  {
+   "seq": 12,
+   "t": 9281,
+   "type": "task.complete",
+   "agent": "you",
+   "data": {}
+  }
+ ],
+ "result": {
+  "intent": "Respond to a customer whose technician missed her 2pm appointment and resolve the no-show.",
+  "urgency": "high",
+  "route": {
+   "owner_id": "a07eaa702d214d6b",
+   "owner_reason": "Maria Okafor knows this best (dispatch, scheduling).",
+   "substituted": true,
+   "human_id": "b0d4739faf3240e4",
+   "substitution_note": "Maria Okafor is off today, so their coworker answered from their notes and Luis Ortega takes the hands-on step.",
+   "scores": [
+    {
+     "employee_id": "a07eaa702d214d6b",
+     "score": 12.0
+    },
+    {
+     "employee_id": "b0d4739faf3240e4",
+     "score": 7.0
+    },
+    {
+     "employee_id": "2e509b41eb5547d7",
+     "score": 4.0
+    },
+    {
+     "employee_id": "d8add97e03234285",
+     "score": 2.0
+    }
+   ]
+  },
+  "mesh": [
+   {
+    "from_id": "a07eaa702d214d6b",
+    "to_id": "b0d4739faf3240e4",
+    "context_shared": "Maria books every job and assigns techs in Jobber and Google Calendar; she handles customer call-backs on complaints. Check Jobber for the 2pm assignment and whether it was dispatched.",
+    "should_check": "Verify in Jobber which tech was assigned to the 2pm slot and whether they were marked en route, before calling the customer back or promising a new time.",
+    "confidence": "medium"
+   },
+   {
+    "from_id": "b0d4739faf3240e4",
+    "to_id": "a07eaa702d214d6b",
+    "context_shared": "Luis runs repair jobs and does on-site AC sizing and installs, and uses Jobber for scheduling. He is the lead tech who handles these appointments, so a missed 2pm slot likely falls on his calendar.",
+    "should_check": "Check Jobber for Luis's 2pm job: confirm whether it was scheduled, dispatched, or was double-booked, and whether he has any logged delay before contacting the customer.",
+    "confidence": "medium"
+   },
+   {
+    "from_id": "2e509b41eb5547d7",
+    "to_id": "a07eaa702d214d6b",
+    "context_shared": "Dana handles customer follow-up and answers the office phone when Maria is out, and tracks appointments in Jobber and Google Calendar. She can check the 2pm booking and rebook quickly there.",
+    "should_check": "Confirm in Jobber whether the tech was dispatched and the 2pm slot was correctly booked before promising a new time. Dana may not know dispatch or technician details.",
+    "confidence": "medium"
+   }
+  ],
+  "workflow": [
+   {
+    "actor_type": "tool",
+    "actor_id": "rosie",
+    "action": "Answer the customer's complaint call and log a transcript with her name, address and the missed 2pm visit.",
+    "tool_id": "rosie",
+    "manual_before": "Staff picked up the phone and jotted notes on paper",
+    "handoff_to": "b0d4739faf3240e4",
+    "gap": false,
+    "gap_capability": null,
+    "n": 1,
+    "recommendations": []
+   },
+   {
+    "actor_type": "employee",
+    "actor_id": "b0d4739faf3240e4",
+    "action": "Check Jobber for the 2pm assignment, whether it was dispatched, and any logged delay or double-booking.",
+    "tool_id": "jobber",
+    "manual_before": null,
+    "handoff_to": "jobber",
+    "gap": false,
+    "gap_capability": null,
+    "n": 2,
+    "recommendations": []
+   },
+   {
+    "actor_type": "tool",
+    "actor_id": "jobber",
+    "action": "Use Copilot to draft an apology message with the next open time slots from the schedule.",
+    "tool_id": "jobber",
+    "manual_before": "Maria wrote apology messages by hand and hunted for open slots",
+    "handoff_to": "b0d4739faf3240e4",
+    "gap": false,
+    "gap_capability": null,
+    "n": 3,
+    "recommendations": []
+   },
+   {
+    "actor_type": "employee",
+    "actor_id": "b0d4739faf3240e4",
+    "action": "Review the draft, then call the customer to apologize, explain what happened and offer the new times.",
+    "tool_id": null,
+    "manual_before": null,
+    "handoff_to": "customer",
+    "gap": false,
+    "gap_capability": null,
+    "n": 4,
+    "recommendations": []
+   },
+   {
+    "actor_type": "customer",
+    "actor_id": null,
+    "action": "Choose a new appointment time that works for her.",
+    "tool_id": null,
+    "manual_before": null,
+    "handoff_to": "b0d4739faf3240e4",
+    "gap": false,
+    "gap_capability": null,
+    "n": 5,
+    "recommendations": []
+   },
+   {
+    "actor_type": "employee",
+    "actor_id": "b0d4739faf3240e4",
+    "action": "Rebook the visit in Jobber, assign the tech, and confirm it shows on Google Calendar.",
+    "tool_id": "jobber",
+    "manual_before": null,
+    "handoff_to": null,
+    "gap": false,
+    "gap_capability": null,
+    "n": 6,
+    "recommendations": []
+   }
+  ],
+  "drafts": [
+   {
+    "kind": "customer_reply",
+    "title": "Apology and rebooking offer for missed 2pm visit",
+    "to": "Customer (missed 2pm appointment)",
+    "body": "Hi [Customer Name], this is Luis from CoolAir HVAC. I'm truly sorry our technician didn't make your 2pm appointment, and I understand how frustrating that is, especially when you were counting on us. I've looked into what happened and I'm working to make it right. I'd like to get someone out to you as soon as possible. Our next open times are [Slot 1], [Slot 2], or [Slot 3]. Which one works best for you? Thank you for your patience, and I appreciate you giving us another chance."
+   },
+   {
+    "kind": "staff_message",
+    "title": "Internal note on missed 2pm appointment",
+    "to": "Technician assigned to 2pm visit",
+    "body": "Hi [Tech Name], the 2pm visit at [Customer Address] was missed. Please check your dispatch and calendar for any conflicting or delayed jobs and reply to me with what you saw. Once we have the rebooked time, I'll confirm it with you in Jobber and on Google Calendar. Thanks, Luis"
+   },
+   {
+    "kind": "other",
+    "title": "Jobber log entry for missed appointment",
+    "to": "Jobber job record",
+    "body": "Customer reported technician did not arrive for 2pm appointment on [Date]. Verified dispatch status: [Assigned/Not dispatched/Delayed/Double-booked]. Apology sent and new time options offered: [Slot 1], [Slot 2], [Slot 3]. Customer selected: [Chosen Time]. Visit rebooked, tech assigned, and confirmed on Google Calendar."
+   }
+  ],
+  "send_log": [
+   {
+    "channel": "Phone / text",
+    "via_tool_id": "rosie",
+    "to": "Luis Ortega",
+    "summary": "Answer the customer's complaint call and log a transcript with her name, address and the missed 2pm visit.",
+    "simulated": true,
+    "label": "Simulated — nothing was sent"
+   },
+   {
+    "channel": "Job & quote",
+    "via_tool_id": "jobber",
+    "to": "Jobber",
+    "summary": "Check Jobber for the 2pm assignment, whether it was dispatched, and any logged delay or double-booking.",
+    "simulated": true,
+    "label": "Simulated — nothing was sent"
+   },
+   {
+    "channel": "Job & quote",
+    "via_tool_id": "jobber",
+    "to": "Luis Ortega",
+    "summary": "Use Copilot to draft an apology message with the next open time slots from the schedule.",
+    "simulated": true,
+    "label": "Simulated — nothing was sent"
+   },
+   {
+    "channel": "Job & quote",
+    "via_tool_id": "jobber",
+    "to": "Team",
+    "summary": "Rebook the visit in Jobber, assign the tech, and confirm it shows on Google Calendar.",
+    "simulated": true,
+    "label": "Simulated — nothing was sent"
+   }
+  ],
+  "assigned_tasks": [
+   {
+    "task_id": 655,
+    "assignee_id": "b0d4739faf3240e4",
+    "text": "Check Jobber for the 2pm assignment, whether it was dispatched, and any logged delay or double-booking."
+   },
+   {
+    "task_id": 656,
+    "assignee_id": "b0d4739faf3240e4",
+    "text": "Review the draft, then call the customer to apologize, explain what happened and offer the new times."
+   },
+   {
+    "task_id": 657,
+    "assignee_id": "b0d4739faf3240e4",
+    "text": "Rebook the visit in Jobber, assign the tech, and confirm it shows on Google Calendar."
+   }
+  ]
+ }
+}

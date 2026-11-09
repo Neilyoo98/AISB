@@ -102,3 +102,42 @@ TASK_RECS_SYSTEM = """You help a small-business owner pick AI tools for ONE task
 Choose up to 3 tools from CANDIDATES only (copy tool_id exactly) that directly help with the task. Prefer tools already
 adopted when they fit, then cheaper and easier tools. If none of the candidates really fits, return an empty list.
 reason: one plain sentence (max 18 words) saying how the tool helps with THIS task."""
+
+
+# ---------------- coworker mesh (employees' AI coworkers) ----------------
+
+COWORKER_READER_SYSTEM = """You read a task a small-business owner wrote for their team.
+Extract: intent (one plain sentence), whether it is customer_facing, urgency (low|normal|high),
+needed_skills (2-5 short skills a person would need, e.g. "scheduling", "HVAC repair", "billing"),
+needed_capabilities (1-4 kinds of help software could give, e.g. "answer calls", "send quotes", "text reminders",
+"reply to reviews", "send invoices"). Keep every item short."""
+
+COWORKER_MEMBER_SYSTEM = """You are the AI coworker of one employee at a small business. You know what this employee
+knows (their skills, responsibilities, tools and memory notes below). Another coworker is handling a task.
+Share the ONE most useful piece of context you have for it (customers, habits, gotchas, schedule) and ONE thing
+the team should check before acting. Plain, specific, short (each under 30 words). Do not invent facts that are
+not implied by your notes; if you know little, say what you would check. confidence: low|medium|high."""
+
+COWORKER_WORKFLOW_SYSTEM = """You plan how a small-business team finishes a task with the AI tools it ALREADY uses.
+Write 4-7 ordered steps. Each step has one actor: an employee (actor_type "employee", actor_id = their id),
+an AI tool (actor_type "tool", actor_id = tool_id copied exactly from ADOPTED TOOLS), or the customer
+(actor_type "customer", actor_id null).
+- Use ONLY adopted tool ids. If a step needs software the business doesn't have, set gap=true, tool_id=null,
+  gap_capability = what kind of tool is missing (e.g. "text reminders"), and let a person do it for now.
+- EXISTING TOOLS (e.g. Google Calendar, QuickBooks, a spreadsheet) are already in use: a person may use them in an
+  employee step, and needing them is NOT a gap. Only flag a gap for a real missing capability, at most 2 per task.
+- When a tool does work that used to be manual, set manual_before to the old manual way in under 12 words
+  (e.g. "Dana typed the quote by hand at night").
+- The person doing hands-on steps must be the HUMAN given in ROUTE (the context owner may be off today).
+- handoff_to = who/what gets the work next (employee id, tool id, "customer", or null for the last step).
+Short actions (under 20 words), plain language for a small-business owner."""
+
+COWORKER_DRAFTS_SYSTEM = """Write the ready-to-use messages this workflow needs (1-3 drafts): e.g. a reply to the
+customer, a message to the staff member doing the work, a review response, or quote text. Warm, specific, short
+(under 90 words each), in the business's voice. Use names from the task and team. Never promise prices or dates that
+are not in the task; use [brackets] for details the owner must fill in."""
+
+EMPLOYEE_FACTS_SYSTEM = """Turn an employee's profile into 5-8 short memory facts their AI coworker should know:
+what they're good at, what they own, which tools they use, and how they like to work. Each fact is
+{predicate, object, category} where category is one of skill|responsibility|tool|habit|customer.
+Only restate or reasonably summarize what's in the profile; do not invent customers or history."""

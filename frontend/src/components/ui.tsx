@@ -28,7 +28,7 @@ export function AppHeader({ businessName, isDemo, loggedOut }: { businessName?: 
     : [
         { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
         { href: "/war-room", label: "War Room", icon: Radio },
-        { href: "/agents", label: "Agents", icon: Network },
+        { href: "/agents", label: "Coworkers", icon: Network },
         { href: "/tools", label: "Discover", icon: Compass },
         { href: "/team", label: "Team", icon: Users2 },
         { href: "/profile", label: "Profile", icon: UserRound },

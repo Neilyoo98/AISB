@@ -1,0 +1,529 @@
+{
+ "persona": "joes-coffee",
+ "slug": "two-star-review",
+ "text": "Reply to a 2-star Google review about slow service",
+ "employees": [
+  {
+   "id": "93df376e196c4646",
+   "name": "Joe Martinez"
+  },
+  {
+   "id": "ab32faed0b03441d",
+   "name": "Priya Shah"
+  },
+  {
+   "id": "43c355c8646546a9",
+   "name": "Marcus Lee"
+  },
+  {
+   "id": "3418536d5c214a04",
+   "name": "Ellie Chen"
+  }
+ ],
+ "events": [
+  {
+   "seq": 0,
+   "t": 0,
+   "type": "task.start",
+   "agent": null,
+   "data": {
+    "mode": "live"
+   }
+  },
+  {
+   "seq": 1,
+   "t": 0,
+   "type": "task.read",
+   "agent": "reader",
+   "data": {
+    "intent": "Write a public reply to a 2-star Google review complaining about slow service.",
+    "customer_facing": true,
+    "urgency": "normal",
+    "needed_skills": [
+     "customer service writing",
+     "tone and empathy",
+     "reputation management",
+     "conflict de-escalation"
+    ],
+    "needed_capabilities": [
+     "reply to reviews",
+     "draft responses for owner approval"
+    ]
+   }
+  },
+  {
+   "seq": 2,
+   "t": 0,
+   "type": "route.chosen",
+   "agent": "router",
+   "data": {
+    "route": {
+     "owner_id": "93df376e196c4646",
+     "owner_reason": "Joe Martinez knows this best (review).",
+     "substituted": false,
+     "human_id": "93df376e196c4646",
+     "substitution_note": null,
+     "scores": [
+      {
+       "employee_id": "93df376e196c4646",
+       "score": 7.0
+      },
+      {
+       "employee_id": "43c355c8646546a9",
+       "score": 3.0
+      },
+      {
+       "employee_id": "ab32faed0b03441d",
+       "score": 0.0
+      },
+      {
+       "employee_id": "3418536d5c214a04",
+       "score": 0.0
+      }
+     ]
+    }
+   }
+  },
+  {
+   "seq": 3,
+   "t": 1203,
+   "type": "mesh.message",
+   "agent": "coworker:93df376e196c4646",
+   "data": {
+    "from_id": "93df376e196c4646",
+    "to_id": "43c355c8646546a9",
+    "context_shared": "Joe handles customer reviews and runs Square and Meta tools, so reviews are his domain. He tends to answer complaints with a short apology plus an invite back, not a defensive reply.",
+    "should_check": "Confirm the review's details (date, order, staff involved) against Square POS before replying, and have Joe approve the draft before it is posted publicly.",
+    "confidence": "medium"
+   }
+  },
+  {
+   "seq": 4,
+   "t": 1359,
+   "type": "mesh.message",
+   "agent": "coworker:43c355c8646546a9",
+   "data": {
+    "from_id": "43c355c8646546a9",
+    "to_id": "93df376e196c4646",
+    "context_shared": "Marcus works weekday mornings at the bar, the likely peak when slow service complaints happen. He handles Square POS and Espresso drinks, so he can speak to order flow and wait causes.",
+    "should_check": "Confirm the review's date and time against 7shifts and Square POS to see whether the delay fell on a busy morning shift before drafting any public reply.",
+    "confidence": "low"
+   }
+  },
+  {
+   "seq": 5,
+   "t": 1375,
+   "type": "mesh.message",
+   "agent": "coworker:ab32faed0b03441d",
+   "data": {
+    "from_id": "ab32faed0b03441d",
+    "to_id": "93df376e196c4646",
+    "context_shared": "Priya handles weekend openings and shift coverage, so slow-service complaints often trace to staffing gaps when a student drops a shift. Her notes show she handled a Saturday opening cover case recently.",
+    "should_check": "Before replying, confirm the review date and whether the shift in question was short-staffed on Priya's 7shifts schedule. Avoid promising specific fixes publicly until the owner approves.",
+    "confidence": "medium"
+   }
+  },
+  {
+   "seq": 6,
+   "t": 5812,
+   "type": "workflow.ready",
+   "agent": "builder",
+   "data": {
+    "workflow": [
+     {
+      "actor_type": "employee",
+      "actor_id": "93df376e196c4646",
+      "action": "Open the 2-star Google review and note the date, time, and what the customer ordered.",
+      "tool_id": null,
+      "manual_before": null,
+      "handoff_to": "93df376e196c4646",
+      "gap": false,
+      "gap_capability": null,
+      "n": 1,
+      "recommendations": []
+     },
+     {
+      "actor_type": "employee",
+      "actor_id": "93df376e196c4646",
+      "action": "Look up that date and time in Square POS to check order details and how busy the shop was.",
+      "tool_id": null,
+      "manual_before": null,
+      "handoff_to": "93df376e196c4646",
+      "gap": false,
+      "gap_capability": null,
+      "n": 2,
+      "recommendations": []
+     },
+     {
+      "actor_type": "tool",
+      "actor_id": "7shifts",
+      "action": "Show who was scheduled at that time, so Joe can see if the shift was short-staffed.",
+      "tool_id": "7shifts",
+      "manual_before": "Joe asked staff who worked that shift from memory",
+      "handoff_to": "93df376e196c4646",
+      "gap": false,
+      "gap_capability": null,
+      "n": 3,
+      "recommendations": []
+     },
+     {
+      "actor_type": "employee",
+      "actor_id": "93df376e196c4646",
+      "action": "Draft a short reply: apologize for the wait, no excuses, and invite them back. Avoid promising specific fixes.",
+      "tool_id": null,
+      "manual_before": null,
+      "handoff_to": "93df376e196c4646",
+      "gap": true,
+      "gap_capability": "AI drafting and posting of Google review replies",
+      "n": 4,
+      "recommendations": [
+       {
+        "tool_id": "nicejob",
+        "reason": "Automatically asks every customer for a review and posts the best ones to your site."
+       },
+       {
+        "tool_id": "chatgpt-business",
+        "reason": "General AI assistant for emails, job posts, menu descriptions, policies and spreadsheet analysis."
+       }
+      ]
+     },
+     {
+      "actor_type": "employee",
+      "actor_id": "93df376e196c4646",
+      "action": "Read the draft once more for tone, then post the reply publicly on Google.",
+      "tool_id": null,
+      "manual_before": null,
+      "handoff_to": "43c355c8646546a9",
+      "gap": false,
+      "gap_capability": null,
+      "n": 5,
+      "recommendations": []
+     },
+     {
+      "actor_type": "employee",
+      "actor_id": "43c355c8646546a9",
+      "action": "Marcus shares any wait-time causes from the morning bar with Joe for future fixes.",
+      "tool_id": null,
+      "manual_before": null,
+      "handoff_to": null,
+      "gap": false,
+      "gap_capability": null,
+      "n": 6,
+      "recommendations": []
+     }
+    ]
+   }
+  },
+  {
+   "seq": 7,
+   "t": 5812,
+   "type": "gap.found",
+   "agent": "builder",
+   "data": {
+    "step_n": 4,
+    "capability": "AI drafting and posting of Google review replies",
+    "recommendations": [
+     {
+      "tool_id": "nicejob",
+      "reason": "Automatically asks every customer for a review and posts the best ones to your site."
+     },
+     {
+      "tool_id": "chatgpt-business",
+      "reason": "General AI assistant for emails, job posts, menu descriptions, policies and spreadsheet analysis."
+     }
+    ]
+   }
+  },
+  {
+   "seq": 8,
+   "t": 8937,
+   "type": "drafts.ready",
+   "agent": "drafter",
+   "data": {
+    "drafts": [
+     {
+      "kind": "review_response",
+      "title": "Public reply to the 2-star Google review about slow service",
+      "to": "Google review author",
+      "body": "Thank you for taking the time to share your experience, and I'm sorry your wait was longer than it should have been. You deserved faster service and a better experience. We're looking closely at what slowed things down during that time so it doesn't happen again. We'd love the chance to make it right, so please come back and let us know how we did. Your visit matters to us. - Joe, Joe's Corner Coffee"
+     },
+     {
+      "kind": "staff_message",
+      "title": "Note to Marcus Lee about the review and wait-time causes",
+      "to": "Marcus Lee",
+      "body": "Hi Marcus, a customer left a 2-star Google review about slow service on [date] around [time]. Could you share what was happening at the bar that morning, such as staffing, machine issues, or a rush of orders? I'm checking the POS and our schedule too. Anything you noticed will help us plan better for future shifts. Thanks, Joe"
+     },
+     {
+      "kind": "customer_reply",
+      "title": "Direct message to the reviewer if they are identifiable",
+      "to": "Reviewer [name]",
+      "body": "Hi [name], thanks for your honest feedback on your recent visit. I'm sorry the wait got in the way of your coffee run. We're reviewing what caused the delay so we can do better. If you're open to it, we'd really appreciate you giving us another try, and I'd be happy to make sure your next order goes smoothly. - Joe, Joe's Corner Coffee"
+     }
+    ]
+   }
+  },
+  {
+   "seq": 9,
+   "t": 8953,
+   "type": "approval.waiting",
+   "agent": null,
+   "data": {}
+  },
+  {
+   "seq": 10,
+   "t": 9000,
+   "type": "task.approved",
+   "agent": "you",
+   "data": {
+    "assigned_tasks": [
+     {
+      "task_id": 641,
+      "assignee_id": "93df376e196c4646",
+      "text": "Open the 2-star Google review and note the date, time, and what the customer ordered."
+     },
+     {
+      "task_id": 642,
+      "assignee_id": "93df376e196c4646",
+      "text": "Look up that date and time in Square POS to check order details and how busy the shop was."
+     },
+     {
+      "task_id": 643,
+      "assignee_id": "93df376e196c4646",
+      "text": "Draft a short reply: apologize for the wait, no excuses, and invite them back. Avoid promising specific fixes."
+     },
+     {
+      "task_id": 644,
+      "assignee_id": "93df376e196c4646",
+      "text": "Read the draft once more for tone, then post the reply publicly on Google."
+     },
+     {
+      "task_id": 645,
+      "assignee_id": "43c355c8646546a9",
+      "text": "Marcus shares any wait-time causes from the morning bar with Joe for future fixes."
+     }
+    ],
+    "send_log": [
+     {
+      "channel": "Update",
+      "via_tool_id": "7shifts",
+      "to": "Joe Martinez",
+      "summary": "Show who was scheduled at that time, so Joe can see if the shift was short-staffed.",
+      "simulated": true,
+      "label": "Simulated — nothing was sent"
+     }
+    ]
+   }
+  },
+  {
+   "seq": 11,
+   "t": 9062,
+   "type": "memory.saved",
+   "agent": "memory",
+   "data": {
+    "employees": [
+     "43c355c8646546a9",
+     "93df376e196c4646"
+    ]
+   }
+  },
+  {
+   "seq": 12,
+   "t": 9062,
+   "type": "task.complete",
+   "agent": "you",
+   "data": {}
+  }
+ ],
+ "result": {
+  "intent": "Write a public reply to a 2-star Google review complaining about slow service.",
+  "urgency": "normal",
+  "route": {
+   "owner_id": "93df376e196c4646",
+   "owner_reason": "Joe Martinez knows this best (review).",
+   "substituted": false,
+   "human_id": "93df376e196c4646",
+   "substitution_note": null,
+   "scores": [
+    {
+     "employee_id": "93df376e196c4646",
+     "score": 7.0
+    },
+    {
+     "employee_id": "43c355c8646546a9",
+     "score": 3.0
+    },
+    {
+     "employee_id": "ab32faed0b03441d",
+     "score": 0.0
+    },
+    {
+     "employee_id": "3418536d5c214a04",
+     "score": 0.0
+    }
+   ]
+  },
+  "mesh": [
+   {
+    "from_id": "93df376e196c4646",
+    "to_id": "43c355c8646546a9",
+    "context_shared": "Joe handles customer reviews and runs Square and Meta tools, so reviews are his domain. He tends to answer complaints with a short apology plus an invite back, not a defensive reply.",
+    "should_check": "Confirm the review's details (date, order, staff involved) against Square POS before replying, and have Joe approve the draft before it is posted publicly.",
+    "confidence": "medium"
+   },
+   {
+    "from_id": "43c355c8646546a9",
+    "to_id": "93df376e196c4646",
+    "context_shared": "Marcus works weekday mornings at the bar, the likely peak when slow service complaints happen. He handles Square POS and Espresso drinks, so he can speak to order flow and wait causes.",
+    "should_check": "Confirm the review's date and time against 7shifts and Square POS to see whether the delay fell on a busy morning shift before drafting any public reply.",
+    "confidence": "low"
+   },
+   {
+    "from_id": "ab32faed0b03441d",
+    "to_id": "93df376e196c4646",
+    "context_shared": "Priya handles weekend openings and shift coverage, so slow-service complaints often trace to staffing gaps when a student drops a shift. Her notes show she handled a Saturday opening cover case recently.",
+    "should_check": "Before replying, confirm the review date and whether the shift in question was short-staffed on Priya's 7shifts schedule. Avoid promising specific fixes publicly until the owner approves.",
+    "confidence": "medium"
+   }
+  ],
+  "workflow": [
+   {
+    "actor_type": "employee",
+    "actor_id": "93df376e196c4646",
+    "action": "Open the 2-star Google review and note the date, time, and what the customer ordered.",
+    "tool_id": null,
+    "manual_before": null,
+    "handoff_to": "93df376e196c4646",
+    "gap": false,
+    "gap_capability": null,
+    "n": 1,
+    "recommendations": []
+   },
+   {
+    "actor_type": "employee",
+    "actor_id": "93df376e196c4646",
+    "action": "Look up that date and time in Square POS to check order details and how busy the shop was.",
+    "tool_id": null,
+    "manual_before": null,
+    "handoff_to": "93df376e196c4646",
+    "gap": false,
+    "gap_capability": null,
+    "n": 2,
+    "recommendations": []
+   },
+   {
+    "actor_type": "tool",
+    "actor_id": "7shifts",
+    "action": "Show who was scheduled at that time, so Joe can see if the shift was short-staffed.",
+    "tool_id": "7shifts",
+    "manual_before": "Joe asked staff who worked that shift from memory",
+    "handoff_to": "93df376e196c4646",
+    "gap": false,
+    "gap_capability": null,
+    "n": 3,
+    "recommendations": []
+   },
+   {
+    "actor_type": "employee",
+    "actor_id": "93df376e196c4646",
+    "action": "Draft a short reply: apologize for the wait, no excuses, and invite them back. Avoid promising specific fixes.",
+    "tool_id": null,
+    "manual_before": null,
+    "handoff_to": "93df376e196c4646",
+    "gap": true,
+    "gap_capability": "AI drafting and posting of Google review replies",
+    "n": 4,
+    "recommendations": [
+     {
+      "tool_id": "nicejob",
+      "reason": "Automatically asks every customer for a review and posts the best ones to your site."
+     },
+     {
+      "tool_id": "chatgpt-business",
+      "reason": "General AI assistant for emails, job posts, menu descriptions, policies and spreadsheet analysis."
+     }
+    ]
+   },
+   {
+    "actor_type": "employee",
+    "actor_id": "93df376e196c4646",
+    "action": "Read the draft once more for tone, then post the reply publicly on Google.",
+    "tool_id": null,
+    "manual_before": null,
+    "handoff_to": "43c355c8646546a9",
+    "gap": false,
+    "gap_capability": null,
+    "n": 5,
+    "recommendations": []
+   },
+   {
+    "actor_type": "employee",
+    "actor_id": "43c355c8646546a9",
+    "action": "Marcus shares any wait-time causes from the morning bar with Joe for future fixes.",
+    "tool_id": null,
+    "manual_before": null,
+    "handoff_to": null,
+    "gap": false,
+    "gap_capability": null,
+    "n": 6,
+    "recommendations": []
+   }
+  ],
+  "drafts": [
+   {
+    "kind": "review_response",
+    "title": "Public reply to the 2-star Google review about slow service",
+    "to": "Google review author",
+    "body": "Thank you for taking the time to share your experience, and I'm sorry your wait was longer than it should have been. You deserved faster service and a better experience. We're looking closely at what slowed things down during that time so it doesn't happen again. We'd love the chance to make it right, so please come back and let us know how we did. Your visit matters to us. - Joe, Joe's Corner Coffee"
+   },
+   {
+    "kind": "staff_message",
+    "title": "Note to Marcus Lee about the review and wait-time causes",
+    "to": "Marcus Lee",
+    "body": "Hi Marcus, a customer left a 2-star Google review about slow service on [date] around [time]. Could you share what was happening at the bar that morning, such as staffing, machine issues, or a rush of orders? I'm checking the POS and our schedule too. Anything you noticed will help us plan better for future shifts. Thanks, Joe"
+   },
+   {
+    "kind": "customer_reply",
+    "title": "Direct message to the reviewer if they are identifiable",
+    "to": "Reviewer [name]",
+    "body": "Hi [name], thanks for your honest feedback on your recent visit. I'm sorry the wait got in the way of your coffee run. We're reviewing what caused the delay so we can do better. If you're open to it, we'd really appreciate you giving us another try, and I'd be happy to make sure your next order goes smoothly. - Joe, Joe's Corner Coffee"
+   }
+  ],
+  "send_log": [
+   {
+    "channel": "Update",
+    "via_tool_id": "7shifts",
+    "to": "Joe Martinez",
+    "summary": "Show who was scheduled at that time, so Joe can see if the shift was short-staffed.",
+    "simulated": true,
+    "label": "Simulated — nothing was sent"
+   }
+  ],
+  "assigned_tasks": [
+   {
+    "task_id": 641,
+    "assignee_id": "93df376e196c4646",
+    "text": "Open the 2-star Google review and note the date, time, and what the customer ordered."
+   },
+   {
+    "task_id": 642,
+    "assignee_id": "93df376e196c4646",
+    "text": "Look up that date and time in Square POS to check order details and how busy the shop was."
+   },
+   {
+    "task_id": 643,
+    "assignee_id": "93df376e196c4646",
+    "text": "Draft a short reply: apologize for the wait, no excuses, and invite them back. Avoid promising specific fixes."
+   },
+   {
+    "task_id": 644,
+    "assignee_id": "93df376e196c4646",
+    "text": "Read the draft once more for tone, then post the reply publicly on Google."
+   },
+   {
+    "task_id": 645,
+    "assignee_id": "43c355c8646546a9",
+    "text": "Marcus shares any wait-time causes from the morning bar with Joe for future fixes."
+   }
+  ]
+ }
+}

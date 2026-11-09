@@ -80,6 +80,7 @@ plan_tasks = Table(
     Column("business_id", String(32)),  # set for setup tasks created by a manual adoption
     Column("source", String(16)),  # null = plan/adoption task, "custom" = published by the owner/team
     Column("suggestions_json", Text),  # tool suggestions for a published task [{tool_id, reason}]
+    Column("assignee_employee_id", String(32)),  # set when an approved coworker task assigns the step to an employee
 )
 
 llm_cache = Table(

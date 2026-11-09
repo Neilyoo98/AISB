@@ -9,6 +9,7 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, EmailStr, Field
 
 import adoptions
+import coworkers
 import db
 import evaluate as ev
 import risk
@@ -248,6 +249,10 @@ def dashboard(request: Request, user=Depends(current_user)):
     biz_scenarios = json.loads(b["scenarios_json"]) if b.get("scenarios_json") else None
     run = db.latest_complete_run(b["id"])
     out["tasks"] = db.get_business_tasks(b["id"], run["id"] if run else None)
+    staff = {e["id"]: e for e in coworkers.list_employees(b["id"])}
+    for t in out["tasks"]:
+        e = staff.get(t.get("assignee_employee_id"))
+        t["assignee"] = {"id": e["id"], "name": e["name"], "initials": e["initials"]} if e else None
     if run:
         res = json.loads(run["result_json"] or "{}")
         approved = res.get("approved_tool_ids") or []
@@ -509,3 +514,5 @@ from routers.profile import router as profile_router  # noqa: E402  (edit busine
 app.include_router(profile_router)
 from routers.assistant import router as assistant_router  # noqa: E402  (Ask StackSmith + published tasks)
 app.include_router(assistant_router)
+from routers.coworkers import router as coworkers_router  # noqa: E402  (coworker mesh: employees + tasks)
+app.include_router(coworkers_router)

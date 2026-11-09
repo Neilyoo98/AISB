@@ -1,0 +1,547 @@
+{
+ "persona": "joes-coffee",
+ "slug": "saturday-shift",
+ "text": "A student staffer can't cover Saturday's opening shift",
+ "employees": [
+  {
+   "id": "93df376e196c4646",
+   "name": "Joe Martinez"
+  },
+  {
+   "id": "ab32faed0b03441d",
+   "name": "Priya Shah"
+  },
+  {
+   "id": "43c355c8646546a9",
+   "name": "Marcus Lee"
+  },
+  {
+   "id": "3418536d5c214a04",
+   "name": "Ellie Chen"
+  }
+ ],
+ "events": [
+  {
+   "seq": 0,
+   "t": 0,
+   "type": "task.start",
+   "agent": null,
+   "data": {
+    "mode": "live"
+   }
+  },
+  {
+   "seq": 1,
+   "t": 0,
+   "type": "task.read",
+   "agent": "reader",
+   "data": {
+    "intent": "Find coverage for Saturday's opening shift after a student staffer becomes unavailable.",
+    "customer_facing": false,
+    "urgency": "high",
+    "needed_skills": [
+     "shift scheduling",
+     "staff communication",
+     "availability tracking",
+     "cafe opening procedures"
+    ],
+    "needed_capabilities": [
+     "send shift-swap requests",
+     "text staff reminders",
+     "track staff availability"
+    ]
+   }
+  },
+  {
+   "seq": 2,
+   "t": 0,
+   "type": "route.chosen",
+   "agent": "router",
+   "data": {
+    "route": {
+     "owner_id": "ab32faed0b03441d",
+     "owner_reason": "Priya Shah knows this best (opening, scheduling, shift).",
+     "substituted": true,
+     "human_id": "93df376e196c4646",
+     "substitution_note": "Priya Shah is off today, so their coworker answered from their notes and Joe Martinez takes the hands-on step.",
+     "scores": [
+      {
+       "employee_id": "ab32faed0b03441d",
+       "score": 20.0
+      },
+      {
+       "employee_id": "3418536d5c214a04",
+       "score": 9.0
+      },
+      {
+       "employee_id": "93df376e196c4646",
+       "score": 0.0
+      },
+      {
+       "employee_id": "43c355c8646546a9",
+       "score": 0.0
+      }
+     ]
+    }
+   }
+  },
+  {
+   "seq": 3,
+   "t": 0,
+   "type": "route.substituted",
+   "agent": "router",
+   "data": {
+    "owner_id": "ab32faed0b03441d",
+    "human_id": "93df376e196c4646",
+    "note": "Priya Shah is off today, so their coworker answered from their notes and Joe Martinez takes the hands-on step."
+   }
+  },
+  {
+   "seq": 4,
+   "t": 1297,
+   "type": "mesh.message",
+   "agent": "coworker:ab32faed0b03441d",
+   "data": {
+    "from_id": "ab32faed0b03441d",
+    "to_id": "93df376e196c4646",
+    "context_shared": "Priya handles shift cover through 7shifts and opens on weekends herself, so she knows the opening routine. Joe can check 7shifts for who is available Saturday morning and who has trained on opening.",
+    "should_check": "Confirm in 7shifts that the replacement has Opening & closing training before assigning them, and check Square POS opening steps are covered.",
+    "confidence": "medium"
+   }
+  },
+  {
+   "seq": 5,
+   "t": 1297,
+   "type": "mesh.message",
+   "agent": "coworker:3418536d5c214a04",
+   "data": {
+    "from_id": "3418536d5c214a04",
+    "to_id": "ab32faed0b03441d",
+    "context_shared": "Ellie covers weekend shifts and uses 7shifts for scheduling, so the open Saturday opening slot is likely visible and swappable there.",
+    "should_check": "Confirm in 7shifts whether Ellie is already on Saturday's opening shift, since she handles weekend coverage, before asking her to take it.",
+    "confidence": "medium"
+   }
+  },
+  {
+   "seq": 6,
+   "t": 1343,
+   "type": "mesh.message",
+   "agent": "coworker:93df376e196c4646",
+   "data": {
+    "from_id": "93df376e196c4646",
+    "to_id": "ab32faed0b03441d",
+    "context_shared": "Joe handles ordering, Square POS, and customer reviews but has no notes on scheduling or staff availability. Shift coverage isn't in his responsibilities, so he may not know who's free Saturday.",
+    "should_check": "Confirm with Joe whether anyone on staff has scheduling authority and whether Square POS shows who clocked in for past openings before contacting staff.",
+    "confidence": "low"
+   }
+  },
+  {
+   "seq": 7,
+   "t": 6172,
+   "type": "workflow.ready",
+   "agent": "builder",
+   "data": {
+    "workflow": [
+     {
+      "actor_type": "employee",
+      "actor_id": "93df376e196c4646",
+      "action": "Open 7shifts, mark the student's Saturday opening shift as needing cover, and review who is available.",
+      "tool_id": null,
+      "manual_before": null,
+      "handoff_to": "7shifts",
+      "gap": false,
+      "gap_capability": null,
+      "n": 1,
+      "recommendations": []
+     },
+     {
+      "actor_type": "tool",
+      "actor_id": "7shifts",
+      "action": "Post the open opening shift to the shift trade app and show staff availability for Saturday morning.",
+      "tool_id": "7shifts",
+      "manual_before": "Priya texted staff one by one asking who was free",
+      "handoff_to": "93df376e196c4646",
+      "gap": false,
+      "gap_capability": null,
+      "n": 2,
+      "recommendations": []
+     },
+     {
+      "actor_type": "employee",
+      "actor_id": "93df376e196c4646",
+      "action": "Check that Ellie isn't already on Saturday's opening and that volunteers have Opening & closing training in 7shifts.",
+      "tool_id": null,
+      "manual_before": null,
+      "handoff_to": "7shifts",
+      "gap": false,
+      "gap_capability": null,
+      "n": 3,
+      "recommendations": []
+     },
+     {
+      "actor_type": "tool",
+      "actor_id": "7shifts",
+      "action": "Send the shift-swap request to qualified staff and record who accepts.",
+      "tool_id": "7shifts",
+      "manual_before": "Priya tracked replies by hand in her notes",
+      "handoff_to": "93df376e196c4646",
+      "gap": false,
+      "gap_capability": null,
+      "n": 4,
+      "recommendations": []
+     },
+     {
+      "actor_type": "employee",
+      "actor_id": "93df376e196c4646",
+      "action": "Text the chosen person to confirm Saturday's opening, since no text reminder tool is in use.",
+      "tool_id": null,
+      "manual_before": null,
+      "handoff_to": "93df376e196c4646",
+      "gap": true,
+      "gap_capability": "text reminders to staff",
+      "n": 5,
+      "recommendations": [
+       {
+        "tool_id": "homebase",
+        "reason": "Scheduling, time clock, team chat and hiring for hourly teams."
+       },
+       {
+        "tool_id": "calendly",
+        "reason": "Shareable booking links for estimates and consultations."
+       }
+      ]
+     },
+     {
+      "actor_type": "employee",
+      "actor_id": "93df376e196c4646",
+      "action": "Approve the swap in 7shifts and confirm Square POS opening steps are covered for Saturday.",
+      "tool_id": null,
+      "manual_before": null,
+      "handoff_to": null,
+      "gap": false,
+      "gap_capability": null,
+      "n": 6,
+      "recommendations": []
+     }
+    ]
+   }
+  },
+  {
+   "seq": 8,
+   "t": 6172,
+   "type": "gap.found",
+   "agent": "builder",
+   "data": {
+    "step_n": 5,
+    "capability": "text reminders to staff",
+    "recommendations": [
+     {
+      "tool_id": "homebase",
+      "reason": "Scheduling, time clock, team chat and hiring for hourly teams."
+     },
+     {
+      "tool_id": "calendly",
+      "reason": "Shareable booking links for estimates and consultations."
+     }
+    ]
+   }
+  },
+  {
+   "seq": 9,
+   "t": 8843,
+   "type": "drafts.ready",
+   "agent": "drafter",
+   "data": {
+    "drafts": [
+     {
+      "kind": "staff_message",
+      "title": "Saturday opening shift needs cover",
+      "to": "Team (6 staff)",
+      "body": "Hi team, I need someone to cover Saturday's opening shift. It's posted in 7shifts under the trade app now. If you have Opening & closing training and are free Saturday morning, please claim it there, or text me at [phone] and I'll confirm with you. Thanks for helping keep us running, I really appreciate it! - Joe"
+     },
+     {
+      "kind": "staff_message",
+      "title": "Confirming your Saturday opening",
+      "to": "[Chosen staff member]",
+      "body": "Hi [Name], thanks for taking Saturday's opening shift at Joe's Corner Coffee. Please arrive at [time] and check in with the Square POS opening steps. I'll approve the swap in 7shifts today. Let me know if anything changes. See you Saturday! - Joe"
+     },
+     {
+      "kind": "customer_reply",
+      "title": "Saturday morning hours note (optional)",
+      "to": "Customers via Instagram",
+      "body": "Good morning! Quick heads up: Saturday we're opening as usual at [time], serving your favorite coffee and pastries. Come say hi and grab a cup before your day gets going. See you soon at Joe's Corner Coffee!"
+     }
+    ]
+   }
+  },
+  {
+   "seq": 10,
+   "t": 8843,
+   "type": "approval.waiting",
+   "agent": null,
+   "data": {}
+  },
+  {
+   "seq": 11,
+   "t": 8890,
+   "type": "task.approved",
+   "agent": "you",
+   "data": {
+    "assigned_tasks": [
+     {
+      "task_id": 637,
+      "assignee_id": "93df376e196c4646",
+      "text": "Open 7shifts, mark the student's Saturday opening shift as needing cover, and review who is available."
+     },
+     {
+      "task_id": 638,
+      "assignee_id": "93df376e196c4646",
+      "text": "Check that Ellie isn't already on Saturday's opening and that volunteers have Opening & closing training in 7shifts."
+     },
+     {
+      "task_id": 639,
+      "assignee_id": "93df376e196c4646",
+      "text": "Text the chosen person to confirm Saturday's opening, since no text reminder tool is in use."
+     },
+     {
+      "task_id": 640,
+      "assignee_id": "93df376e196c4646",
+      "text": "Approve the swap in 7shifts and confirm Square POS opening steps are covered for Saturday."
+     }
+    ],
+    "send_log": [
+     {
+      "channel": "Update",
+      "via_tool_id": "7shifts",
+      "to": "Joe Martinez",
+      "summary": "Post the open opening shift to the shift trade app and show staff availability for Saturday morning.",
+      "simulated": true,
+      "label": "Simulated — nothing was sent"
+     },
+     {
+      "channel": "Update",
+      "via_tool_id": "7shifts",
+      "to": "Joe Martinez",
+      "summary": "Send the shift-swap request to qualified staff and record who accepts.",
+      "simulated": true,
+      "label": "Simulated — nothing was sent"
+     }
+    ]
+   }
+  },
+  {
+   "seq": 12,
+   "t": 8952,
+   "type": "memory.saved",
+   "agent": "memory",
+   "data": {
+    "employees": [
+     "93df376e196c4646",
+     "ab32faed0b03441d"
+    ]
+   }
+  },
+  {
+   "seq": 13,
+   "t": 8952,
+   "type": "task.complete",
+   "agent": "you",
+   "data": {}
+  }
+ ],
+ "result": {
+  "intent": "Find coverage for Saturday's opening shift after a student staffer becomes unavailable.",
+  "urgency": "high",
+  "route": {
+   "owner_id": "ab32faed0b03441d",
+   "owner_reason": "Priya Shah knows this best (opening, scheduling, shift).",
+   "substituted": true,
+   "human_id": "93df376e196c4646",
+   "substitution_note": "Priya Shah is off today, so their coworker answered from their notes and Joe Martinez takes the hands-on step.",
+   "scores": [
+    {
+     "employee_id": "ab32faed0b03441d",
+     "score": 20.0
+    },
+    {
+     "employee_id": "3418536d5c214a04",
+     "score": 9.0
+    },
+    {
+     "employee_id": "93df376e196c4646",
+     "score": 0.0
+    },
+    {
+     "employee_id": "43c355c8646546a9",
+     "score": 0.0
+    }
+   ]
+  },
+  "mesh": [
+   {
+    "from_id": "ab32faed0b03441d",
+    "to_id": "93df376e196c4646",
+    "context_shared": "Priya handles shift cover through 7shifts and opens on weekends herself, so she knows the opening routine. Joe can check 7shifts for who is available Saturday morning and who has trained on opening.",
+    "should_check": "Confirm in 7shifts that the replacement has Opening & closing training before assigning them, and check Square POS opening steps are covered.",
+    "confidence": "medium"
+   },
+   {
+    "from_id": "93df376e196c4646",
+    "to_id": "ab32faed0b03441d",
+    "context_shared": "Joe handles ordering, Square POS, and customer reviews but has no notes on scheduling or staff availability. Shift coverage isn't in his responsibilities, so he may not know who's free Saturday.",
+    "should_check": "Confirm with Joe whether anyone on staff has scheduling authority and whether Square POS shows who clocked in for past openings before contacting staff.",
+    "confidence": "low"
+   },
+   {
+    "from_id": "3418536d5c214a04",
+    "to_id": "ab32faed0b03441d",
+    "context_shared": "Ellie covers weekend shifts and uses 7shifts for scheduling, so the open Saturday opening slot is likely visible and swappable there.",
+    "should_check": "Confirm in 7shifts whether Ellie is already on Saturday's opening shift, since she handles weekend coverage, before asking her to take it.",
+    "confidence": "medium"
+   }
+  ],
+  "workflow": [
+   {
+    "actor_type": "employee",
+    "actor_id": "93df376e196c4646",
+    "action": "Open 7shifts, mark the student's Saturday opening shift as needing cover, and review who is available.",
+    "tool_id": null,
+    "manual_before": null,
+    "handoff_to": "7shifts",
+    "gap": false,
+    "gap_capability": null,
+    "n": 1,
+    "recommendations": []
+   },
+   {
+    "actor_type": "tool",
+    "actor_id": "7shifts",
+    "action": "Post the open opening shift to the shift trade app and show staff availability for Saturday morning.",
+    "tool_id": "7shifts",
+    "manual_before": "Priya texted staff one by one asking who was free",
+    "handoff_to": "93df376e196c4646",
+    "gap": false,
+    "gap_capability": null,
+    "n": 2,
+    "recommendations": []
+   },
+   {
+    "actor_type": "employee",
+    "actor_id": "93df376e196c4646",
+    "action": "Check that Ellie isn't already on Saturday's opening and that volunteers have Opening & closing training in 7shifts.",
+    "tool_id": null,
+    "manual_before": null,
+    "handoff_to": "7shifts",
+    "gap": false,
+    "gap_capability": null,
+    "n": 3,
+    "recommendations": []
+   },
+   {
+    "actor_type": "tool",
+    "actor_id": "7shifts",
+    "action": "Send the shift-swap request to qualified staff and record who accepts.",
+    "tool_id": "7shifts",
+    "manual_before": "Priya tracked replies by hand in her notes",
+    "handoff_to": "93df376e196c4646",
+    "gap": false,
+    "gap_capability": null,
+    "n": 4,
+    "recommendations": []
+   },
+   {
+    "actor_type": "employee",
+    "actor_id": "93df376e196c4646",
+    "action": "Text the chosen person to confirm Saturday's opening, since no text reminder tool is in use.",
+    "tool_id": null,
+    "manual_before": null,
+    "handoff_to": "93df376e196c4646",
+    "gap": true,
+    "gap_capability": "text reminders to staff",
+    "n": 5,
+    "recommendations": [
+     {
+      "tool_id": "homebase",
+      "reason": "Scheduling, time clock, team chat and hiring for hourly teams."
+     },
+     {
+      "tool_id": "calendly",
+      "reason": "Shareable booking links for estimates and consultations."
+     }
+    ]
+   },
+   {
+    "actor_type": "employee",
+    "actor_id": "93df376e196c4646",
+    "action": "Approve the swap in 7shifts and confirm Square POS opening steps are covered for Saturday.",
+    "tool_id": null,
+    "manual_before": null,
+    "handoff_to": null,
+    "gap": false,
+    "gap_capability": null,
+    "n": 6,
+    "recommendations": []
+   }
+  ],
+  "drafts": [
+   {
+    "kind": "staff_message",
+    "title": "Saturday opening shift needs cover",
+    "to": "Team (6 staff)",
+    "body": "Hi team, I need someone to cover Saturday's opening shift. It's posted in 7shifts under the trade app now. If you have Opening & closing training and are free Saturday morning, please claim it there, or text me at [phone] and I'll confirm with you. Thanks for helping keep us running, I really appreciate it! - Joe"
+   },
+   {
+    "kind": "staff_message",
+    "title": "Confirming your Saturday opening",
+    "to": "[Chosen staff member]",
+    "body": "Hi [Name], thanks for taking Saturday's opening shift at Joe's Corner Coffee. Please arrive at [time] and check in with the Square POS opening steps. I'll approve the swap in 7shifts today. Let me know if anything changes. See you Saturday! - Joe"
+   },
+   {
+    "kind": "customer_reply",
+    "title": "Saturday morning hours note (optional)",
+    "to": "Customers via Instagram",
+    "body": "Good morning! Quick heads up: Saturday we're opening as usual at [time], serving your favorite coffee and pastries. Come say hi and grab a cup before your day gets going. See you soon at Joe's Corner Coffee!"
+   }
+  ],
+  "send_log": [
+   {
+    "channel": "Update",
+    "via_tool_id": "7shifts",
+    "to": "Joe Martinez",
+    "summary": "Post the open opening shift to the shift trade app and show staff availability for Saturday morning.",
+    "simulated": true,
+    "label": "Simulated — nothing was sent"
+   },
+   {
+    "channel": "Update",
+    "via_tool_id": "7shifts",
+    "to": "Joe Martinez",
+    "summary": "Send the shift-swap request to qualified staff and record who accepts.",
+    "simulated": true,
+    "label": "Simulated — nothing was sent"
+   }
+  ],
+  "assigned_tasks": [
+   {
+    "task_id": 637,
+    "assignee_id": "93df376e196c4646",
+    "text": "Open 7shifts, mark the student's Saturday opening shift as needing cover, and review who is available."
+   },
+   {
+    "task_id": 638,
+    "assignee_id": "93df376e196c4646",
+    "text": "Check that Ellie isn't already on Saturday's opening and that volunteers have Opening & closing training in 7shifts."
+   },
+   {
+    "task_id": 639,
+    "assignee_id": "93df376e196c4646",
+    "text": "Text the chosen person to confirm Saturday's opening, since no text reminder tool is in use."
+   },
+   {
+    "task_id": 640,
+    "assignee_id": "93df376e196c4646",
+    "text": "Approve the swap in 7shifts and confirm Square POS opening steps are covered for Saturday."
+   }
+  ]
+ }
+}

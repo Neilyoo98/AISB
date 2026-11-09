@@ -9,6 +9,7 @@ import type { Business, Tool, User } from "@/lib/types";
 import { useRunStream } from "@/hooks/useRunStream";
 import { AppHeader, FlowStepper, Spinner, useTitle } from "@/components/ui";
 import { ToolsGraph } from "@/components/agent-graph";
+import { AdvisorTeamReplay } from "@/components/advisor-replay";
 import { useAdoptions } from "@/hooks/useAdoptions";
 import { MeshPanel, PainCards, Pipeline, PlanView, ProfileCard, ScoutGrid, Section, StackPanel } from "@/components/war-room";
 
@@ -189,7 +190,7 @@ export default function WarRoom() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
-              className="sticky bottom-4 z-20 rounded-2xl border border-stone-200 bg-white/95 p-4 shadow-lg backdrop-blur"
+              className="sticky bottom-20 z-20 rounded-2xl border border-stone-200 bg-white/95 p-4 shadow-lg backdrop-blur sm:bottom-4 sm:mr-48"
             >
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="text-sm">
@@ -221,6 +222,18 @@ export default function WarRoom() {
             >
               <ToolsGraph scenarios={view.plan.scenarios!} catalog={catalog} approved={view.approved || []} />
             </Section>
+          )}
+
+          {(view.status === "complete" || view.status === "awaiting_approval") && (
+            <details className="card group p-5">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-3 font-semibold">
+                <span className="flex items-center gap-2"><Network size={18} className="text-emerald-700" /> How your advisors worked</span>
+                <span className="text-sm font-normal text-emerald-700 group-open:hidden">Show replay</span>
+              </summary>
+              <div className="mt-4">
+                <AdvisorTeamReplay runId={runId} catalog={catalog} showWarRoomLink={false} />
+              </div>
+            </details>
           )}
 
           {view.plan && (

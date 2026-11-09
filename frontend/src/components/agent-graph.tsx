@@ -18,7 +18,9 @@ const EASE = [0.23, 1, 0.32, 1] as const;
 const GREEN = "#059669";
 const INK = "#44403c";
 
-export type MeshKind = "core" | "scout" | "advisor" | "you" | "new" | "existing" | "person";
+export type MeshKind = "core" | "scout" | "advisor" | "you" | "new" | "existing" | "person" | "coworker" | "off";
+/** A dashed "covering for" arc: `from`'s coworker answers for an absent person, `to` does the human step. */
+export type MeshCover = { from: string; to: string; note: string };
 export type MeshNode = { id: string; label: string; sub?: string; x: number; y: number; kind: MeshKind; icon?: React.ReactNode };
 export type MeshLink = { from: string; to: string; label: string; why?: string[]; detail?: React.ReactNode };
 /** @deprecated kept for older imports */
@@ -32,7 +34,10 @@ const KIND: Record<MeshKind, { tag: string; accent: string }> = {
   new: { tag: "new ai tool", accent: GREEN },
   existing: { tag: "already used", accent: "#78716c" },
   person: { tag: "person", accent: "#b45309" },
+  coworker: { tag: "ai coworker", accent: GREEN },
+  off: { tag: "off today", accent: "#a8a29e" },
 };
+const AMBER = "#d97706";
 
 const NW = 156;
 const NH = 58;
@@ -55,8 +60,12 @@ const key = (l: { from: string; to: string }) => `${l.from}>${l.to}`;
 
 /** The AUBI-style canvas (light stone/emerald). `from`/`to` mark the hand-off happening right now. */
 export function Graph({
-  nodes, links, from, to = [], step = 0, w, h, title, status, columns, legend, overlay, label = "Agents working together",
+  nodes, links, from, to = [], step = 0, w, h, title, status, columns, legend, overlay, label = "Agents working together", cover, highlight = [],
 }: {
+  /** optional "covering for" arc + annotation (coworker mesh substitution) */
+  cover?: MeshCover | null;
+  /** nodes to ring even when no hand-off is running (e.g. the task's owner coworker) */
+  highlight?: string[];
   nodes: MeshNode[];
   links: MeshLink[];
   from?: string;
@@ -172,6 +181,36 @@ export function Graph({
               );
             })}
 
+          {cover && pos[cover.from] && pos[cover.to] && (() => {
+            const a = pos[cover.from];
+            const b = pos[cover.to];
+            // bow the arc away from straight links so it reads as a separate "covering" relationship
+            const mx = (a.x + b.x) / 2;
+            const my = Math.min(a.y, b.y) - Math.max(60, Math.abs(a.x - b.x) * 0.18);
+            const d = `M ${a.x} ${a.y - NH / 2} Q ${mx} ${my} ${b.x} ${b.y - NH / 2}`;
+            return (
+              <g key="cover">
+                <motion.path
+                  d={d}
+                  fill="none"
+                  stroke={AMBER}
+                  strokeWidth={2.2}
+                  strokeDasharray="7 6"
+                  initial={reduce ? false : { pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ duration: 0.9, ease: EASE }}
+                />
+                <foreignObject x={mx - 150} y={my - 34} width={300} height={44} style={{ overflow: "visible", pointerEvents: "none" }}>
+                  <div className="flex h-full items-end justify-center">
+                    <span className="rounded-lg border border-amber-300 bg-amber-50 px-2.5 py-1 text-center text-[11px] font-medium leading-snug text-amber-900 shadow-sm">
+                      {cover.note}
+                    </span>
+                  </div>
+                </foreignObject>
+              </g>
+            );
+          })()}
+
           {from &&
             !reduce &&
             to.map((t) => {
@@ -192,12 +231,13 @@ export function Graph({
 
           {nodes.map((n) => {
             const k = KIND[n.kind];
-            const hot = n.id === from || to.includes(n.id);
+            const hot = n.id === from || to.includes(n.id) || highlight.includes(n.id);
             return (
               <foreignObject key={n.id} x={n.x - NW / 2} y={n.y - NH / 2} width={NW} height={NH} style={{ overflow: "visible" }}>
                 <div
                   className={cn(
-                    "flex h-full items-center gap-2 rounded-lg border bg-white px-2.5 transition-[border-color,box-shadow] duration-300",
+                    "flex h-full items-center gap-2 rounded-lg border px-2.5 transition-[border-color,box-shadow] duration-300",
+                    n.kind === "off" ? "border-dashed bg-stone-100" : "bg-white",
                     hot ? "border-emerald-500 shadow-[0_0_0_3px_rgba(5,150,105,0.12),0_4px_14px_rgba(5,150,105,0.18)]" : "border-stone-200 shadow-[0_1px_2px_rgba(28,25,23,0.06)]",
                   )}
                 >
@@ -261,12 +301,13 @@ function ConnectionCard({ link, fromLabel, toLabel, at, w, h, onClose }: { link:
     <motion.div
       role="dialog"
       aria-label={`${fromLabel} to ${toLabel}`}
-      initial={{ opacity: 0, y: below ? -6 : 6 }}
-      animate={{ opacity: 1, y: 0 }}
+      // framer-motion owns `transform`, so the -50% centering must go through motion (a Tailwind translate class would be overwritten)
+      initial={{ opacity: 0, x: "-50%", y: below ? -6 : 6 }}
+      animate={{ opacity: 1, x: "-50%", y: 0 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.18, ease: EASE }}
       onClick={(e) => e.stopPropagation()}
-      className="absolute z-20 w-72 max-w-[calc(100%-1.5rem)] -translate-x-1/2 rounded-xl border border-stone-200 bg-white shadow-xl"
+      className="absolute z-20 w-72 max-w-[calc(100%-1.5rem)] rounded-xl border border-stone-200 bg-white shadow-xl"
       style={{ left: `${left}%`, ...(below ? { top: `calc(${(at.y / h) * 100}% + 16px)` } : { bottom: `calc(${100 - (at.y / h) * 100}% + 16px)` }) }}
     >
       <div className="flex items-center justify-between border-b border-stone-100 px-3 py-2">

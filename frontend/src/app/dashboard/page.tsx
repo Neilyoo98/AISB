@@ -24,6 +24,7 @@ type Task = {
   done: boolean;
   source?: string | null;
   suggestions?: Suggestion[];
+  assignee?: { id: string; name: string; initials: string } | null;
 };
 type AdoptedTool = { id: string; name: string; url: string; category: string; price: number; source: "plan" | "manual" };
 type Dash = {
@@ -221,8 +222,14 @@ export default function Dashboard() {
                           </span>
                           <span className="min-w-0 flex-1">
                             <span className={cn("block text-sm leading-snug", t.done && "text-stone-400 line-through")}>{t.text}</span>
-                            <span className="mt-0.5 block text-xs text-stone-500">
-                              {t.source === "custom" ? "Your task" : t.owner}
+                            <span className="mt-0.5 flex flex-wrap items-center gap-1.5 text-xs text-stone-500">
+                              {t.assignee && (
+                                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-1.5 py-0.5 font-medium text-emerald-800" title={`Assigned to ${t.assignee.name}`}>
+                                  <span className="grid h-4 w-4 place-items-center rounded-full bg-emerald-700 text-[9px] font-bold text-white">{t.assignee.initials}</span>
+                                  {t.assignee.name}
+                                </span>
+                              )}
+                              {t.source === "custom" ? "Your task" : t.source === "coworker" ? "From a coworker task" : t.owner}
                               {t.minutes ? ` · about ${t.minutes} min` : ""}
                             </span>
                           </span>

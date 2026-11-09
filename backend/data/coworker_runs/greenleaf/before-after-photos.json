@@ -1,0 +1,568 @@
+{
+ "persona": "greenleaf",
+ "slug": "before-after-photos",
+ "text": "Post before-and-after photos of this week's cleanups on Google and Facebook",
+ "employees": [
+  {
+   "id": "a12792cca8e94cf4",
+   "name": "Dev Patel"
+  },
+  {
+   "id": "4d90984469d54d68",
+   "name": "Tom Reyes"
+  },
+  {
+   "id": "13465994a05d4c2b",
+   "name": "Ana Silva"
+  },
+  {
+   "id": "bcd89d8bbe3a463f",
+   "name": "Mateo Cruz"
+  }
+ ],
+ "events": [
+  {
+   "seq": 0,
+   "t": 0,
+   "type": "task.start",
+   "agent": null,
+   "data": {
+    "mode": "live"
+   }
+  },
+  {
+   "seq": 1,
+   "t": 15,
+   "type": "task.read",
+   "agent": "reader",
+   "data": {
+    "intent": "Post before-and-after photos of this week's cleanups on Google and Facebook.",
+    "customer_facing": true,
+    "urgency": "normal",
+    "needed_skills": [
+     "photography",
+     "social media posting",
+     "writing captions",
+     "photo editing"
+    ],
+    "needed_capabilities": [
+     "post to Google Business Profile",
+     "post to Facebook",
+     "schedule posts"
+    ]
+   }
+  },
+  {
+   "seq": 2,
+   "t": 15,
+   "type": "route.chosen",
+   "agent": "router",
+   "data": {
+    "route": {
+     "owner_id": "bcd89d8bbe3a463f",
+     "owner_reason": "Mateo Cruz knows this best (cleanup).",
+     "substituted": false,
+     "human_id": "bcd89d8bbe3a463f",
+     "substitution_note": null,
+     "scores": [
+      {
+       "employee_id": "bcd89d8bbe3a463f",
+       "score": 5.0
+      },
+      {
+       "employee_id": "a12792cca8e94cf4",
+       "score": 3.0
+      },
+      {
+       "employee_id": "4d90984469d54d68",
+       "score": 0.0
+      },
+      {
+       "employee_id": "13465994a05d4c2b",
+       "score": 0.0
+      }
+     ]
+    }
+   }
+  },
+  {
+   "seq": 3,
+   "t": 1125,
+   "type": "mesh.message",
+   "agent": "coworker:a12792cca8e94cf4",
+   "data": {
+    "from_id": "a12792cca8e94cf4",
+    "to_id": "bcd89d8bbe3a463f",
+    "context_shared": "Dev writes every quote and talks to homeowners, so before-and-after photos of this week's spring cleanups may show customer properties. Dev has handled cleanup quotes before.",
+    "should_check": "Confirm each homeowner has consented to their property being photographed and posted publicly, and ask Dev before posting identifying details or addresses.",
+    "confidence": "medium"
+   }
+  },
+  {
+   "seq": 4,
+   "t": 1250,
+   "type": "mesh.message",
+   "agent": "coworker:bcd89d8bbe3a463f",
+   "data": {
+    "from_id": "bcd89d8bbe3a463f",
+    "to_id": "a12792cca8e94cf4",
+    "context_shared": "Mateo Cruz is a crew member who handles cleanups, planting and hauling debris, and has no listed photography or social media skills or tools. He is currently busy, so any before-and-after photos would need to come from crew work logs or be shot by someone else.",
+    "should_check": "Confirm who took this week's before-and-after photos and whether customers consented to their images being posted publicly on Google and Facebook.",
+    "confidence": "medium"
+   }
+  },
+  {
+   "seq": 5,
+   "t": 1281,
+   "type": "mesh.message",
+   "agent": "coworker:4d90984469d54d68",
+   "data": {
+    "from_id": "4d90984469d54d68",
+    "to_id": "bcd89d8bbe3a463f",
+    "context_shared": "Tom runs the crew and routes jobs, so he knows which cleanups finished this week and where the crew was. Tom's notes don't cover photos or social media, so the rest is unknown.",
+    "should_check": "Confirm with Tom which completed jobs are cleared for public posting and that customers gave photo permission before posting on Google or Facebook.",
+    "confidence": "medium"
+   }
+  },
+  {
+   "seq": 6,
+   "t": 5734,
+   "type": "workflow.ready",
+   "agent": "builder",
+   "data": {
+    "workflow": [
+     {
+      "actor_type": "employee",
+      "actor_id": "bcd89d8bbe3a463f",
+      "action": "Gather this week's before-and-after cleanup photos from the crew and pick the best pairs.",
+      "tool_id": null,
+      "manual_before": null,
+      "handoff_to": "4d90984469d54d68",
+      "gap": false,
+      "gap_capability": null,
+      "n": 1,
+      "recommendations": []
+     },
+     {
+      "actor_type": "employee",
+      "actor_id": "4d90984469d54d68",
+      "action": "Confirm which finished jobs are cleared for public posting and which homeowners gave photo permission.",
+      "tool_id": null,
+      "manual_before": null,
+      "handoff_to": "jobber",
+      "gap": false,
+      "gap_capability": null,
+      "n": 2,
+      "recommendations": []
+     },
+     {
+      "actor_type": "tool",
+      "actor_id": "jobber",
+      "action": "Use Copilot to draft short friendly captions for each approved before-and-after pair, with no addresses.",
+      "tool_id": "jobber",
+      "manual_before": "Caption written by hand from scratch",
+      "handoff_to": "bcd89d8bbe3a463f",
+      "gap": false,
+      "gap_capability": null,
+      "n": 3,
+      "recommendations": []
+     },
+     {
+      "actor_type": "employee",
+      "actor_id": "bcd89d8bbe3a463f",
+      "action": "Review captions, fix details, and crop or lightly edit the photos on the phone.",
+      "tool_id": null,
+      "manual_before": null,
+      "handoff_to": "bcd89d8bbe3a463f",
+      "gap": true,
+      "gap_capability": "photo editing",
+      "n": 4,
+      "recommendations": [
+       {
+        "tool_id": "canva-pro",
+        "reason": "Design flyers, menus and social posts in minutes with AI templates and scheduling."
+       },
+       {
+        "tool_id": "buffer",
+        "reason": "Simple social scheduler with an AI assistant that writes and repurposes posts."
+       }
+      ]
+     },
+     {
+      "actor_type": "employee",
+      "actor_id": "bcd89d8bbe3a463f",
+      "action": "Approve the final photos and captions, especially any customer-identifying details.",
+      "tool_id": null,
+      "manual_before": null,
+      "handoff_to": "bcd89d8bbe3a463f",
+      "gap": false,
+      "gap_capability": null,
+      "n": 5,
+      "recommendations": []
+     },
+     {
+      "actor_type": "employee",
+      "actor_id": "bcd89d8bbe3a463f",
+      "action": "Post the approved photos and captions by hand on Google Business Profile and Facebook.",
+      "tool_id": null,
+      "manual_before": null,
+      "handoff_to": null,
+      "gap": true,
+      "gap_capability": "social media posting and scheduling for Google and Facebook",
+      "n": 6,
+      "recommendations": [
+       {
+        "tool_id": "meta-business-suite",
+        "reason": "Free hub to schedule Facebook/Instagram posts and auto-answer DMs with AI."
+       },
+       {
+        "tool_id": "buffer",
+        "reason": "Simple social scheduler with an AI assistant that writes and repurposes posts."
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "seq": 7,
+   "t": 5734,
+   "type": "gap.found",
+   "agent": "builder",
+   "data": {
+    "step_n": 4,
+    "capability": "photo editing",
+    "recommendations": [
+     {
+      "tool_id": "canva-pro",
+      "reason": "Design flyers, menus and social posts in minutes with AI templates and scheduling."
+     },
+     {
+      "tool_id": "buffer",
+      "reason": "Simple social scheduler with an AI assistant that writes and repurposes posts."
+     }
+    ]
+   }
+  },
+  {
+   "seq": 8,
+   "t": 5734,
+   "type": "gap.found",
+   "agent": "builder",
+   "data": {
+    "step_n": 6,
+    "capability": "social media posting and scheduling for Google and Facebook",
+    "recommendations": [
+     {
+      "tool_id": "meta-business-suite",
+      "reason": "Free hub to schedule Facebook/Instagram posts and auto-answer DMs with AI."
+     },
+     {
+      "tool_id": "buffer",
+      "reason": "Simple social scheduler with an AI assistant that writes and repurposes posts."
+     }
+    ]
+   }
+  },
+  {
+   "seq": 9,
+   "t": 9000,
+   "type": "drafts.ready",
+   "agent": "drafter",
+   "data": {
+    "drafts": [
+     {
+      "kind": "customer_reply",
+      "title": "Photo permission request to homeowner",
+      "to": "[Homeowner name]",
+      "body": "Hi [Homeowner name], this is Tom from GreenLeaf Landscaping. We were so happy with how your yard turned out and would love to share a before-and-after photo of the cleanup on our Google and Facebook pages. We would never include your address or name. Would you be okay with that? Just reply yes or no. Thank you, and enjoy the new look!"
+     },
+     {
+      "kind": "staff_message",
+      "title": "Note to Mateo on photo selection and approvals",
+      "to": "Mateo Cruz",
+      "body": "Hi Mateo, please send me this week's before-and-after photos from the crew when you have them. Once I confirm which jobs are cleared and which homeowners gave permission, pick the best pairs from those only. Please skip any photo showing house numbers, street signs, or license plates. Review the captions before posting, and check with me on any customer-identifying detail. Thanks!"
+     },
+     {
+      "kind": "other",
+      "title": "Draft caption for an approved job",
+      "to": "Google Business Profile and Facebook",
+      "body": "Fresh start for this [neighborhood or area] yard! Our crew cleared overgrowth, refreshed the beds, and gave the lawn a clean edge. Swipe to see the before and after. Want results like this at your place? Message GreenLeaf Landscaping for a quote. [Optional: add a seasonal tip or service reminder]"
+     }
+    ]
+   }
+  },
+  {
+   "seq": 10,
+   "t": 9015,
+   "type": "approval.waiting",
+   "agent": null,
+   "data": {}
+  },
+  {
+   "seq": 11,
+   "t": 9062,
+   "type": "task.approved",
+   "agent": "you",
+   "data": {
+    "assigned_tasks": [
+     {
+      "task_id": 650,
+      "assignee_id": "bcd89d8bbe3a463f",
+      "text": "Gather this week's before-and-after cleanup photos from the crew and pick the best pairs."
+     },
+     {
+      "task_id": 651,
+      "assignee_id": "4d90984469d54d68",
+      "text": "Confirm which finished jobs are cleared for public posting and which homeowners gave photo permission."
+     },
+     {
+      "task_id": 652,
+      "assignee_id": "bcd89d8bbe3a463f",
+      "text": "Review captions, fix details, and crop or lightly edit the photos on the phone."
+     },
+     {
+      "task_id": 653,
+      "assignee_id": "bcd89d8bbe3a463f",
+      "text": "Approve the final photos and captions, especially any customer-identifying details."
+     },
+     {
+      "task_id": 654,
+      "assignee_id": "bcd89d8bbe3a463f",
+      "text": "Post the approved photos and captions by hand on Google Business Profile and Facebook."
+     }
+    ],
+    "send_log": [
+     {
+      "channel": "Job & quote",
+      "via_tool_id": "jobber",
+      "to": "Mateo Cruz",
+      "summary": "Use Copilot to draft short friendly captions for each approved before-and-after pair, with no addresses.",
+      "simulated": true,
+      "label": "Simulated — nothing was sent"
+     }
+    ]
+   }
+  },
+  {
+   "seq": 12,
+   "t": 9187,
+   "type": "memory.saved",
+   "agent": "memory",
+   "data": {
+    "employees": [
+     "4d90984469d54d68",
+     "bcd89d8bbe3a463f"
+    ]
+   }
+  },
+  {
+   "seq": 13,
+   "t": 9187,
+   "type": "task.complete",
+   "agent": "you",
+   "data": {}
+  }
+ ],
+ "result": {
+  "intent": "Post before-and-after photos of this week's cleanups on Google and Facebook.",
+  "urgency": "normal",
+  "route": {
+   "owner_id": "bcd89d8bbe3a463f",
+   "owner_reason": "Mateo Cruz knows this best (cleanup).",
+   "substituted": false,
+   "human_id": "bcd89d8bbe3a463f",
+   "substitution_note": null,
+   "scores": [
+    {
+     "employee_id": "bcd89d8bbe3a463f",
+     "score": 5.0
+    },
+    {
+     "employee_id": "a12792cca8e94cf4",
+     "score": 3.0
+    },
+    {
+     "employee_id": "4d90984469d54d68",
+     "score": 0.0
+    },
+    {
+     "employee_id": "13465994a05d4c2b",
+     "score": 0.0
+    }
+   ]
+  },
+  "mesh": [
+   {
+    "from_id": "bcd89d8bbe3a463f",
+    "to_id": "a12792cca8e94cf4",
+    "context_shared": "Mateo Cruz is a crew member who handles cleanups, planting and hauling debris, and has no listed photography or social media skills or tools. He is currently busy, so any before-and-after photos would need to come from crew work logs or be shot by someone else.",
+    "should_check": "Confirm who took this week's before-and-after photos and whether customers consented to their images being posted publicly on Google and Facebook.",
+    "confidence": "medium"
+   },
+   {
+    "from_id": "a12792cca8e94cf4",
+    "to_id": "bcd89d8bbe3a463f",
+    "context_shared": "Dev writes every quote and talks to homeowners, so before-and-after photos of this week's spring cleanups may show customer properties. Dev has handled cleanup quotes before.",
+    "should_check": "Confirm each homeowner has consented to their property being photographed and posted publicly, and ask Dev before posting identifying details or addresses.",
+    "confidence": "medium"
+   },
+   {
+    "from_id": "4d90984469d54d68",
+    "to_id": "bcd89d8bbe3a463f",
+    "context_shared": "Tom runs the crew and routes jobs, so he knows which cleanups finished this week and where the crew was. Tom's notes don't cover photos or social media, so the rest is unknown.",
+    "should_check": "Confirm with Tom which completed jobs are cleared for public posting and that customers gave photo permission before posting on Google or Facebook.",
+    "confidence": "medium"
+   }
+  ],
+  "workflow": [
+   {
+    "actor_type": "employee",
+    "actor_id": "bcd89d8bbe3a463f",
+    "action": "Gather this week's before-and-after cleanup photos from the crew and pick the best pairs.",
+    "tool_id": null,
+    "manual_before": null,
+    "handoff_to": "4d90984469d54d68",
+    "gap": false,
+    "gap_capability": null,
+    "n": 1,
+    "recommendations": []
+   },
+   {
+    "actor_type": "employee",
+    "actor_id": "4d90984469d54d68",
+    "action": "Confirm which finished jobs are cleared for public posting and which homeowners gave photo permission.",
+    "tool_id": null,
+    "manual_before": null,
+    "handoff_to": "jobber",
+    "gap": false,
+    "gap_capability": null,
+    "n": 2,
+    "recommendations": []
+   },
+   {
+    "actor_type": "tool",
+    "actor_id": "jobber",
+    "action": "Use Copilot to draft short friendly captions for each approved before-and-after pair, with no addresses.",
+    "tool_id": "jobber",
+    "manual_before": "Caption written by hand from scratch",
+    "handoff_to": "bcd89d8bbe3a463f",
+    "gap": false,
+    "gap_capability": null,
+    "n": 3,
+    "recommendations": []
+   },
+   {
+    "actor_type": "employee",
+    "actor_id": "bcd89d8bbe3a463f",
+    "action": "Review captions, fix details, and crop or lightly edit the photos on the phone.",
+    "tool_id": null,
+    "manual_before": null,
+    "handoff_to": "bcd89d8bbe3a463f",
+    "gap": true,
+    "gap_capability": "photo editing",
+    "n": 4,
+    "recommendations": [
+     {
+      "tool_id": "canva-pro",
+      "reason": "Design flyers, menus and social posts in minutes with AI templates and scheduling."
+     },
+     {
+      "tool_id": "buffer",
+      "reason": "Simple social scheduler with an AI assistant that writes and repurposes posts."
+     }
+    ]
+   },
+   {
+    "actor_type": "employee",
+    "actor_id": "bcd89d8bbe3a463f",
+    "action": "Approve the final photos and captions, especially any customer-identifying details.",
+    "tool_id": null,
+    "manual_before": null,
+    "handoff_to": "bcd89d8bbe3a463f",
+    "gap": false,
+    "gap_capability": null,
+    "n": 5,
+    "recommendations": []
+   },
+   {
+    "actor_type": "employee",
+    "actor_id": "bcd89d8bbe3a463f",
+    "action": "Post the approved photos and captions by hand on Google Business Profile and Facebook.",
+    "tool_id": null,
+    "manual_before": null,
+    "handoff_to": null,
+    "gap": true,
+    "gap_capability": "social media posting and scheduling for Google and Facebook",
+    "n": 6,
+    "recommendations": [
+     {
+      "tool_id": "meta-business-suite",
+      "reason": "Free hub to schedule Facebook/Instagram posts and auto-answer DMs with AI."
+     },
+     {
+      "tool_id": "buffer",
+      "reason": "Simple social scheduler with an AI assistant that writes and repurposes posts."
+     }
+    ]
+   }
+  ],
+  "drafts": [
+   {
+    "kind": "customer_reply",
+    "title": "Photo permission request to homeowner",
+    "to": "[Homeowner name]",
+    "body": "Hi [Homeowner name], this is Tom from GreenLeaf Landscaping. We were so happy with how your yard turned out and would love to share a before-and-after photo of the cleanup on our Google and Facebook pages. We would never include your address or name. Would you be okay with that? Just reply yes or no. Thank you, and enjoy the new look!"
+   },
+   {
+    "kind": "staff_message",
+    "title": "Note to Mateo on photo selection and approvals",
+    "to": "Mateo Cruz",
+    "body": "Hi Mateo, please send me this week's before-and-after photos from the crew when you have them. Once I confirm which jobs are cleared and which homeowners gave permission, pick the best pairs from those only. Please skip any photo showing house numbers, street signs, or license plates. Review the captions before posting, and check with me on any customer-identifying detail. Thanks!"
+   },
+   {
+    "kind": "other",
+    "title": "Draft caption for an approved job",
+    "to": "Google Business Profile and Facebook",
+    "body": "Fresh start for this [neighborhood or area] yard! Our crew cleared overgrowth, refreshed the beds, and gave the lawn a clean edge. Swipe to see the before and after. Want results like this at your place? Message GreenLeaf Landscaping for a quote. [Optional: add a seasonal tip or service reminder]"
+   }
+  ],
+  "send_log": [
+   {
+    "channel": "Job & quote",
+    "via_tool_id": "jobber",
+    "to": "Mateo Cruz",
+    "summary": "Use Copilot to draft short friendly captions for each approved before-and-after pair, with no addresses.",
+    "simulated": true,
+    "label": "Simulated — nothing was sent"
+   }
+  ],
+  "assigned_tasks": [
+   {
+    "task_id": 650,
+    "assignee_id": "bcd89d8bbe3a463f",
+    "text": "Gather this week's before-and-after cleanup photos from the crew and pick the best pairs."
+   },
+   {
+    "task_id": 651,
+    "assignee_id": "4d90984469d54d68",
+    "text": "Confirm which finished jobs are cleared for public posting and which homeowners gave photo permission."
+   },
+   {
+    "task_id": 652,
+    "assignee_id": "bcd89d8bbe3a463f",
+    "text": "Review captions, fix details, and crop or lightly edit the photos on the phone."
+   },
+   {
+    "task_id": 653,
+    "assignee_id": "bcd89d8bbe3a463f",
+    "text": "Approve the final photos and captions, especially any customer-identifying details."
+   },
+   {
+    "task_id": 654,
+    "assignee_id": "bcd89d8bbe3a463f",
+    "text": "Post the approved photos and captions by hand on Google Business Profile and Facebook."
+   }
+  ]
+ }
+}

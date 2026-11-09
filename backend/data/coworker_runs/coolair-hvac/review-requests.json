@@ -1,0 +1,551 @@
+{
+ "persona": "coolair-hvac",
+ "slug": "review-requests",
+ "text": "Ask this week's happy customers to leave us a Google review",
+ "employees": [
+  {
+   "id": "a07eaa702d214d6b",
+   "name": "Maria Okafor"
+  },
+  {
+   "id": "b0d4739faf3240e4",
+   "name": "Luis Ortega"
+  },
+  {
+   "id": "2e509b41eb5547d7",
+   "name": "Dana Brooks"
+  },
+  {
+   "id": "d8add97e03234285",
+   "name": "Kevin Park"
+  }
+ ],
+ "events": [
+  {
+   "seq": 0,
+   "t": 0,
+   "type": "task.start",
+   "agent": null,
+   "data": {
+    "mode": "live"
+   }
+  },
+  {
+   "seq": 1,
+   "t": 0,
+   "type": "task.read",
+   "agent": "reader",
+   "data": {
+    "intent": "Ask this week's happy customers to leave a Google review for CoolAir HVAC.",
+    "customer_facing": true,
+    "urgency": "normal",
+    "needed_skills": [
+     "customer communication",
+     "identifying happy customers",
+     "review platform management",
+     "messaging and follow-up"
+    ],
+    "needed_capabilities": [
+     "send review request texts",
+     "send review request emails",
+     "reply to reviews"
+    ]
+   }
+  },
+  {
+   "seq": 2,
+   "t": 0,
+   "type": "route.chosen",
+   "agent": "router",
+   "data": {
+    "route": {
+     "owner_id": "2e509b41eb5547d7",
+     "owner_reason": "Dana Brooks knows this best (follow).",
+     "substituted": false,
+     "human_id": "2e509b41eb5547d7",
+     "substitution_note": null,
+     "scores": [
+      {
+       "employee_id": "2e509b41eb5547d7",
+       "score": 5.5
+      },
+      {
+       "employee_id": "a07eaa702d214d6b",
+       "score": 0.5
+      },
+      {
+       "employee_id": "b0d4739faf3240e4",
+       "score": 0.0
+      },
+      {
+       "employee_id": "d8add97e03234285",
+       "score": 0.0
+      }
+     ]
+    }
+   }
+  },
+  {
+   "seq": 3,
+   "t": 1297,
+   "type": "mesh.message",
+   "agent": "coworker:2e509b41eb5547d7",
+   "data": {
+    "from_id": "2e509b41eb5547d7",
+    "to_id": "a07eaa702d214d6b",
+    "context_shared": "Dana handles customer follow-up and renews maintenance plans, and she tracks jobs and payments in Jobber and QuickBooks. Paid or completed jobs this week are the best source for identifying happy customers.",
+    "should_check": "Confirm each target customer's job was completed and paid, with no open complaint or late-payment issue, before sending any review request.",
+    "confidence": "medium"
+   }
+  },
+  {
+   "seq": 4,
+   "t": 1327,
+   "type": "mesh.message",
+   "agent": "coworker:a07eaa702d214d6b",
+   "data": {
+    "from_id": "a07eaa702d214d6b",
+    "to_id": "2e509b41eb5547d7",
+    "context_shared": "Maria handles customer complaints and calls back customers after problems, so she knows which recent jobs went badly. Check her Jobber records before asking anyone for a review, and skip those customers.",
+    "should_check": "Confirm with Maria in Jobber which customers had recent complaints or no-shows, like the missed 2pm appointment, and exclude them from this week's review requests.",
+    "confidence": "medium"
+   }
+  },
+  {
+   "seq": 5,
+   "t": 1342,
+   "type": "mesh.message",
+   "agent": "coworker:b0d4739faf3240e4",
+   "data": {
+    "from_id": "b0d4739faf3240e4",
+    "to_id": "2e509b41eb5547d7",
+    "context_shared": "Luis runs repair and install jobs in Jobber and has handled a no-show complaint before, so he knows which completed jobs went well. Customers he serviced recently are the best candidates to ask for reviews.",
+    "should_check": "Confirm which completed jobs this week had positive outcomes and no open complaints, like the missed-appointment case, before any review request goes out.",
+    "confidence": "medium"
+   }
+  },
+  {
+   "seq": 6,
+   "t": 5467,
+   "type": "workflow.ready",
+   "agent": "builder",
+   "data": {
+    "workflow": [
+     {
+      "actor_type": "employee",
+      "actor_id": "2e509b41eb5547d7",
+      "action": "Pull this week's completed jobs in Jobber and check QuickBooks to confirm each one is paid.",
+      "tool_id": "jobber",
+      "manual_before": "Dana scanned invoices and job notes by hand",
+      "handoff_to": "2e509b41eb5547d7",
+      "gap": false,
+      "gap_capability": null,
+      "n": 1,
+      "recommendations": []
+     },
+     {
+      "actor_type": "employee",
+      "actor_id": "2e509b41eb5547d7",
+      "action": "Review the list and flag customers with complaints or no-shows, like the missed 2pm appointment, to exclude.",
+      "tool_id": null,
+      "manual_before": null,
+      "handoff_to": "2e509b41eb5547d7",
+      "gap": false,
+      "gap_capability": null,
+      "n": 2,
+      "recommendations": []
+     },
+     {
+      "actor_type": "tool",
+      "actor_id": "jobber",
+      "action": "Draft a friendly, personal review request message for each happy customer using Copilot.",
+      "tool_id": "jobber",
+      "manual_before": "Dana typed each thank-you message by hand",
+      "handoff_to": "2e509b41eb5547d7",
+      "gap": false,
+      "gap_capability": null,
+      "n": 3,
+      "recommendations": []
+     },
+     {
+      "actor_type": "employee",
+      "actor_id": "2e509b41eb5547d7",
+      "action": "Check the drafts, add the Google review link, and send them by email from Jobber.",
+      "tool_id": "jobber",
+      "manual_before": null,
+      "handoff_to": "customer",
+      "gap": false,
+      "gap_capability": null,
+      "n": 4,
+      "recommendations": []
+     },
+     {
+      "actor_type": "customer",
+      "actor_id": null,
+      "action": "Reads the message and leaves a Google review for CoolAir HVAC.",
+      "tool_id": null,
+      "manual_before": null,
+      "handoff_to": "2e509b41eb5547d7",
+      "gap": false,
+      "gap_capability": null,
+      "n": 5,
+      "recommendations": []
+     },
+     {
+      "actor_type": "employee",
+      "actor_id": "2e509b41eb5547d7",
+      "action": "Check Google for new reviews and reply to each one manually, since no review-reply tool exists.",
+      "tool_id": null,
+      "manual_before": null,
+      "handoff_to": null,
+      "gap": true,
+      "gap_capability": "review monitoring and reply management",
+      "n": 6,
+      "recommendations": [
+       {
+        "tool_id": "nicejob",
+        "reason": "Automatically asks every customer for a review and posts the best ones to your site."
+       },
+       {
+        "tool_id": "birdeye",
+        "reason": "Reputation platform that collects reviews, drafts AI replies and analyzes sentiment."
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "seq": 7,
+   "t": 5467,
+   "type": "gap.found",
+   "agent": "builder",
+   "data": {
+    "step_n": 6,
+    "capability": "review monitoring and reply management",
+    "recommendations": [
+     {
+      "tool_id": "nicejob",
+      "reason": "Automatically asks every customer for a review and posts the best ones to your site."
+     },
+     {
+      "tool_id": "birdeye",
+      "reason": "Reputation platform that collects reviews, drafts AI replies and analyzes sentiment."
+     }
+    ]
+   }
+  },
+  {
+   "seq": 8,
+   "t": 8125,
+   "type": "drafts.ready",
+   "agent": "drafter",
+   "data": {
+    "drafts": [
+     {
+      "kind": "customer_reply",
+      "title": "Review request for happy customers",
+      "to": "Happy customers from this week's completed, paid jobs",
+      "body": "Hi [Customer Name], this is Dana Brooks with CoolAir HVAC. Thank you for trusting us with your cooling system this week. We really appreciate your business. If you have a moment, would you mind sharing your experience on Google? Your feedback helps local families find a reliable team. Here's the link: [Google review link]. Thanks again, and stay cool!"
+     },
+     {
+      "kind": "staff_message",
+      "title": "Review follow-up checklist for the team",
+      "to": "Dana Brooks",
+      "body": "Dana, before sending, confirm each customer is paid in QuickBooks and had no complaints or missed appointments. Leave out anyone like the missed 2pm customer. Add the Google review link to each draft and send from Jobber. Check Google weekly and reply to every review, positive or negative, within 48 hours."
+     },
+     {
+      "kind": "review_response",
+      "title": "Reply to a positive Google review",
+      "to": "Google reviewer",
+      "body": "Thank you, [Reviewer Name]! We're so glad our team at CoolAir HVAC could keep your home comfortable. Our technicians take pride in every job, and we appreciate you taking the time to share your experience. Please reach out anytime you need service. We're always happy to help."
+     }
+    ]
+   }
+  },
+  {
+   "seq": 9,
+   "t": 8125,
+   "type": "approval.waiting",
+   "agent": null,
+   "data": {}
+  },
+  {
+   "seq": 10,
+   "t": 8172,
+   "type": "task.approved",
+   "agent": "you",
+   "data": {
+    "assigned_tasks": [
+     {
+      "task_id": 658,
+      "assignee_id": "2e509b41eb5547d7",
+      "text": "Pull this week's completed jobs in Jobber and check QuickBooks to confirm each one is paid."
+     },
+     {
+      "task_id": 659,
+      "assignee_id": "2e509b41eb5547d7",
+      "text": "Review the list and flag customers with complaints or no-shows, like the missed 2pm appointment, to exclude."
+     },
+     {
+      "task_id": 660,
+      "assignee_id": "2e509b41eb5547d7",
+      "text": "Check the drafts, add the Google review link, and send them by email from Jobber."
+     },
+     {
+      "task_id": 661,
+      "assignee_id": "2e509b41eb5547d7",
+      "text": "Check Google for new reviews and reply to each one manually, since no review-reply tool exists."
+     }
+    ],
+    "send_log": [
+     {
+      "channel": "Job & quote",
+      "via_tool_id": "jobber",
+      "to": "Dana Brooks",
+      "summary": "Pull this week's completed jobs in Jobber and check QuickBooks to confirm each one is paid.",
+      "simulated": true,
+      "label": "Simulated — nothing was sent"
+     },
+     {
+      "channel": "Job & quote",
+      "via_tool_id": "jobber",
+      "to": "Dana Brooks",
+      "summary": "Draft a friendly, personal review request message for each happy customer using Copilot.",
+      "simulated": true,
+      "label": "Simulated — nothing was sent"
+     },
+     {
+      "channel": "Job & quote",
+      "via_tool_id": "jobber",
+      "to": "Customer",
+      "summary": "Check the drafts, add the Google review link, and send them by email from Jobber.",
+      "simulated": true,
+      "label": "Simulated — nothing was sent"
+     }
+    ]
+   }
+  },
+  {
+   "seq": 11,
+   "t": 8217,
+   "type": "memory.saved",
+   "agent": "memory",
+   "data": {
+    "employees": [
+     "2e509b41eb5547d7"
+    ]
+   }
+  },
+  {
+   "seq": 12,
+   "t": 8217,
+   "type": "task.complete",
+   "agent": "you",
+   "data": {}
+  }
+ ],
+ "result": {
+  "intent": "Ask this week's happy customers to leave a Google review for CoolAir HVAC.",
+  "urgency": "normal",
+  "route": {
+   "owner_id": "2e509b41eb5547d7",
+   "owner_reason": "Dana Brooks knows this best (follow).",
+   "substituted": false,
+   "human_id": "2e509b41eb5547d7",
+   "substitution_note": null,
+   "scores": [
+    {
+     "employee_id": "2e509b41eb5547d7",
+     "score": 5.5
+    },
+    {
+     "employee_id": "a07eaa702d214d6b",
+     "score": 0.5
+    },
+    {
+     "employee_id": "b0d4739faf3240e4",
+     "score": 0.0
+    },
+    {
+     "employee_id": "d8add97e03234285",
+     "score": 0.0
+    }
+   ]
+  },
+  "mesh": [
+   {
+    "from_id": "2e509b41eb5547d7",
+    "to_id": "a07eaa702d214d6b",
+    "context_shared": "Dana handles customer follow-up and renews maintenance plans, and she tracks jobs and payments in Jobber and QuickBooks. Paid or completed jobs this week are the best source for identifying happy customers.",
+    "should_check": "Confirm each target customer's job was completed and paid, with no open complaint or late-payment issue, before sending any review request.",
+    "confidence": "medium"
+   },
+   {
+    "from_id": "a07eaa702d214d6b",
+    "to_id": "2e509b41eb5547d7",
+    "context_shared": "Maria handles customer complaints and calls back customers after problems, so she knows which recent jobs went badly. Check her Jobber records before asking anyone for a review, and skip those customers.",
+    "should_check": "Confirm with Maria in Jobber which customers had recent complaints or no-shows, like the missed 2pm appointment, and exclude them from this week's review requests.",
+    "confidence": "medium"
+   },
+   {
+    "from_id": "b0d4739faf3240e4",
+    "to_id": "2e509b41eb5547d7",
+    "context_shared": "Luis runs repair and install jobs in Jobber and has handled a no-show complaint before, so he knows which completed jobs went well. Customers he serviced recently are the best candidates to ask for reviews.",
+    "should_check": "Confirm which completed jobs this week had positive outcomes and no open complaints, like the missed-appointment case, before any review request goes out.",
+    "confidence": "medium"
+   }
+  ],
+  "workflow": [
+   {
+    "actor_type": "employee",
+    "actor_id": "2e509b41eb5547d7",
+    "action": "Pull this week's completed jobs in Jobber and check QuickBooks to confirm each one is paid.",
+    "tool_id": "jobber",
+    "manual_before": "Dana scanned invoices and job notes by hand",
+    "handoff_to": "2e509b41eb5547d7",
+    "gap": false,
+    "gap_capability": null,
+    "n": 1,
+    "recommendations": []
+   },
+   {
+    "actor_type": "employee",
+    "actor_id": "2e509b41eb5547d7",
+    "action": "Review the list and flag customers with complaints or no-shows, like the missed 2pm appointment, to exclude.",
+    "tool_id": null,
+    "manual_before": null,
+    "handoff_to": "2e509b41eb5547d7",
+    "gap": false,
+    "gap_capability": null,
+    "n": 2,
+    "recommendations": []
+   },
+   {
+    "actor_type": "tool",
+    "actor_id": "jobber",
+    "action": "Draft a friendly, personal review request message for each happy customer using Copilot.",
+    "tool_id": "jobber",
+    "manual_before": "Dana typed each thank-you message by hand",
+    "handoff_to": "2e509b41eb5547d7",
+    "gap": false,
+    "gap_capability": null,
+    "n": 3,
+    "recommendations": []
+   },
+   {
+    "actor_type": "employee",
+    "actor_id": "2e509b41eb5547d7",
+    "action": "Check the drafts, add the Google review link, and send them by email from Jobber.",
+    "tool_id": "jobber",
+    "manual_before": null,
+    "handoff_to": "customer",
+    "gap": false,
+    "gap_capability": null,
+    "n": 4,
+    "recommendations": []
+   },
+   {
+    "actor_type": "customer",
+    "actor_id": null,
+    "action": "Reads the message and leaves a Google review for CoolAir HVAC.",
+    "tool_id": null,
+    "manual_before": null,
+    "handoff_to": "2e509b41eb5547d7",
+    "gap": false,
+    "gap_capability": null,
+    "n": 5,
+    "recommendations": []
+   },
+   {
+    "actor_type": "employee",
+    "actor_id": "2e509b41eb5547d7",
+    "action": "Check Google for new reviews and reply to each one manually, since no review-reply tool exists.",
+    "tool_id": null,
+    "manual_before": null,
+    "handoff_to": null,
+    "gap": true,
+    "gap_capability": "review monitoring and reply management",
+    "n": 6,
+    "recommendations": [
+     {
+      "tool_id": "nicejob",
+      "reason": "Automatically asks every customer for a review and posts the best ones to your site."
+     },
+     {
+      "tool_id": "birdeye",
+      "reason": "Reputation platform that collects reviews, drafts AI replies and analyzes sentiment."
+     }
+    ]
+   }
+  ],
+  "drafts": [
+   {
+    "kind": "customer_reply",
+    "title": "Review request for happy customers",
+    "to": "Happy customers from this week's completed, paid jobs",
+    "body": "Hi [Customer Name], this is Dana Brooks with CoolAir HVAC. Thank you for trusting us with your cooling system this week. We really appreciate your business. If you have a moment, would you mind sharing your experience on Google? Your feedback helps local families find a reliable team. Here's the link: [Google review link]. Thanks again, and stay cool!"
+   },
+   {
+    "kind": "staff_message",
+    "title": "Review follow-up checklist for the team",
+    "to": "Dana Brooks",
+    "body": "Dana, before sending, confirm each customer is paid in QuickBooks and had no complaints or missed appointments. Leave out anyone like the missed 2pm customer. Add the Google review link to each draft and send from Jobber. Check Google weekly and reply to every review, positive or negative, within 48 hours."
+   },
+   {
+    "kind": "review_response",
+    "title": "Reply to a positive Google review",
+    "to": "Google reviewer",
+    "body": "Thank you, [Reviewer Name]! We're so glad our team at CoolAir HVAC could keep your home comfortable. Our technicians take pride in every job, and we appreciate you taking the time to share your experience. Please reach out anytime you need service. We're always happy to help."
+   }
+  ],
+  "send_log": [
+   {
+    "channel": "Job & quote",
+    "via_tool_id": "jobber",
+    "to": "Dana Brooks",
+    "summary": "Pull this week's completed jobs in Jobber and check QuickBooks to confirm each one is paid.",
+    "simulated": true,
+    "label": "Simulated — nothing was sent"
+   },
+   {
+    "channel": "Job & quote",
+    "via_tool_id": "jobber",
+    "to": "Dana Brooks",
+    "summary": "Draft a friendly, personal review request message for each happy customer using Copilot.",
+    "simulated": true,
+    "label": "Simulated — nothing was sent"
+   },
+   {
+    "channel": "Job & quote",
+    "via_tool_id": "jobber",
+    "to": "Customer",
+    "summary": "Check the drafts, add the Google review link, and send them by email from Jobber.",
+    "simulated": true,
+    "label": "Simulated — nothing was sent"
+   }
+  ],
+  "assigned_tasks": [
+   {
+    "task_id": 658,
+    "assignee_id": "2e509b41eb5547d7",
+    "text": "Pull this week's completed jobs in Jobber and check QuickBooks to confirm each one is paid."
+   },
+   {
+    "task_id": 659,
+    "assignee_id": "2e509b41eb5547d7",
+    "text": "Review the list and flag customers with complaints or no-shows, like the missed 2pm appointment, to exclude."
+   },
+   {
+    "task_id": 660,
+    "assignee_id": "2e509b41eb5547d7",
+    "text": "Check the drafts, add the Google review link, and send them by email from Jobber."
+   },
+   {
+    "task_id": 661,
+    "assignee_id": "2e509b41eb5547d7",
+    "text": "Check Google for new reviews and reply to each one manually, since no review-reply tool exists."
+   }
+  ]
+ }
+}

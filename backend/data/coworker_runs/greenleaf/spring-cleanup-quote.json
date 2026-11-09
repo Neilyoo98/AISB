@@ -1,0 +1,533 @@
+{
+ "persona": "greenleaf",
+ "slug": "spring-cleanup-quote",
+ "text": "A homeowner wants a spring cleanup quote by tomorrow",
+ "employees": [
+  {
+   "id": "a12792cca8e94cf4",
+   "name": "Dev Patel"
+  },
+  {
+   "id": "4d90984469d54d68",
+   "name": "Tom Reyes"
+  },
+  {
+   "id": "13465994a05d4c2b",
+   "name": "Ana Silva"
+  },
+  {
+   "id": "bcd89d8bbe3a463f",
+   "name": "Mateo Cruz"
+  }
+ ],
+ "events": [
+  {
+   "seq": 0,
+   "t": 0,
+   "type": "task.start",
+   "agent": null,
+   "data": {
+    "mode": "live"
+   }
+  },
+  {
+   "seq": 1,
+   "t": 15,
+   "type": "task.read",
+   "agent": "reader",
+   "data": {
+    "intent": "Prepare and send a spring cleanup quote to a homeowner by tomorrow.",
+    "customer_facing": true,
+    "urgency": "high",
+    "needed_skills": [
+     "estimating",
+     "site assessment",
+     "pricing",
+     "customer communication"
+    ],
+    "needed_capabilities": [
+     "send quotes",
+     "text reminders",
+     "schedule jobs"
+    ]
+   }
+  },
+  {
+   "seq": 2,
+   "t": 15,
+   "type": "route.chosen",
+   "agent": "router",
+   "data": {
+    "route": {
+     "owner_id": "a12792cca8e94cf4",
+     "owner_reason": "Dev Patel knows this best (cleanup, quote, site).",
+     "substituted": true,
+     "human_id": "13465994a05d4c2b",
+     "substitution_note": "Dev Patel is off today, so their coworker answered from their notes and Ana Silva takes the hands-on step.",
+     "scores": [
+      {
+       "employee_id": "a12792cca8e94cf4",
+       "score": 16.0
+      },
+      {
+       "employee_id": "bcd89d8bbe3a463f",
+       "score": 5.0
+      },
+      {
+       "employee_id": "13465994a05d4c2b",
+       "score": 4.5
+      },
+      {
+       "employee_id": "4d90984469d54d68",
+       "score": 2.0
+      }
+     ]
+    }
+   }
+  },
+  {
+   "seq": 3,
+   "t": 15,
+   "type": "route.substituted",
+   "agent": "router",
+   "data": {
+    "owner_id": "a12792cca8e94cf4",
+    "human_id": "13465994a05d4c2b",
+    "note": "Dev Patel is off today, so their coworker answered from their notes and Ana Silva takes the hands-on step."
+   }
+  },
+  {
+   "seq": 4,
+   "t": 1140,
+   "type": "mesh.message",
+   "agent": "coworker:a12792cca8e94cf4",
+   "data": {
+    "from_id": "a12792cca8e94cf4",
+    "to_id": "13465994a05d4c2b",
+    "context_shared": "Dev writes every quote himself after measuring beds and lawns on site, and handles homeowner calls. Quotes go out through Jobber, with pricing tracked in his spreadsheet.",
+    "should_check": "Confirm the property address and whether Dev has visited or measured it, since quotes depend on site measurements he normally takes himself.",
+    "confidence": "medium"
+   }
+  },
+  {
+   "seq": 5,
+   "t": 1187,
+   "type": "mesh.message",
+   "agent": "coworker:bcd89d8bbe3a463f",
+   "data": {
+    "from_id": "bcd89d8bbe3a463f",
+    "to_id": "a12792cca8e94cf4",
+    "context_shared": "Mateo runs cleanups, planting and debris hauling on the crew, so he knows typical spring cleanup scope. He has no noted pricing or estimating skills and no tools listed.",
+    "should_check": "Confirm the homeowner's property size, debris volume and site access before pricing, since Mateo's notes don't cover estimating or quoting.",
+    "confidence": "low"
+   }
+  },
+  {
+   "seq": 6,
+   "t": 1562,
+   "type": "mesh.message",
+   "agent": "coworker:13465994a05d4c2b",
+   "data": {
+    "from_id": "13465994a05d4c2b",
+    "to_id": "a12792cca8e94cf4",
+    "context_shared": "Ana handles scheduling and customer texts, and sends invoices through Jobber, so she can likely schedule the site visit and text the homeowner. She does not list estimating or pricing skills.",
+    "should_check": "Confirm who will do the site assessment and price the quote, since Ana's notes show no estimating skills, and check the homeowner's preferred visit time before texting.",
+    "confidence": "medium"
+   }
+  },
+  {
+   "seq": 7,
+   "t": 6125,
+   "type": "workflow.ready",
+   "agent": "builder",
+   "data": {
+    "workflow": [
+     {
+      "actor_type": "employee",
+      "actor_id": "13465994a05d4c2b",
+      "action": "Ana confirms the homeowner's address and preferred visit time, and checks if Dev already measured the property.",
+      "tool_id": null,
+      "manual_before": null,
+      "handoff_to": "jobber",
+      "gap": false,
+      "gap_capability": null,
+      "n": 1,
+      "recommendations": []
+     },
+     {
+      "actor_type": "tool",
+      "actor_id": "jobber",
+      "action": "Jobber creates the request and drafts a spring cleanup quote from Dev's past quotes and the property details.",
+      "tool_id": "jobber",
+      "manual_before": "Dev typed each quote by hand after site visits",
+      "handoff_to": "13465994a05d4c2b",
+      "gap": false,
+      "gap_capability": null,
+      "n": 2,
+      "recommendations": []
+     },
+     {
+      "actor_type": "employee",
+      "actor_id": "13465994a05d4c2b",
+      "action": "Ana adds the property details and checks prices against Dev's pricing spreadsheet, marking any unknown measurements.",
+      "tool_id": null,
+      "manual_before": null,
+      "handoff_to": "13465994a05d4c2b",
+      "gap": false,
+      "gap_capability": null,
+      "n": 3,
+      "recommendations": []
+     },
+     {
+      "actor_type": "employee",
+      "actor_id": "13465994a05d4c2b",
+      "action": "Dev reviews the draft quote, adjusts the price, and approves it when he is back.",
+      "tool_id": null,
+      "manual_before": null,
+      "handoff_to": "jobber",
+      "gap": false,
+      "gap_capability": null,
+      "n": 4,
+      "recommendations": []
+     },
+     {
+      "actor_type": "tool",
+      "actor_id": "jobber",
+      "action": "Jobber sends the approved quote to the homeowner by email with an online approval link.",
+      "tool_id": "jobber",
+      "manual_before": "Dev sent quotes one at a time by hand",
+      "handoff_to": "customer",
+      "gap": false,
+      "gap_capability": null,
+      "n": 5,
+      "recommendations": []
+     },
+     {
+      "actor_type": "customer",
+      "actor_id": null,
+      "action": "Homeowner reviews the quote and approves it or asks questions.",
+      "tool_id": null,
+      "manual_before": null,
+      "handoff_to": "13465994a05d4c2b",
+      "gap": false,
+      "gap_capability": null,
+      "n": 6,
+      "recommendations": []
+     },
+     {
+      "actor_type": "employee",
+      "actor_id": "13465994a05d4c2b",
+      "action": "Ana texts the homeowner a reminder if there is no reply, then books the cleanup in Jobber once approved.",
+      "tool_id": null,
+      "manual_before": null,
+      "handoff_to": null,
+      "gap": false,
+      "gap_capability": null,
+      "n": 7,
+      "recommendations": []
+     }
+    ]
+   }
+  },
+  {
+   "seq": 8,
+   "t": 8390,
+   "type": "drafts.ready",
+   "agent": "drafter",
+   "data": {
+    "drafts": [
+     {
+      "kind": "customer_reply",
+      "title": "Quote follow-up to homeowner",
+      "to": "Homeowner",
+      "body": "Hi [Homeowner name], this is Ana from GreenLeaf Landscaping. Thanks for reaching out about a spring cleanup at [property address]. Your quote is being finalized and will be sent to you by email tomorrow for your review. Let me know if you'd like a visit time of [preferred time] or if you have any questions in the meantime. We look forward to getting your yard in shape!"
+     },
+     {
+      "kind": "staff_message",
+      "title": "Quote approval request to Dev",
+      "to": "Dev",
+      "body": "Hi Dev, a spring cleanup quote for [homeowner name] at [property address] is drafted in Jobber and ready for your review. I checked it against your pricing sheet and marked [unknown measurements] that need confirming. Please adjust the price and approve when you're back so I can send it out tomorrow. Thanks!"
+     },
+     {
+      "kind": "other",
+      "title": "Reminder text if no reply",
+      "to": "Homeowner",
+      "body": "Hi [Homeowner name], just checking in on the spring cleanup quote we sent for [property address]. Did you have a chance to review it? Happy to answer any questions or adjust the visit time. Thanks, Ana at GreenLeaf Landscaping."
+     }
+    ]
+   }
+  },
+  {
+   "seq": 9,
+   "t": 8405,
+   "type": "approval.waiting",
+   "agent": null,
+   "data": {}
+  },
+  {
+   "seq": 10,
+   "t": 8452,
+   "type": "task.approved",
+   "agent": "you",
+   "data": {
+    "assigned_tasks": [
+     {
+      "task_id": 646,
+      "assignee_id": "13465994a05d4c2b",
+      "text": "Ana confirms the homeowner's address and preferred visit time, and checks if Dev already measured the property."
+     },
+     {
+      "task_id": 647,
+      "assignee_id": "13465994a05d4c2b",
+      "text": "Ana adds the property details and checks prices against Dev's pricing spreadsheet, marking any unknown measurements."
+     },
+     {
+      "task_id": 648,
+      "assignee_id": "13465994a05d4c2b",
+      "text": "Dev reviews the draft quote, adjusts the price, and approves it when he is back."
+     },
+     {
+      "task_id": 649,
+      "assignee_id": "13465994a05d4c2b",
+      "text": "Ana texts the homeowner a reminder if there is no reply, then books the cleanup in Jobber once approved."
+     }
+    ],
+    "send_log": [
+     {
+      "channel": "Job & quote",
+      "via_tool_id": "jobber",
+      "to": "Ana Silva",
+      "summary": "Jobber creates the request and drafts a spring cleanup quote from Dev's past quotes and the property details.",
+      "simulated": true,
+      "label": "Simulated — nothing was sent"
+     },
+     {
+      "channel": "Job & quote",
+      "via_tool_id": "jobber",
+      "to": "Customer",
+      "summary": "Jobber sends the approved quote to the homeowner by email with an online approval link.",
+      "simulated": true,
+      "label": "Simulated — nothing was sent"
+     }
+    ]
+   }
+  },
+  {
+   "seq": 11,
+   "t": 8545,
+   "type": "memory.saved",
+   "agent": "memory",
+   "data": {
+    "employees": [
+     "13465994a05d4c2b",
+     "a12792cca8e94cf4"
+    ]
+   }
+  },
+  {
+   "seq": 12,
+   "t": 8545,
+   "type": "task.complete",
+   "agent": "you",
+   "data": {}
+  }
+ ],
+ "result": {
+  "intent": "Prepare and send a spring cleanup quote to a homeowner by tomorrow.",
+  "urgency": "high",
+  "route": {
+   "owner_id": "a12792cca8e94cf4",
+   "owner_reason": "Dev Patel knows this best (cleanup, quote, site).",
+   "substituted": true,
+   "human_id": "13465994a05d4c2b",
+   "substitution_note": "Dev Patel is off today, so their coworker answered from their notes and Ana Silva takes the hands-on step.",
+   "scores": [
+    {
+     "employee_id": "a12792cca8e94cf4",
+     "score": 16.0
+    },
+    {
+     "employee_id": "bcd89d8bbe3a463f",
+     "score": 5.0
+    },
+    {
+     "employee_id": "13465994a05d4c2b",
+     "score": 4.5
+    },
+    {
+     "employee_id": "4d90984469d54d68",
+     "score": 2.0
+    }
+   ]
+  },
+  "mesh": [
+   {
+    "from_id": "a12792cca8e94cf4",
+    "to_id": "13465994a05d4c2b",
+    "context_shared": "Dev writes every quote himself after measuring beds and lawns on site, and handles homeowner calls. Quotes go out through Jobber, with pricing tracked in his spreadsheet.",
+    "should_check": "Confirm the property address and whether Dev has visited or measured it, since quotes depend on site measurements he normally takes himself.",
+    "confidence": "medium"
+   },
+   {
+    "from_id": "13465994a05d4c2b",
+    "to_id": "a12792cca8e94cf4",
+    "context_shared": "Ana handles scheduling and customer texts, and sends invoices through Jobber, so she can likely schedule the site visit and text the homeowner. She does not list estimating or pricing skills.",
+    "should_check": "Confirm who will do the site assessment and price the quote, since Ana's notes show no estimating skills, and check the homeowner's preferred visit time before texting.",
+    "confidence": "medium"
+   },
+   {
+    "from_id": "bcd89d8bbe3a463f",
+    "to_id": "a12792cca8e94cf4",
+    "context_shared": "Mateo runs cleanups, planting and debris hauling on the crew, so he knows typical spring cleanup scope. He has no noted pricing or estimating skills and no tools listed.",
+    "should_check": "Confirm the homeowner's property size, debris volume and site access before pricing, since Mateo's notes don't cover estimating or quoting.",
+    "confidence": "low"
+   }
+  ],
+  "workflow": [
+   {
+    "actor_type": "employee",
+    "actor_id": "13465994a05d4c2b",
+    "action": "Ana confirms the homeowner's address and preferred visit time, and checks if Dev already measured the property.",
+    "tool_id": null,
+    "manual_before": null,
+    "handoff_to": "jobber",
+    "gap": false,
+    "gap_capability": null,
+    "n": 1,
+    "recommendations": []
+   },
+   {
+    "actor_type": "tool",
+    "actor_id": "jobber",
+    "action": "Jobber creates the request and drafts a spring cleanup quote from Dev's past quotes and the property details.",
+    "tool_id": "jobber",
+    "manual_before": "Dev typed each quote by hand after site visits",
+    "handoff_to": "13465994a05d4c2b",
+    "gap": false,
+    "gap_capability": null,
+    "n": 2,
+    "recommendations": []
+   },
+   {
+    "actor_type": "employee",
+    "actor_id": "13465994a05d4c2b",
+    "action": "Ana adds the property details and checks prices against Dev's pricing spreadsheet, marking any unknown measurements.",
+    "tool_id": null,
+    "manual_before": null,
+    "handoff_to": "13465994a05d4c2b",
+    "gap": false,
+    "gap_capability": null,
+    "n": 3,
+    "recommendations": []
+   },
+   {
+    "actor_type": "employee",
+    "actor_id": "13465994a05d4c2b",
+    "action": "Dev reviews the draft quote, adjusts the price, and approves it when he is back.",
+    "tool_id": null,
+    "manual_before": null,
+    "handoff_to": "jobber",
+    "gap": false,
+    "gap_capability": null,
+    "n": 4,
+    "recommendations": []
+   },
+   {
+    "actor_type": "tool",
+    "actor_id": "jobber",
+    "action": "Jobber sends the approved quote to the homeowner by email with an online approval link.",
+    "tool_id": "jobber",
+    "manual_before": "Dev sent quotes one at a time by hand",
+    "handoff_to": "customer",
+    "gap": false,
+    "gap_capability": null,
+    "n": 5,
+    "recommendations": []
+   },
+   {
+    "actor_type": "customer",
+    "actor_id": null,
+    "action": "Homeowner reviews the quote and approves it or asks questions.",
+    "tool_id": null,
+    "manual_before": null,
+    "handoff_to": "13465994a05d4c2b",
+    "gap": false,
+    "gap_capability": null,
+    "n": 6,
+    "recommendations": []
+   },
+   {
+    "actor_type": "employee",
+    "actor_id": "13465994a05d4c2b",
+    "action": "Ana texts the homeowner a reminder if there is no reply, then books the cleanup in Jobber once approved.",
+    "tool_id": null,
+    "manual_before": null,
+    "handoff_to": null,
+    "gap": false,
+    "gap_capability": null,
+    "n": 7,
+    "recommendations": []
+   }
+  ],
+  "drafts": [
+   {
+    "kind": "customer_reply",
+    "title": "Quote follow-up to homeowner",
+    "to": "Homeowner",
+    "body": "Hi [Homeowner name], this is Ana from GreenLeaf Landscaping. Thanks for reaching out about a spring cleanup at [property address]. Your quote is being finalized and will be sent to you by email tomorrow for your review. Let me know if you'd like a visit time of [preferred time] or if you have any questions in the meantime. We look forward to getting your yard in shape!"
+   },
+   {
+    "kind": "staff_message",
+    "title": "Quote approval request to Dev",
+    "to": "Dev",
+    "body": "Hi Dev, a spring cleanup quote for [homeowner name] at [property address] is drafted in Jobber and ready for your review. I checked it against your pricing sheet and marked [unknown measurements] that need confirming. Please adjust the price and approve when you're back so I can send it out tomorrow. Thanks!"
+   },
+   {
+    "kind": "other",
+    "title": "Reminder text if no reply",
+    "to": "Homeowner",
+    "body": "Hi [Homeowner name], just checking in on the spring cleanup quote we sent for [property address]. Did you have a chance to review it? Happy to answer any questions or adjust the visit time. Thanks, Ana at GreenLeaf Landscaping."
+   }
+  ],
+  "send_log": [
+   {
+    "channel": "Job & quote",
+    "via_tool_id": "jobber",
+    "to": "Ana Silva",
+    "summary": "Jobber creates the request and drafts a spring cleanup quote from Dev's past quotes and the property details.",
+    "simulated": true,
+    "label": "Simulated — nothing was sent"
+   },
+   {
+    "channel": "Job & quote",
+    "via_tool_id": "jobber",
+    "to": "Customer",
+    "summary": "Jobber sends the approved quote to the homeowner by email with an online approval link.",
+    "simulated": true,
+    "label": "Simulated — nothing was sent"
+   }
+  ],
+  "assigned_tasks": [
+   {
+    "task_id": 646,
+    "assignee_id": "13465994a05d4c2b",
+    "text": "Ana confirms the homeowner's address and preferred visit time, and checks if Dev already measured the property."
+   },
+   {
+    "task_id": 647,
+    "assignee_id": "13465994a05d4c2b",
+    "text": "Ana adds the property details and checks prices against Dev's pricing spreadsheet, marking any unknown measurements."
+   },
+   {
+    "task_id": 648,
+    "assignee_id": "13465994a05d4c2b",
+    "text": "Dev reviews the draft quote, adjusts the price, and approves it when he is back."
+   },
+   {
+    "task_id": 649,
+    "assignee_id": "13465994a05d4c2b",
+    "text": "Ana texts the homeowner a reminder if there is no reply, then books the cleanup in Jobber once approved."
+   }
+  ]
+ }
+}

@@ -110,8 +110,8 @@ def test_seeded_history_is_approved_and_builds_a_rich_map(fresh, monkeypatch):
     n = seed.seed_demo_coworker_history(bid, "coolair-hvac", uid, staff)
     assert n == 2
     tasks = approved_tasks(bid)
-    assert len(tasks) == 2 and all(t["result"].get("assigned_tasks") == [] for t in tasks)
-    assert db_.get_business_tasks(bid) == [] if hasattr(db_, "get_business_tasks") else True  # no dashboard tasks
+    # task-queue contract: seeded history now carries real assigned steps (one task done, one in progress)
+    assert len(tasks) == 2 and all(t["result"].get("assigned_tasks") for t in tasks)
     ids = {e["id"] for e in staff}
     actors = {s["actor_id"] for t in tasks for s in t["result"]["workflow"] if s["actor_type"] == "employee"}
     assert actors and actors <= ids  # recorded ids remapped to the seeded staff

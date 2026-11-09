@@ -183,9 +183,24 @@ async def create_task(body: TaskIn, request: Request, user=Depends(current_user)
 
 
 @router.get("/coworker-tasks")
-def list_tasks(user=Depends(current_user)):
-    b, _ = _context(user)
-    return [_task_with_status(t, with_result=False) for t in cw.list_tasks(b["id"])]
+def list_tasks(scope: str | None = None, user=Depends(current_user)):
+    """Task queue, newest first. Employees default to 'mine' (assignee or a step assigned to them); owners to 'all'."""
+    b, role = _context(user)
+    scope = scope if scope in ("mine", "all") else ("all" if role == "admin" else "mine")
+    rows = cw.list_tasks(b["id"])
+    steps = cw.steps_for([t["id"] for t in rows])
+    by_id = {e["id"]: e for e in cw.list_employees(b["id"])}
+    if scope == "mine":
+        pid = cw.person_id_for_user(b["id"], user["id"])
+        rows = [t for t in rows if cw.is_mine(t, steps.get(t["id"], []), pid)]
+    return [_queue_task(t, steps.get(t["id"], []), by_id, with_result=False) for t in rows]
+
+
+def _queue_task(t: dict, steps: list[dict], by_id: dict, with_result=True) -> dict:
+    out = _task_with_status(t, with_result=with_result)
+    # stage follows the stored status; a resumed task that is still finalizing counts from its stored status
+    status = t["status"] if t["status"] != "running" else out["status"]
+    return out | cw.queue_fields(t, status, steps, by_id)
 
 
 def _task_with_status(t: dict, with_result=True) -> dict:
@@ -206,9 +221,14 @@ def _own_task(task_id: str, user) -> tuple[dict, dict]:
 
 @router.get("/coworker-tasks/{task_id}")
 def get_task(task_id: str, user=Depends(current_user)):
-    t, _ = _own_task(task_id, user)
+    t, b = _own_task(task_id, user)
     ch = G.CHANNELS.get(task_id)
-    return _task_with_status(t) | {"events": ch.events if ch else json.loads(t["events_json"] or "[]")}
+    steps = cw.steps_for([task_id]).get(task_id, [])
+    out = _queue_task(t, steps, {e["id"]: e for e in cw.list_employees(b["id"])})
+    events = ch.events if ch else json.loads(t["events_json"] or "[]")
+    if not events and t["status"] in ("awaiting_approval", "approved", "rejected"):
+        events = cw.synth_events(out.get("result") or {}, t["status"], steps)  # never blank for finished tasks
+    return out | {"events": events}
 
 
 @router.get("/coworker-tasks/{task_id}/stream")
@@ -220,8 +240,12 @@ async def stream(task_id: str, request: Request, after: int = -1, user=Depends(c
 
     async def gen():
         ch = G.CHANNELS.get(task_id)
-        if ch is None:  # restarted server / old task: send what we stored and close
-            for e in json.loads(t["events_json"] or "[]"):
+        if ch is None:  # restarted server / old task: send what we stored (or a synthesized replay) and close
+            stored = json.loads(t["events_json"] or "[]")
+            if not stored and t["status"] in ("awaiting_approval", "approved", "rejected"):
+                stored = cw.synth_events(json.loads(t["result_json"] or "{}"), t["status"],
+                                         cw.steps_for([task_id]).get(task_id, []))
+            for e in stored:
                 if e["seq"] > after:
                     yield f"id: {e['seq']}\ndata: {json.dumps(e)}\n\n"
             yield f"data: {json.dumps({'seq': -1, 'type': 'stream.end', 'data': {'status': t['status']}})}\n\n"

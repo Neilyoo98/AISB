@@ -1,11 +1,13 @@
 "use client";
 // Streams one coworker task (GET /coworker-tasks/{id} for history, then SSE), and approves/rejects it.
+// Never blanks an open view: the first load resets, later reloads (after ticking a step, polling) merge in place.
 import { useCallback, useEffect, useReducer, useRef } from "react";
 import { api } from "@/lib/api";
 import type { RunEvent } from "@/lib/types";
 import type {
-  AssignedTask, CoworkerResult, CoworkerTaskDetail, Draft, MeshMessage, Route, SendLogEntry, TaskStatus, WorkflowStep,
+  AssignedTask, CoworkerResult, Draft, MeshMessage, QueuePerson, QueueStep, QueueTaskDetail, Route, SendLogEntry, TaskStage, TaskStatus, WorkflowStep,
 } from "@/components/coworkers/types";
+import { stageOf } from "@/components/coworkers/types";
 
 export type CoworkerView = {
   loading: boolean;
@@ -25,19 +27,55 @@ export type CoworkerView = {
   sendLog: SendLogEntry[];
   savedFor: string[];
   error: string | null;
+  // queue fields (task queue contract)
+  stage: TaskStage;
+  assignee: QueuePerson | null;
+  coveringFor: { id: string; name: string } | null;
+  progress: { done: number; total: number };
+  steps: QueueStep[];
+  createdAt: string | null;
 };
 
 const initial: CoworkerView = {
   loading: true, text: "", status: "running", mode: null, events: [], lastSeq: -1, intent: null, urgency: null, route: null,
   mesh: [], workflow: [], gaps: {}, drafts: [], assigned: [], sendLog: [], savedFor: [], error: null,
+  stage: "planning", assignee: null, coveringFor: null, progress: { done: 0, total: 0 }, steps: [], createdAt: null,
 };
 
 type Action =
   | { kind: "reset" }
-  | { kind: "loaded"; task: CoworkerTaskDetail }
+  | { kind: "loaded"; task: QueueTaskDetail }
+  | { kind: "refreshed"; task: QueueTaskDetail }
   | { kind: "event"; e: RunEvent }
   | { kind: "status"; status: TaskStatus }
+  | { kind: "step"; taskId: number; done: boolean }
   | { kind: "error"; message: string };
+
+/**
+ * Finished tasks seeded as history may have no stored events. Rebuild the same event sequence from `result`
+ * so the mesh animation and step log always have something to replay (never a blank panel).
+ */
+export function synthesizeEvents(status: TaskStatus, mode: "live" | "replay", r: CoworkerResult | null): RunEvent[] {
+  if (!r) return [];
+  const out: RunEvent[] = [];
+  const push = (type: string, agent: string | null, data: Record<string, unknown>) => out.push({ seq: out.length, t: out.length * 900, type, agent, data });
+  push("task.start", null, { mode });
+  push("task.read", "reader", { intent: r.intent, urgency: r.urgency, needed_skills: [], needed_capabilities: [] });
+  if (r.route) {
+    push("route.chosen", "router", { route: r.route });
+    if (r.route.substituted) push("route.substituted", "router", { owner_id: r.route.owner_id, human_id: r.route.human_id, note: r.route.substitution_note });
+  }
+  for (const m of r.mesh || []) push("mesh.message", `coworker:${m.from_id}`, m as unknown as Record<string, unknown>);
+  if (r.workflow?.length) push("workflow.ready", "builder", { workflow: r.workflow });
+  for (const s of r.workflow || []) if (s.gap) push("gap.found", "builder", { step_n: s.n, capability: s.gap_capability, recommendations: s.recommendations || [] });
+  if (r.drafts?.length) push("drafts.ready", "drafter", { drafts: r.drafts });
+  push("approval.waiting", null, {});
+  if (status === "approved") {
+    push("task.approved", "you", { assigned_tasks: r.assigned_tasks || [], send_log: r.send_log || [] });
+    push("task.complete", null, {});
+  } else if (status === "rejected") push("task.rejected", "you", {});
+  return out;
+}
 
 function fromResult(s: CoworkerView, r: CoworkerResult | null): CoworkerView {
   if (!r) return s;
@@ -51,6 +89,19 @@ function fromResult(s: CoworkerView, r: CoworkerResult | null): CoworkerView {
     drafts: s.drafts.length ? s.drafts : r.drafts || [],
     assigned: s.assigned.length ? s.assigned : r.assigned_tasks || [],
     sendLog: s.sendLog.length ? s.sendLog : r.send_log || [],
+  };
+}
+
+function withQueue(s: CoworkerView, t: QueueTaskDetail): CoworkerView {
+  const progress = t.progress ?? s.progress;
+  return {
+    ...s,
+    stage: stageOf({ stage: t.stage, status: t.status, progress }),
+    assignee: t.assignee ?? s.assignee,
+    coveringFor: t.covering_for ?? s.coveringFor,
+    progress,
+    steps: t.steps ?? s.steps,
+    createdAt: t.created_at ?? s.createdAt,
   };
 }
 
@@ -89,14 +140,17 @@ function apply(s: CoworkerView, e: RunEvent): CoworkerView {
       break;
     case "approval.waiting":
       n.status = "awaiting_approval";
+      n.stage = "needs_ok";
       break;
     case "task.approved":
       n.status = "approved";
+      n.stage = "in_progress";
       n.assigned = d.assigned_tasks || [];
       n.sendLog = d.send_log || [];
       break;
     case "task.rejected":
       n.status = "rejected";
+      n.stage = "rejected";
       break;
     case "memory.saved":
       n.savedFor = d.employees || [];
@@ -109,21 +163,37 @@ function apply(s: CoworkerView, e: RunEvent): CoworkerView {
   return n;
 }
 
+function load(s: CoworkerView, t: QueueTaskDetail): CoworkerView {
+  const events = t.events?.length ? t.events : synthesizeEvents(t.status, t.mode, t.result);
+  let n: CoworkerView = { ...s, loading: false, text: t.text, mode: t.mode };
+  for (const e of events) n = apply(n, e);
+  n = fromResult(n, t.result);
+  // the server's status wins once history is applied (e.g. approved after a reload)
+  return withQueue({ ...n, status: t.status }, t);
+}
+
 function reducer(s: CoworkerView, a: Action): CoworkerView {
   switch (a.kind) {
     case "reset":
       return initial;
-    case "loaded": {
-      let n: CoworkerView = { ...s, loading: false, text: a.task.text, mode: a.task.mode };
-      for (const e of a.task.events || []) n = apply(n, e);
-      n = fromResult(n, a.task.result);
-      // the server's status wins once history is applied (e.g. approved after a reload)
-      return { ...n, status: a.task.status };
+    case "loaded":
+      return load(s, a.task);
+    case "refreshed": {
+      // merge without clearing: keep the events already played, take the latest status/queue fields
+      if (s.loading || !s.events.length) return load(s, a.task);
+      return withQueue(fromResult({ ...s, status: a.task.status, text: a.task.text || s.text }, a.task.result), a.task);
     }
     case "event":
       return apply(s, a.e);
     case "status":
       return { ...s, status: a.status };
+    case "step": {
+      const steps = s.steps.map((x) => (x.task_id === a.taskId ? { ...x, done: a.done } : x));
+      const done = steps.filter((x) => x.done).length;
+      const progress = steps.length ? { done, total: steps.length } : s.progress;
+      const stage: TaskStage = s.stage === "in_progress" || s.stage === "done" ? (progress.total > 0 && done >= progress.total ? "done" : "in_progress") : s.stage;
+      return { ...s, steps, progress, stage };
+    }
     case "error":
       return { ...s, loading: false, status: "error", error: a.message };
   }
@@ -138,6 +208,16 @@ export function useCoworkerTask(taskId: string | null, onSettled?: () => void) {
   const settled = useRef(onSettled);
   settled.current = onSettled;
 
+  const refresh = useCallback(async () => {
+    if (!taskId) return;
+    try {
+      const t = await api<QueueTaskDetail>(`/coworker-tasks/${taskId}`);
+      dispatch({ kind: "refreshed", task: t });
+    } catch {
+      /* keep what's on screen */
+    }
+  }, [taskId]);
+
   const open = useCallback(() => {
     if (!taskId) return;
     esRef.current?.close();
@@ -150,21 +230,24 @@ export function useCoworkerTask(taskId: string | null, onSettled?: () => void) {
       if (TERMINAL.has(e.type)) {
         es.close();
         settled.current?.();
+        // pick up assignee / steps / progress the stream doesn't carry
+        refresh();
       }
     };
     es.onerror = () => {
       if (es.readyState === EventSource.CLOSED) esRef.current = null;
     };
-  }, [taskId]);
+  }, [taskId, refresh]);
 
   useEffect(() => {
     if (!taskId) return;
     let cancelled = false;
     dispatch({ kind: "reset" });
     seqRef.current = -1;
-    api<CoworkerTaskDetail>(`/coworker-tasks/${taskId}`)
+    api<QueueTaskDetail>(`/coworker-tasks/${taskId}`)
       .then((t) => {
         if (cancelled) return;
+        // only stored events count toward the stream cursor; synthesized ones are display-only
         for (const e of t.events || []) seqRef.current = Math.max(seqRef.current, e.seq);
         dispatch({ kind: "loaded", task: t });
         if (t.status === "running") open();
@@ -186,5 +269,20 @@ export function useCoworkerTask(taskId: string | null, onSettled?: () => void) {
     [taskId, open],
   );
 
-  return { view, decide };
+  /** Tick / untick one assigned step. Optimistic; rolls back on error. */
+  const toggleStep = useCallback(
+    async (stepTaskId: number, done: boolean) => {
+      dispatch({ kind: "step", taskId: stepTaskId, done });
+      try {
+        await api(`/plan-tasks/${stepTaskId}`, { method: "PATCH", json: { done } });
+        refresh();
+      } catch (e) {
+        dispatch({ kind: "step", taskId: stepTaskId, done: !done });
+        throw e;
+      }
+    },
+    [refresh],
+  );
+
+  return { view, decide, toggleStep, refresh };
 }

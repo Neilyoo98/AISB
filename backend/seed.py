@@ -124,19 +124,37 @@ def seed_demo_staff(business_id: str, persona_id: str, owner_user_id: str | None
     return out
 
 
-def seed_demo_coworker_history(business_id: str, persona_id: str, owner_user_id: str, staff: list[dict]) -> int:
-    """Store the sample business's recorded coworker tasks as already-approved history (no dashboard tasks, no
-    memory writes), so the workflow map has real hand-offs on first login. Recordings stay replayable."""
-    from graphs.coworker_graph import _mapping_for, list_recordings, remap_ids
+def seed_demo_coworker_history(business_id: str, persona_id: str, owner_user_id: str, staff: list[dict],
+                               run_id: str | None = None) -> int:
+    """Store the sample business's recorded coworker tasks as approved history WITH real assigned steps, so the task
+    queue shows progress on first login: the oldest task is done (all steps checked), the next is in progress
+    (first step checked). No coworker memory writes. Recordings stay replayable from the example chips."""
+    from graphs.coworker_graph import _mapping_for, _set_assignee, _task_run_id, assigned_task_specs, list_recordings, remap_ids
     n = 0
     now = datetime.now(timezone.utc)
     for i, rec in enumerate(list_recordings(persona_id)):
         mapping = _mapping_for(rec, staff)
         result = remap_ids(rec.get("result") or {}, mapping)
-        result["assigned_tasks"] = []  # history only: no dashboard tasks were created for these
         tid = coworkers.create_task(business_id, owner_user_id, rec["text"], "replay",
                                     recording=f"{persona_id}/{rec['slug']}", created_at=now - timedelta(days=3 + i))
-        coworkers.update_task(tid, status="approved", result=result, events=remap_ids(rec.get("events") or [], mapping))
+        coworkers.set_assignment(tid, result.get("route"))
+        staff_ids = {e["id"] for e in staff}
+        wf = [s_ for s_ in result.get("workflow", []) if s_.get("actor_type") != "employee" or s_.get("actor_id") in staff_ids]
+        rid = run_id or _task_run_id(business_id)
+        assigned = []
+        for k, spec in enumerate(assigned_task_specs(wf, rec["text"])):
+            pt = db.add_custom_task(business_id, rid, spec["text"], 1, None)
+            _set_assignee(pt, spec["assignee_employee_id"], tid)
+            done = i == 0 or k == 0  # task 0: done; task 1: first step done -> in progress
+            if done:
+                db.set_task_done_raw(pt, True)
+            assigned.append({"task_id": pt, "assignee_id": spec["assignee_employee_id"], "text": spec["text"]})
+        result["assigned_tasks"] = assigned
+        events = remap_ids(rec.get("events") or [], mapping)
+        for e in events:  # recorded approval referenced the recording business's step ids
+            if e.get("type") == "task.approved":
+                e["data"] = dict(e.get("data") or {}, assigned_tasks=assigned)
+        coworkers.update_task(tid, status="approved", result=result, events=events)
         n += 1
     return n
 
@@ -186,7 +204,7 @@ def seed_demos():
                               {"tool_id": t, "pains": pains, "run_id": rid})
         team.seed_demo_team(bid, uid, p["id"], (res.get("profile") or {}).get("monthly_budget"))
         staff = seed_demo_staff(bid, p["id"], owner_user_id=uid)
-        seed_demo_coworker_history(bid, p["id"], uid, staff)
+        seed_demo_coworker_history(bid, p["id"], uid, staff, run_id=rid)
         log.info("seeded demo %s", p["id"])
 
 

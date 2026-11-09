@@ -81,6 +81,7 @@ plan_tasks = Table(
     Column("source", String(16)),  # null = plan/adoption task, "custom" = published by the owner/team
     Column("suggestions_json", Text),  # tool suggestions for a published task [{tool_id, reason}]
     Column("assignee_employee_id", String(32)),  # set when an approved coworker task assigns the step to an employee
+    Column("coworker_task_id", String(32)),  # the coworker task this step came from (task queue progress)
 )
 
 llm_cache = Table(
@@ -316,9 +317,11 @@ def add_business_tasks(business_id, run_id, tasks):
 
 
 def set_task_done(task_id, done, user_id):
-    """The run's owner, or anyone whose business (owner or team member) the task belongs to, may toggle it."""
+    """The business owner may toggle any task. Team members may toggle unassigned tasks and steps assigned to them;
+    a step assigned to someone else raises PermissionError (-> 403)."""
     with engine.begin() as c:
-        t = c.execute(select(plan_tasks.c.run_id).where(plan_tasks.c.id == task_id)).first()
+        t = c.execute(select(plan_tasks.c.run_id, plan_tasks.c.assignee_employee_id)
+                      .where(plan_tasks.c.id == task_id)).first()
         if not t:
             return False
         r = c.execute(select(runs.c.user_id, runs.c.business_id).where(runs.c.id == t.run_id)).first()
@@ -328,9 +331,19 @@ def set_task_done(task_id, done, user_id):
         b = get_user_business(user_id)
         if not b or b["id"] != r.business_id:
             return False
+        if b.get("user_id") != user_id and t.assignee_employee_id:
+            from coworkers import person_id_for_user  # lazy: coworkers imports db
+            if person_id_for_user(r.business_id, user_id) != t.assignee_employee_id:
+                raise PermissionError("You can only check off steps assigned to you")
     with engine.begin() as c:
         c.execute(update(plan_tasks).where(plan_tasks.c.id == task_id).values(done=done))
         return True
+
+
+def set_task_done_raw(task_id, done):
+    """No permission check (seed/tests only)."""
+    with engine.begin() as c:
+        c.execute(update(plan_tasks).where(plan_tasks.c.id == task_id).values(done=done))
 
 
 def cache_get(key):

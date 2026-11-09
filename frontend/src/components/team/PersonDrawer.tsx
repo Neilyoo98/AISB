@@ -11,6 +11,25 @@ import { STATUS_LABEL, TOOL_SOURCE_LABEL, copyText, day, fullUrl, short, type Pe
 
 const SOURCE_ORDER: PersonToolSource[] = ["uses", "approved_request", "self_declared", "assigned_task"];
 
+// Task-queue shape (docs/TASK_QUEUE_CONTRACT.md); only the fields this drawer shows.
+type QueueStage = "planning" | "needs_ok" | "in_progress" | "done" | "rejected";
+type QueueTask = {
+  id: string;
+  text: string;
+  created_at: string;
+  stage: QueueStage;
+  assignee: { id: string; name: string; initials: string } | null;
+  progress: { done: number; total: number };
+  steps?: { task_id: number; text: string; done: boolean; assignee: { id: string } | null }[];
+};
+const STAGE: Record<QueueStage, { label: string; cls: string }> = {
+  planning: { label: "Planning", cls: "border-sky-200 bg-sky-50 text-sky-800" },
+  needs_ok: { label: "Needs OK", cls: "border-amber-200 bg-amber-50 text-amber-800" },
+  in_progress: { label: "In progress", cls: "border-emerald-200 bg-emerald-50 text-emerald-800" },
+  done: { label: "Done", cls: "border-stone-200 bg-stone-100 text-stone-600" },
+  rejected: { label: "Rejected", cls: "border-stone-200 bg-stone-50 text-stone-500" },
+};
+
 /** Everything about one person: the AI tools they use, what their AI coworker knows, their tasks and requests. */
 export function PersonDrawer({
   person, catalog, isOwnerView, onClose, onEdit, onRemove, onInvite,
@@ -26,12 +45,18 @@ export function PersonDrawer({
   const [d, setD] = useState<PersonDetail | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [queue, setQueue] = useState<QueueTask[] | null>(null);
 
   useEffect(() => {
     setD(null);
     setErr(null);
+    setQueue(null);
     if (!person) return;
     api<PersonDetail>(`/people/${person.id}`).then(setD).catch((e) => setErr((e as Error).message));
+    // Tasks assigned to this person, or where they have a step.
+    api<QueueTask[]>("/coworker-tasks?scope=all")
+      .then((ts) => setQueue(ts.filter((t) => t.assignee?.id === person.id || (t.steps || []).some((s) => s.assignee?.id === person.id))))
+      .catch(() => setQueue([]));
   }, [person]);
 
   const p = d || person;
@@ -185,19 +210,42 @@ export function PersonDrawer({
                 </section>
               )}
 
-              {d.coworker_tasks.length > 0 && (
-                <section>
-                  <h3 className="font-semibold">Recent team tasks</h3>
-                  <ul className="mt-2 space-y-1 text-sm text-stone-700">
-                    {d.coworker_tasks.slice(0, 5).map((t) => (
-                      <li key={t.id}>
-                        <Link href={`/team?tab=tasks&task=${t.id}`} className="hover:underline">{t.text}</Link>
-                        {t.role_in_task && <span className="text-xs text-stone-500"> · {t.role_in_task}</span>}
-                      </li>
-                    ))}
+              <section>
+                <h3 className="flex items-center gap-1.5 font-semibold">
+                  Tasks
+                  <HelpTip>Team tasks assigned to {p?.name?.split(" ")[0] || "them"}, or where they have a step. Open one to see how the coworkers planned it.</HelpTip>
+                </h3>
+                {!queue ? (
+                  <div className="mt-2 flex items-center gap-2 text-sm text-stone-500"><Spinner /> Loading…</div>
+                ) : queue.length === 0 ? (
+                  <p className="mt-1 text-sm text-stone-500">No team tasks yet.</p>
+                ) : (
+                  <ul className="mt-2 space-y-2">
+                    {queue.slice(0, 6).map((t) => {
+                      const st = STAGE[t.stage] || STAGE.planning;
+                      const pct = t.progress.total ? Math.round((t.progress.done / t.progress.total) * 100) : 0;
+                      return (
+                        <li key={t.id}>
+                          <Link href={`/team/tasks/${t.id}`} className="block rounded-xl border border-stone-200 p-3 hover:border-emerald-300 hover:bg-emerald-50/40">
+                            <div className="flex items-start justify-between gap-2">
+                              <span className="min-w-0 break-words text-sm font-medium text-stone-800">{t.text}</span>
+                              <span className={`shrink-0 rounded-full border px-2 py-0.5 text-[11px] font-semibold ${st.cls}`}>{st.label}</span>
+                            </div>
+                            {t.progress.total > 0 && (
+                              <div className="mt-2 flex items-center gap-2 text-xs text-stone-500">
+                                <div className="h-1.5 flex-1 rounded-full bg-stone-100">
+                                  <div className="h-full rounded-full bg-emerald-600" style={{ width: `${pct}%` }} />
+                                </div>
+                                {t.progress.done} of {t.progress.total} steps
+                              </div>
+                            )}
+                          </Link>
+                        </li>
+                      );
+                    })}
                   </ul>
-                </section>
-              )}
+                )}
+              </section>
             </>
           )}
         </div>

@@ -3,7 +3,7 @@ import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { AlertTriangle, Check, CircleHelp, Compass, Hammer, LayoutDashboard, LogOut, Radio, Star, UserRound, Users2 } from "lucide-react";
+import { AlertTriangle, Check, CircleHelp, Compass, Contact, Hammer, LayoutDashboard, LogOut, Radio, Star, UserRound, Users2 } from "lucide-react";
 import { api, cn } from "@/lib/api";
 
 export function Logo({ className, light }: { className?: string; light?: boolean }) {
@@ -33,6 +33,7 @@ export function AppHeader({ businessName, isDemo, loggedOut }: { businessName?: 
         // employees don't run business analyses, so the War Room is owner-only
         ...(accountRole === "employee" ? [] : [{ href: "/war-room", label: "War Room", icon: Radio }]),
         { href: "/team", label: "Team", icon: Users2 },
+        { href: "/people", label: "People", icon: Contact },
         { href: "/tools", label: "Discover", icon: Compass },
         { href: "/profile", label: "Profile", icon: UserRound },
       ];
@@ -42,14 +43,14 @@ export function AppHeader({ businessName, isDemo, loggedOut }: { businessName?: 
         <div className="flex min-w-0 items-center gap-3">
           <Logo />
           {businessName && (
-            <span className="hidden min-w-0 max-w-[14rem] truncate border-l border-stone-300 pl-3 text-sm text-stone-600 xl:block">{businessName}</span>
+            <span className="hidden min-w-0 max-w-[14rem] truncate border-l border-stone-300 pl-3 text-sm text-stone-600 2xl:block">{businessName}</span>
           )}
         </div>
         <nav className="flex items-center gap-0.5">
           {links.map((l) => {
             const active = pathname === l.href || pathname.startsWith(`${l.href}/`);
             return (
-              <Link key={l.href} href={l.href} className={cn("btn-ghost px-2.5 sm:px-3", active && "bg-stone-100 text-stone-900")} aria-label={l.label}>
+              <Link key={l.href} href={l.href} className={cn("btn-ghost whitespace-nowrap px-2.5 lg:px-2.5 xl:px-3", active && "bg-stone-100 text-stone-900")} aria-label={l.label}>
                 <l.icon size={16} /> <span className="hidden lg:inline">{l.label}</span>
               </Link>
             );

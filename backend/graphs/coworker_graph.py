@@ -175,6 +175,7 @@ async def router(state: CoState):
     needs = state["read"] | {"text": state["text"]}
     hits = cw.memory_hits_for(state["business_id"], state["text"])
     route = cw.route_task(state["employees"], needs, hits)
+    await asyncio.to_thread(cw.set_assignment, tid, route)  # assignee shows in the queue right away
     await emit(tid, "route.chosen", {"route": route}, agent="router")
     if route["substituted"]:
         await emit(tid, "route.substituted", {"owner_id": route["owner_id"], "human_id": route["human_id"],
@@ -393,7 +394,7 @@ async def finalize_core(task_id: str, business_id: str, text: str, result: dict,
     assigned = []
     for spec in specs:
         tid_ = await asyncio.to_thread(db.add_custom_task, business_id, run_id, spec["text"], 1, None)
-        await asyncio.to_thread(_set_assignee, tid_, spec["assignee_employee_id"])
+        await asyncio.to_thread(_set_assignee, tid_, spec["assignee_employee_id"], task_id)
         assigned.append({"task_id": tid_, "assignee_id": spec["assignee_employee_id"], "text": spec["text"]})
     send_log = build_send_log(workflow, employees, catalog)
     await emit(task_id, "task.approved", {"assigned_tasks": assigned, "send_log": send_log}, agent="you")
@@ -420,11 +421,11 @@ async def finalize_core(task_id: str, business_id: str, text: str, result: dict,
     return {"approved": True, "assigned_tasks": assigned, "send_log": send_log}
 
 
-def _set_assignee(task_id: int, employee_id: str):
+def _set_assignee(task_id: int, employee_id: str, coworker_task_id: str | None = None):
     from sqlalchemy import update as _upd
     with db.engine.begin() as c:
         c.execute(_upd(db.plan_tasks).where(db.plan_tasks.c.id == task_id)
-                  .values(assignee_employee_id=employee_id, source="coworker"))
+                  .values(assignee_employee_id=employee_id, source="coworker", coworker_task_id=coworker_task_id))
 
 
 async def finalize(state: CoState):
@@ -572,6 +573,7 @@ async def start_coworker_replay(task_id: str, business_id: str, recording: dict)
     employees = cw.list_employees(business_id)
     mapping = _mapping_for(recording, employees)
     rec = remap_ids({"events": recording["events"], "result": recording["result"]}, mapping)
+    cw.set_assignment(task_id, (rec["result"] or {}).get("route"))  # queue shows the assignee immediately
     for e in rec["events"]:
         if e["type"] in _SKIP:
             continue

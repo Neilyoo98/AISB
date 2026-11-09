@@ -38,6 +38,8 @@ coworker_tasks = Table(
     Column("recording", String(160)),  # replay: "{persona}/{slug}"
     Column("result_json", Text),
     Column("events_json", Text),
+    Column("assignee_employee_id", String(32)),  # hands-on person, set as soon as routing picks them
+    Column("covering_for_id", String(32)),  # context owner who is Off (context substitution), if any
     Column("created_at", DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)),
 )
 
@@ -284,3 +286,141 @@ def involvement(result: dict, employee_id: str) -> str | None:
     if any(m.get("from_id") == employee_id for m in result.get("mesh", [])):
         return "Shared context"
     return None
+
+
+# ---------------- task queue: assignment, steps, stage, progress ----------------
+
+def set_assignment(task_id: str, route: dict | None):
+    """Record the router's pick on the task row immediately (context substitution included)."""
+    if not route or not route.get("human_id"):
+        return
+    update_task(task_id, assignee_employee_id=route["human_id"],
+                covering_for_id=route["owner_id"] if route.get("substituted") and route.get("owner_id") != route["human_id"]
+                else None)
+
+
+def person_id_for_user(business_id: str, user_id: str) -> str | None:
+    with engine.begin() as c:
+        r = c.execute(select(employees.c.id).where(employees.c.business_id == business_id,
+                                                   employees.c.user_id == user_id)).first()
+    return r.id if r else None
+
+
+def steps_for(task_ids: list[str]) -> dict[str, list[dict]]:
+    """Assigned dashboard steps created by approved coworker tasks, grouped by coworker task id."""
+    out: dict[str, list[dict]] = {t: [] for t in task_ids}
+    if not task_ids:
+        return out
+    pt = db.plan_tasks
+    with engine.begin() as c:
+        rs = c.execute(select(pt.c.id, pt.c.text, pt.c.done, pt.c.assignee_employee_id, pt.c.coworker_task_id)
+                       .where(pt.c.coworker_task_id.in_(task_ids)).order_by(pt.c.id)).all()
+    for r in rs:
+        out.setdefault(r.coworker_task_id, []).append(
+            {"task_id": r.id, "text": r.text, "done": bool(r.done), "assignee_employee_id": r.assignee_employee_id})
+    return out
+
+
+def progress_of(steps: list[dict]) -> dict:
+    return {"done": sum(1 for s in steps if s.get("done")), "total": len(steps)}
+
+
+def stage_for(status: str, steps: list[dict]) -> str:
+    """planning -> needs_ok -> in_progress -> done | rejected (error shows as 'error')."""
+    if status == "running":
+        return "planning"
+    if status == "awaiting_approval":
+        return "needs_ok"
+    if status == "rejected":
+        return "rejected"
+    if status == "error":
+        return "error"
+    if status == "approved":
+        p = progress_of(steps)
+        return "done" if p["done"] >= p["total"] else "in_progress"
+    return "planning"
+
+
+def _person_ref(e: dict | None, with_role=False) -> dict | None:
+    if not e:
+        return None
+    out = {"id": e["id"], "name": e["name"], "initials": e.get("initials") or initials(e["name"])}
+    if with_role:
+        out["role"] = e.get("role") or ""
+    return out
+
+
+def queue_fields(t: dict, status: str, steps: list[dict], by_id: dict[str, dict]) -> dict:
+    """Queue-card fields shared by the list and detail endpoints."""
+    assignee_id = t.get("assignee_employee_id")
+    cover_id = t.get("covering_for_id")
+    if not assignee_id and t.get("result_json"):  # older rows: derive from the stored route
+        route = (json.loads(t["result_json"]) or {}).get("route") or {}
+        assignee_id = route.get("human_id")
+        if route.get("substituted") and route.get("owner_id") != assignee_id:
+            cover_id = route.get("owner_id")
+    cover = by_id.get(cover_id) if cover_id else None
+    return {
+        "stage": stage_for(status, steps),
+        "assignee": _person_ref(by_id.get(assignee_id), with_role=True),
+        "covering_for": {"id": cover["id"], "name": cover["name"]} if cover else None,
+        "progress": progress_of(steps),
+        "steps": [{"task_id": s["task_id"], "text": s["text"], "done": s["done"],
+                   "assignee": _person_ref(by_id.get(s.get("assignee_employee_id")))} for s in steps],
+    }
+
+
+def is_mine(t: dict, steps: list[dict], person_id: str | None) -> bool:
+    if not person_id:
+        return False
+    if t.get("assignee_employee_id") == person_id:
+        return True
+    if not t.get("assignee_employee_id") and t.get("result_json"):
+        if ((json.loads(t["result_json"]) or {}).get("route") or {}).get("human_id") == person_id:
+            return True
+    return any(s.get("assignee_employee_id") == person_id for s in steps)
+
+
+def synth_events(result: dict, status: str, steps: list[dict] | None = None) -> list[dict]:
+    """Deterministic replay events for a stored task that has none (e.g. seeded history), so the task page is never
+    blank: task.read -> route.chosen -> route.substituted? -> mesh.message* -> workflow.ready -> gap.found* ->
+    drafts.ready -> approval.waiting -> task.approved|task.rejected -> task.complete."""
+    if not result:
+        return []
+    evs: list[dict] = []
+
+    def add(type_, data, agent):
+        evs.append({"seq": len(evs), "t": len(evs) * 1200, "type": type_, "agent": agent, "data": data})
+
+    add("task.start", {"mode": "replay"}, None)
+    add("task.read", {"intent": result.get("intent", ""), "urgency": result.get("urgency", "normal"),
+                      "needed_skills": result.get("needed_skills", []),
+                      "needed_capabilities": result.get("needed_capabilities", [])}, "reader")
+    route = result.get("route")
+    if route:
+        add("route.chosen", {"route": route}, "router")
+        if route.get("substituted"):
+            add("route.substituted", {"owner_id": route.get("owner_id"), "human_id": route.get("human_id"),
+                                      "note": route.get("substitution_note")}, "router")
+    for m in result.get("mesh") or []:
+        add("mesh.message", m, f"coworker:{m.get('from_id')}")
+    wf = result.get("workflow") or []
+    if wf:
+        add("workflow.ready", {"workflow": wf}, "builder")
+        for s in wf:
+            if s.get("gap"):
+                add("gap.found", {"step_n": s.get("n"), "capability": s.get("gap_capability"),
+                                  "recommendations": s.get("recommendations") or []}, "builder")
+    if result.get("drafts"):
+        add("drafts.ready", {"drafts": result["drafts"]}, "drafter")
+    if status in ("awaiting_approval", "approved", "rejected"):
+        add("approval.waiting", {}, None)
+    if status == "approved":
+        assigned = [{"task_id": s["task_id"], "assignee_id": s.get("assignee_employee_id"), "text": s["text"]}
+                    for s in (steps or [])] or result.get("assigned_tasks") or []
+        add("task.approved", {"assigned_tasks": assigned, "send_log": result.get("send_log") or []}, "you")
+        add("task.complete", {}, "you")
+    elif status == "rejected":
+        add("task.rejected", {}, "you")
+        add("task.complete", {}, "you")
+    return evs

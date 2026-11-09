@@ -83,3 +83,40 @@ export const TASK_STATUS_LABEL: Record<TaskStatus, string> = {
   rejected: "Rejected",
   error: "Didn't finish",
 };
+
+// ---- Task queue (docs/TASK_QUEUE_CONTRACT.md) ----
+export type TaskStage = "planning" | "needs_ok" | "in_progress" | "done" | "rejected";
+export type QueuePerson = { id: string; name: string; initials: string; role?: string };
+export type QueueStep = { task_id: number; text: string; done: boolean; assignee: QueuePerson | null };
+export type QueueTask = {
+  id: string;
+  text: string;
+  created_at: string;
+  mode: "live" | "replay";
+  status: TaskStatus;
+  stage: TaskStage;
+  assignee: QueuePerson | null;
+  covering_for: { id: string; name: string } | null;
+  progress: { done: number; total: number };
+  steps: QueueStep[];
+};
+export type QueueTaskDetail = CoworkerTaskDetail & Partial<Omit<QueueTask, keyof CoworkerTask>>;
+
+export const STAGE_LABEL: Record<TaskStage, string> = {
+  planning: "Planning",
+  needs_ok: "Needs your OK",
+  in_progress: "In progress",
+  done: "Done",
+  rejected: "Rejected",
+};
+export const STAGE_LABEL_EMPLOYEE: Record<TaskStage, string> = { ...STAGE_LABEL, needs_ok: "Waiting for owner" };
+
+/** Fallback when the API hasn't sent a stage yet. */
+export function stageOf(t: { stage?: TaskStage; status: TaskStatus; progress?: { done: number; total: number } }): TaskStage {
+  if (t.stage) return t.stage;
+  if (t.status === "running") return "planning";
+  if (t.status === "awaiting_approval") return "needs_ok";
+  if (t.status === "rejected" || t.status === "error") return "rejected";
+  const p = t.progress;
+  return p && p.total > 0 && p.done >= p.total ? "done" : "in_progress";
+}

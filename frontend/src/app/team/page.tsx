@@ -1,24 +1,21 @@
 "use client";
-// Team: add your people once → give them work → approve what they need.
-// Tabs: People (each person + their AI coworker + the AI tools they use) · Workflow (people ↔ AI tools ↔ customers) · Tasks (coworker mesh) · Spending (owner only).
+// Team: give your people work and track it.
+// Tabs: Task queue (default; finished vs unfinished, auto-assigned) · Workflow (people ↔ AI tools ↔ customers) · Spending (owner only).
+// People (profiles, AI coworkers, invites) live on their own page: /people.
 import { Suspense, useCallback, useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Send, UserPlus, X } from "lucide-react";
-import Link from "next/link";
 import { api, cn } from "@/lib/api";
-import type { Business, Tool, User } from "@/lib/types";
-import { useAdoptions } from "@/hooks/useAdoptions";
+import type { Business, User } from "@/lib/types";
 import { AppHeader, PageHeader, PageState, useTitle } from "@/components/ui";
-import { PeopleTab } from "@/components/team/PeopleTab";
-import { TasksTab } from "@/components/team/TasksTab";
+import { TaskQueue } from "@/components/team/TaskQueue";
 import { SpendingTab } from "@/components/team/SpendingTab";
 import { WorkflowTab } from "@/components/team/WorkflowTab";
-import { PersonDrawer } from "@/components/team/PersonDrawer";
-import { AddPersonDrawer } from "@/components/team/AddPersonDrawer";
-import type { Person, PersonStatus, TeamData } from "@/components/team/types";
+import type { TeamData } from "@/components/team/types";
 
 type Me = { user: User; business: Business | null; account_role?: "owner" | "employee"; person_id?: string | null };
-type Tab = "people" | "workflow" | "tasks" | "spending";
+type Tab = "queue" | "workflow" | "spending";
 const STEPS_KEY = "ss_team_steps_dismissed";
 
 function TeamInner() {
@@ -27,32 +24,36 @@ function TeamInner() {
   const params = useSearchParams();
   const [me, setMe] = useState<Me | null>(null);
   const [team, setTeam] = useState<TeamData | null>(null);
-  const [people, setPeople] = useState<Person[] | null>(null);
-  const [catalog, setCatalog] = useState<Record<string, Tool>>({});
+  const [peopleCount, setPeopleCount] = useState(0);
   const [err, setErr] = useState<string | null>(null);
   const [flash, setFlash] = useState<{ ok: boolean; text: string } | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
-  const [statusBusy, setStatusBusy] = useState<string | null>(null);
-  const [open, setOpen] = useState<Person | null>(null);
-  const [editing, setEditing] = useState<Person | null>(null);
-  const [formOpen, setFormOpen] = useState(false);
   const [showSteps, setShowSteps] = useState(false);
-  const { adopted } = useAdoptions();
 
   const isOwnerView = me ? (me.account_role ? me.account_role === "owner" : team?.role !== "member") : false;
-  const requested = (params.get("tab") as Tab) || "people";
-  const tab: Tab = requested === "spending" && !isOwnerView ? "people" : ["people", "workflow", "tasks", "spending"].includes(requested) ? requested : "people";
 
-  const loadPeople = useCallback(() => api<Person[]>("/people").then(setPeople), []);
+  // old links: ?tab=people → /people, ?tab=tasks(&task=ID) → queue / task page
+  const raw = params.get("tab");
+  const legacyTask = params.get("task");
+  useEffect(() => {
+    if (raw === "people") router.replace("/people");
+    else if (legacyTask) router.replace(`/team/tasks/${legacyTask}`);
+  }, [raw, legacyTask, router]);
+  const requested: Tab = raw === "workflow" || raw === "spending" ? raw : "queue";
+  const tab: Tab = requested === "spending" && !isOwnerView ? "queue" : requested;
+
   const loadTeam = useCallback(() => api<TeamData>("/team").then(setTeam).catch(() => setTeam(null)), []);
   const load = useCallback(() => {
     setErr(null);
-    Promise.all([api<Me>("/me").then(setMe), loadPeople(), loadTeam()]).catch((e) => setErr((e as Error).message));
-  }, [loadPeople, loadTeam]);
+    Promise.all([
+      api<Me>("/me").then(setMe),
+      api<unknown[]>("/people").then((p) => setPeopleCount(p.length)).catch(() => setPeopleCount(0)),
+      loadTeam(),
+    ]).catch((e) => setErr((e as Error).message));
+  }, [loadTeam]);
 
   useEffect(() => {
     load();
-    api<Tool[]>("/catalog").then((ts) => setCatalog(Object.fromEntries(ts.map((t) => [t.id, t])))).catch(() => {});
     try {
       setShowSteps(localStorage.getItem(STEPS_KEY) !== "1");
     } catch {
@@ -74,40 +75,10 @@ function TeamInner() {
       await fn();
       if (ok) setFlash({ ok: true, text: ok });
       loadTeam();
-      loadPeople().catch(() => {});
     } catch (e) {
       setFlash({ ok: false, text: (e as Error).message });
     }
     setBusy(null);
-  };
-
-  const setStatus = async (p: Person, status: PersonStatus) => {
-    setStatusBusy(p.id);
-    setPeople((list) => list && list.map((x) => (x.id === p.id ? { ...x, status } : x)));
-    try {
-      await api(`/people/${p.id}/status`, { method: "PATCH", json: { status } });
-    } catch (e) {
-      setPeople((list) => list && list.map((x) => (x.id === p.id ? { ...x, status: p.status } : x)));
-      setFlash({ ok: false, text: (e as Error).message });
-    }
-    setStatusBusy(null);
-  };
-
-  const invite = async (p: Person): Promise<string | null> => {
-    try {
-      const r = await api<{ invite_url: string }>(`/people/${p.id}/invite`, { method: "POST" });
-      setPeople((list) => list && list.map((x) => (x.id === p.id ? { ...x, pending_invite_url: r.invite_url } : x)));
-      return r.invite_url;
-    } catch (e) {
-      setFlash({ ok: false, text: (e as Error).message });
-      return null;
-    }
-  };
-
-  const remove = async (p: Person) => {
-    if (!window.confirm(`Remove ${p.name} from the team? Their AI coworker is removed too.`)) return;
-    setOpen(null);
-    await act(`rm-${p.id}`, () => api(`/people/${p.id}`, { method: "DELETE" }), `${p.name} removed.`);
   };
 
   const dismissSteps = () => {
@@ -119,9 +90,8 @@ function TeamInner() {
 
   const pendingRequests = team?.requests.filter((r) => r.status === "pending").length ?? 0;
   const tabs: { id: Tab; label: string; badge?: number }[] = [
-    { id: "people", label: "People" },
+    { id: "queue", label: "Task queue" },
     { id: "workflow", label: "Workflow" },
-    { id: "tasks", label: "Tasks" },
     ...(isOwnerView ? [{ id: "spending" as Tab, label: "Spending", badge: pendingRequests }] : []),
   ];
 
@@ -131,35 +101,33 @@ function TeamInner() {
       <main className="mx-auto max-w-6xl space-y-6 px-4 pt-8">
         <PageHeader
           eyebrow="Team"
-          title={isOwnerView || !team ? "Your team" : `Your team at ${team.business_name}`}
+          title={isOwnerView || !team ? "Your team's work" : `Your work at ${team.business_name}`}
           help={
             isOwnerView ? (
               <>
-                Add each person once. They get an AI coworker that knows their skills, and you can invite them to log in. Hand the team a task in <b>Tasks</b>; employees request
-                tools from Discover and you approve them in <b>Spending</b>.
+                Describe a task and it&apos;s assigned to the best-fit person automatically. Track every task from planning to done in the <b>Task queue</b>. Manage people and invites on
+                the <b>People</b> page.
               </>
             ) : (
-              <>
-                See who&apos;s on your team and set your own availability. Find a tool in Discover and press <b>Request</b>; your owner approves it.
-              </>
+              <>Your tasks are under <b>Mine</b>; tick steps off as you finish them. Find a tool in Discover and press <b>Request</b>; your owner approves it.</>
             )
           }
           actions={
             isOwnerView ? (
-              tab === "people" ? (
-                <button className="btn-primary" onClick={() => { setEditing(null); setFormOpen(true); }}>
-                  <UserPlus size={16} /> Add a person
-                </button>
-              ) : undefined
+              <Link href="/people" className="btn-secondary">
+                <UserPlus size={16} /> Add a person
+              </Link>
             ) : (
-              <Link href="/tools" className="btn-primary"><Send size={16} /> Find a tool to request</Link>
+              <Link href="/tools" className="btn-primary">
+                <Send size={16} /> Find a tool to request
+              </Link>
             )
           }
         />
 
         {showSteps && isOwnerView && <Steps onClose={dismissSteps} />}
 
-        <div role="tablist" aria-label="Team sections" className="flex gap-1 border-b border-stone-200">
+        <div role="tablist" aria-label="Team sections" className="flex gap-1 overflow-x-auto overflow-y-hidden border-b border-stone-200 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {tabs.map((t) => (
             <button
               key={t.id}
@@ -167,7 +135,7 @@ function TeamInner() {
               aria-selected={tab === t.id}
               onClick={() => setTab(t.id)}
               className={cn(
-                "-mb-px flex items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors",
+                "-mb-px flex shrink-0 items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors",
                 tab === t.id ? "border-emerald-700 text-stone-900" : "border-transparent text-stone-500 hover:text-stone-800",
               )}
             >
@@ -186,67 +154,27 @@ function TeamInner() {
 
         {err ? (
           <PageState kind="error" message={err} onRetry={load} />
-        ) : !people || !me ? (
+        ) : !me ? (
           <PageState kind="loading" />
-        ) : tab === "people" ? (
-          <PeopleTab
-            people={people}
-            catalog={catalog}
-            isOwnerView={isOwnerView}
-            myPersonId={me.person_id ?? null}
-            statusBusy={statusBusy}
-            onOpen={setOpen}
-            onStatus={setStatus}
-            onInvite={invite}
-            onAdd={() => { setEditing(null); setFormOpen(true); }}
-            team={team}
-            busy={busy}
-            act={act}
-          />
+        ) : tab === "queue" ? (
+          <TaskQueue isOwnerView={isOwnerView} myPersonId={me.person_id ?? null} peopleCount={peopleCount} />
         ) : tab === "workflow" ? (
           <WorkflowTab isOwnerView={isOwnerView} myPersonId={me.person_id ?? null} />
-        ) : tab === "tasks" ? (
-          <TasksTab catalog={catalog} isOwnerView={isOwnerView} initialTaskId={params.get("task")} peopleCount={people.length} autoStartDemo={!!me.user.is_demo} />
         ) : team ? (
           <SpendingTab t={team} busy={busy} act={act} />
         ) : (
           <PageState kind="loading" />
         )}
       </main>
-
-      <PersonDrawer
-        person={open}
-        catalog={catalog}
-        isOwnerView={isOwnerView}
-        onClose={() => setOpen(null)}
-        onEdit={(p) => { setOpen(null); setEditing(p); setFormOpen(true); }}
-        onRemove={remove}
-        onInvite={invite}
-      />
-      <AddPersonDrawer
-        open={formOpen}
-        onClose={() => setFormOpen(false)}
-        editing={editing}
-        catalog={catalog}
-        adoptedIds={[...adopted]}
-        onSaved={(p) => {
-          setPeople((list) => {
-            const l = list || [];
-            return l.some((x) => x.id === p.id) ? l.map((x) => (x.id === p.id ? p : x)) : [...l, p];
-          });
-          if (editing) setFormOpen(false);
-          loadPeople().catch(() => {});
-        }}
-      />
     </div>
   );
 }
 
 function Steps({ onClose }: { onClose: () => void }) {
   const steps = [
-    ["Add your people", "Each gets an AI coworker that knows their skills."],
-    ["Give them tasks", "Coworkers plan it with your AI tools."],
-    ["Approve what they need", "Tool requests and plans wait for your OK."],
+    ["Describe a task", "It goes to the best-fit person automatically."],
+    ["Approve the plan", "Coworkers plan it with your AI tools."],
+    ["Track progress", "Steps get ticked off until it's done."],
   ];
   return (
     <div className="card relative grid gap-4 p-5 pr-10 sm:grid-cols-3">

@@ -300,7 +300,11 @@ def dashboard(request: Request, user=Depends(current_user)):
 
 @app.patch("/plan-tasks/{task_id}")
 def toggle_task(task_id: int, body: TaskIn, user=Depends(current_user)):
-    if not db.set_task_done(task_id, body.done, user["id"]):
+    try:
+        ok = db.set_task_done(task_id, body.done, user["id"])
+    except PermissionError as e:
+        raise HTTPException(403, str(e))
+    if not ok:
         raise HTTPException(404, "Task not found")
     return {"ok": True}
 

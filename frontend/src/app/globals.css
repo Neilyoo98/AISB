@@ -15,6 +15,26 @@ body {
 }
 body {
   min-height: 100dvh;
+  /* never let a scaled/animated element (e.g. the hero zoom) widen the page and leave a strip on the right */
+  overflow-x: clip;
+}
+
+/* The page scrollbar blends with the background instead of showing a bright white column on the right (Windows). */
+html {
+  scrollbar-color: #d6d3d1 #fafaf7;
+  scrollbar-width: thin;
+}
+html::-webkit-scrollbar {
+  width: 10px;
+  background: #fafaf7;
+}
+html::-webkit-scrollbar-thumb {
+  background: #d6d3d1;
+  border-radius: 9999px;
+  border: 2px solid #fafaf7;
+}
+html::-webkit-scrollbar-thumb:hover {
+  background: #a8a29e;
 }
 
 @layer components {
@@ -44,7 +64,8 @@ body {
   }
   /* Shared page width: uses wide screens instead of leaving empty margins. */
   .page-wrap {
-    @apply mx-auto w-full max-w-[1600px] px-4 sm:px-6 lg:px-8;
+    /* full width of the window on every screen size; only side padding */
+    @apply w-full px-4 sm:px-6 lg:px-10 2xl:px-14;
   }
   .chip {
     @apply inline-flex items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-0.5 text-xs font-medium text-stone-700;

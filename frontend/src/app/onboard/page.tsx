@@ -16,8 +16,9 @@ export default function Onboard() {
   const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
-    api<{ user: User; business: (Business & { details?: Record<string, unknown> | null }) | null }>("/me").then((m) => {
-      if (m.user.is_demo) return router.replace("/dashboard");
+    api<{ user: User; business: (Business & { details?: Record<string, unknown> | null }) | null; account_role?: "owner" | "employee" }>("/me").then((m) => {
+      // only owners describe the business; demo accounts and employees go to their dashboard
+      if (m.user.is_demo || m.account_role === "employee") return router.replace("/dashboard");
       setMe(m);
       if (m.business) setValue(formFromBusiness(m.business));
     });

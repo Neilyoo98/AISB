@@ -54,9 +54,14 @@ body {
 
 /* Hero slideshow: opacity crossfade (on-screen morph -> strong ease-in-out) + slow linear drift.
    Only opacity/transform animate. Reduced motion: no drift, no cycling (handled in JS). */
+/* Isolate the slideshow's repaints from the rest of the page (smoother scrolling). */
+.hero-slides {
+  contain: strict;
+}
 .hero-slide {
   opacity: 0;
   transition: opacity 1400ms cubic-bezier(0.77, 0, 0.175, 1);
+  will-change: opacity;
 }
 .hero-slide[data-active="true"] {
   opacity: 1;
@@ -66,6 +71,11 @@ body {
 }
 .hero-slide[data-active="true"] img {
   animation: hero-drift 7400ms linear forwards;
+  will-change: transform;
+}
+/* Paused while the hero is scrolled out of view: no off-screen animation work during scroll. */
+.hero-slides[data-paused="true"] .hero-slide[data-active="true"] img {
+  animation-play-state: paused;
 }
 @keyframes hero-drift {
   from { transform: scale(1.04); }

@@ -43,9 +43,14 @@ export default function JoinPage() {
     setBusy(true);
     setErr(null);
     try {
-      if (tab === "new") await api("/auth/register", { method: "POST", json: form });
-      else await api("/auth/login", { method: "POST", json: { email: form.email, password: form.password } });
-      await join();
+      if (tab === "new") {
+        // registering as an employee with this invite joins the business in one step
+        await api("/auth/register", { method: "POST", json: { ...form, account_type: "employee", invite_code: code } });
+        setJoined(info?.business_name || "your");
+      } else {
+        await api("/auth/login", { method: "POST", json: { email: form.email, password: form.password } });
+        await join();
+      }
     } catch (x) {
       setErr((x as Error).message);
     }
@@ -75,10 +80,10 @@ export default function JoinPage() {
           <Card>
             <CheckCircle2 className="mx-auto text-emerald-700" size={36} />
             <h1 className="mt-3 text-center font-display text-2xl font-bold">You&apos;re on the {joined} team</h1>
-            <p className="mt-2 text-center text-stone-600">Find an AI tool that would help your work and press <b>Request</b>. Your owner approves it.</p>
+            <p className="mt-2 text-center text-stone-600">See your tasks, or find an AI tool for your work and press <b>Request</b>. Your owner approves it.</p>
             <div className="mt-6 grid gap-2">
-              <Link href="/tools" className="btn-primary py-3"><Send size={16} /> Find a tool to request</Link>
-              <Link href="/team" className="btn-secondary">See your team</Link>
+              <Link href="/dashboard?welcome=1" className="btn-primary py-3">Go to my tasks</Link>
+              <Link href="/tools" className="btn-secondary"><Send size={16} /> Find a tool to request</Link>
             </div>
           </Card>
         ) : info.status !== "valid" ? (

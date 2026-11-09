@@ -82,6 +82,26 @@ DEMO_STAFF: dict[str, list[dict]] = {
 }
 
 
+# The sample EMPLOYEE login for each business ("Log in as an employee" on the login page). Must be one of the
+# team.DEMO_TEAM members, so seed_demo_staff links that login to their person profile.
+DEMO_EMPLOYEE_LOGIN = {"coolair-hvac": "Luis Ortega", "joes-coffee": "Marcus Lee", "greenleaf": "Tom Reyes"}
+
+
+def demo_employee_email(persona_id: str) -> str | None:
+    name = DEMO_EMPLOYEE_LOGIN.get(persona_id)
+    members = [m[0] for m in team.DEMO_TEAM.get(persona_id, {}).get("members", [])]
+    if not name or name not in members:
+        return None
+    return f"member{members.index(name) + 1}.{persona_id}@demo.stacksmith"
+
+
+def demo_employee(persona_id: str) -> dict | None:
+    """{name, role} of the sample employee login, for the login page."""
+    name = DEMO_EMPLOYEE_LOGIN.get(persona_id)
+    staff = next((s for s in DEMO_STAFF.get(persona_id, []) if s["name"] == name), None)
+    return {"name": name, "role": staff["role"]} if staff and demo_employee_email(persona_id) else None
+
+
 def seed_demo_staff(business_id: str, persona_id: str, owner_user_id: str | None = None) -> list[dict]:
     """Create the sample business's employees + their coworker profile facts (no LLM call)."""
     from graphs.coworker_graph import base_facts  # local import: graph module is heavy

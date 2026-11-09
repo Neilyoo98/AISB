@@ -244,7 +244,7 @@ function Reviews({ d, onPosted }: { d: Detail; onPosted: () => void }) {
     setBusy(false);
   };
   return (
-    <div className="mt-6 grid gap-6 md:grid-cols-[260px_1fr]">
+    <div className="mt-6 grid gap-6 md:grid-cols-[260px_1fr] [&>*]:min-w-0">
       <aside className="space-y-3">
         {a ? (
           <div className="card p-5">

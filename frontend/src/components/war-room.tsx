@@ -13,6 +13,20 @@ import { AdoptButton } from "@/components/adopt-button";
 
 const EASE = [0.23, 1, 0.32, 1] as const;
 
+/** Long text stays hidden until the owner asks for it. */
+export function More({ label = "Show details", children, className }: { label?: string; children: React.ReactNode; className?: string }) {
+  return (
+    <details className={cn("group/more", className)}>
+      <summary className="inline-flex cursor-pointer list-none items-center gap-1 text-xs font-semibold text-emerald-700 hover:underline [&::-webkit-details-marker]:hidden">
+        <span className="group-open/more:hidden">{label}</span>
+        <span className="hidden group-open/more:inline">Hide details</span>
+        <ChevronDown size={12} className="transition-transform group-open/more:rotate-180" />
+      </summary>
+      <div className="mt-2 text-sm leading-relaxed text-stone-600">{children}</div>
+    </details>
+  );
+}
+
 export const AGENTS: { key: AgentKey; name: string; role: string; icon: typeof Search }[] = [
   { key: "intake", name: "Intake Analyst", role: "Understands your business", icon: BookOpen },
   { key: "memory", name: "Memory", role: "Recalls your Constitution", icon: ClipboardList },
@@ -130,8 +144,10 @@ export function PainCards({ pains }: { pains: Pain[] }) {
             {money(p.monthly_cost_of_pain)}
             <span className="ml-1 font-sans text-sm font-medium text-stone-500">/month</span>
           </div>
-          <p className="mt-2 text-sm leading-relaxed text-stone-600">{p.impact_explanation}</p>
-          {p.evidence_quote && <blockquote className="mt-auto border-l-2 border-stone-200 pl-3 pt-3 text-xs italic text-stone-500">&ldquo;{p.evidence_quote}&rdquo;</blockquote>}
+          <More label="How we got this number" className="mt-auto pt-3">
+            <p>{p.impact_explanation}</p>
+            {p.evidence_quote && <blockquote className="mt-2 border-l-2 border-stone-200 pl-3 text-xs italic text-stone-500">&ldquo;{p.evidence_quote}&rdquo;</blockquote>}
+          </More>
         </motion.div>
       ))}
     </div>
@@ -161,14 +177,22 @@ export function ScoutGrid({
               </div>
             ) : (
               <>
-                <ul className="mt-3 space-y-2">
+                <ul className="mt-3 space-y-1.5">
                   {s.picks.map((pk: Pick) => (
-                    <li key={pk.tool_id} className="rounded-lg bg-stone-50 p-2.5">
-                      <div className="text-sm font-semibold">{catalog[pk.tool_id]?.name || pk.tool_id}</div>
-                      <div className="mt-0.5 text-xs leading-relaxed text-stone-600">{pk.why_fit}</div>
+                    <li key={pk.tool_id} className="rounded-lg bg-stone-50 px-2.5 py-2 text-sm font-semibold">
+                      {catalog[pk.tool_id]?.name || pk.tool_id}
                     </li>
                   ))}
                 </ul>
+                <More label="Why these tools" className="mt-2">
+                  <ul className="space-y-1.5 text-xs">
+                    {s.picks.map((pk: Pick) => (
+                      <li key={pk.tool_id}>
+                        <b className="text-stone-800">{catalog[pk.tool_id]?.name || pk.tool_id}:</b> {pk.why_fit}
+                      </li>
+                    ))}
+                  </ul>
+                </More>
                 {drop.length > 0 && (
                   <div className="mt-3 flex items-start gap-2 rounded-lg bg-amber-50 p-2 text-xs text-amber-900">
                     <ShieldAlert size={14} className="mt-0.5 shrink-0" /> Skipped a suggestion that isn&apos;t in our verified catalog.
@@ -215,7 +239,8 @@ export function MeshPanel({ mesh, catalog, waiting }: { mesh: MeshMsg[]; catalog
                 <div className="text-sm font-semibold">{m.persona}</div>
                 <p className="mt-1 text-sm leading-relaxed text-stone-800">{m.headline}</p>
                 {m.critiques.length > 0 && (
-                  <ul className="mt-3 space-y-2">
+                  <More label={m.critiques.length === 1 ? "Show concern" : "Show concerns"} className="mt-2">
+                  <ul className="space-y-2">
                     {m.critiques.map((c, i) => (
                       <li key={i} className="text-sm">
                         <span className="flex flex-wrap items-center gap-2">
@@ -227,6 +252,7 @@ export function MeshPanel({ mesh, catalog, waiting }: { mesh: MeshMsg[]; catalog
                       </li>
                     ))}
                   </ul>
+                  </More>
                 )}
               </div>
             </motion.div>
@@ -270,7 +296,11 @@ export function StackPanel({
         <Metric label="You save / month" value={money(stack.net_monthly, { sign: true })} good sub="after tool costs" />
         <Metric label="Tools cost / month" value={money(stack.monthly_cost)} sub={stack.within_budget ? `within your ${money(stack.budget)} budget` : `over your ${money(stack.budget)} budget`} />
         <Metric label="Time back / month" value={`${Math.round(stack.hours_saved_per_month)} hours`} />
-        {verdicts?.summary && <p className="col-span-full border-t border-stone-100 pt-4 text-sm leading-relaxed text-stone-700">{verdicts.summary}</p>}
+        {verdicts?.summary && (
+          <More label="Why this stack" className="col-span-full border-t border-stone-100 pt-3">
+            <p className="text-stone-700">{verdicts.summary}</p>
+          </More>
+        )}
       </div>
 
       {pains.map((p) => {
@@ -432,7 +462,20 @@ function Metric({ label, value, sub, good }: { label: string; value: string; sub
 }
 
 export function PlanView({ plan, catalog }: { plan: Plan; catalog: Record<string, Tool> }) {
-  const [openWeek, setOpenWeek] = useState<number | null>(plan.weeks[0]?.week ?? null);
+  // One numbered checklist per tool, in the order the coach scheduled them (week 1 first).
+  const groups: { key: string; name: string; steps: { text: string; owner: string; week: number }[] }[] = [];
+  for (const w of [...plan.weeks].sort((a, b) => a.week - b.week)) {
+    for (const t of w.tasks) {
+      const key = t.tool_id && catalog[t.tool_id] ? t.tool_id : "general";
+      let g = groups.find((x) => x.key === key);
+      if (!g) {
+        g = { key, name: key === "general" ? "Check results" : catalog[key].name.replace(/ \(.*\)$/, ""), steps: [] };
+        groups.push(g);
+      }
+      g.steps.push({ text: t.text, owner: t.owner, week: w.week });
+    }
+  }
+  const [open, setOpen] = useState<string | null>(groups[0]?.key ?? null);
   return (
     <div className="space-y-3">
       <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
@@ -440,36 +483,34 @@ export function PlanView({ plan, catalog }: { plan: Plan; catalog: Record<string
         <p className="mt-1 text-emerald-950">{plan.first_step_today}</p>
       </div>
       <div className="card divide-y divide-stone-100">
-        {plan.weeks.map((w) => {
-          const open = openWeek === w.week;
+        {groups.map((g, gi) => {
+          const isOpen = open === g.key;
           return (
-            <div key={w.week}>
+            <div key={g.key}>
               <button
-                onClick={() => setOpenWeek(open ? null : w.week)}
-                aria-expanded={open}
+                onClick={() => setOpen(isOpen ? null : g.key)}
+                aria-expanded={isOpen}
                 className="flex w-full items-center justify-between gap-3 px-5 py-3.5 text-left hover:bg-stone-50"
               >
-                <span className="min-w-0">
-                  <span className="eyebrow mr-2">Week {w.week}</span>
-                  <span className="font-semibold">{w.theme}</span>
+                <span className="flex min-w-0 items-center gap-3">
+                  <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-stone-900 text-xs font-bold text-white">{gi + 1}</span>
+                  <span className="font-semibold">{g.name}</span>
+                  <span className="text-xs text-stone-500">starts week {g.steps[0].week}</span>
                 </span>
-                <ChevronDown size={16} className={cn("shrink-0 text-stone-400 transition-transform", open && "rotate-180")} />
+                <ChevronDown size={16} className={cn("shrink-0 text-stone-400 transition-transform", isOpen && "rotate-180")} />
               </button>
-              {open && (
-                <ul className="space-y-2.5 px-5 pb-4">
-                  {w.tasks.map((t, i) => (
+              {isOpen && (
+                <ol className="space-y-2 px-5 pb-4 sm:pl-14">
+                  {g.steps.map((st, i) => (
                     <li key={i} className="flex gap-2.5 text-sm">
-                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-600" />
-                      <span>
-                        {t.text}
-                        <span className="mt-0.5 block text-xs text-stone-500">
-                          {t.owner}
-                          {t.tool_id && catalog[t.tool_id] ? ` · ${catalog[t.tool_id].name.replace(/ \(.*\)$/, "")}` : ""}
-                        </span>
+                      <span className="w-5 shrink-0 text-right font-semibold tabular-nums text-stone-400">{i + 1}.</span>
+                      <span className="min-w-0">
+                        {st.text}
+                        <span className="ml-2 text-xs text-stone-500">{st.owner}</span>
                       </span>
                     </li>
                   ))}
-                </ul>
+                </ol>
               )}
             </div>
           );
@@ -477,7 +518,7 @@ export function PlanView({ plan, catalog }: { plan: Plan; catalog: Record<string
       </div>
       {plan.success_metrics.length > 0 && (
         <div className="card p-5">
-          <div className="eyebrow">Check after 30 days</div>
+          <div className="eyebrow">How you&apos;ll know it works</div>
           <ul className="mt-2 space-y-1.5">
             {plan.success_metrics.map((m, i) => (
               <li key={i} className="flex gap-2 text-sm">

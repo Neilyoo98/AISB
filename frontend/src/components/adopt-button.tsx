@@ -1,10 +1,10 @@
 "use client";
-import { useEffect, useSyncExternalStore, useState } from "react";
+import { useEffect, useRef, useSyncExternalStore, useState } from "react";
 import Link from "next/link";
 import { Check, Clock, Plus, Send, Undo2 } from "lucide-react";
 import { cn } from "@/lib/api";
 import type { Adoption } from "@/lib/types";
-import { Spinner } from "@/components/ui";
+import { AnchoredPopover, Spinner } from "@/components/ui";
 
 /* One shared store per page, so every Adopt / Request button stays in sync with a single fetch.
    Owners adopt tools directly; team members send a request the owner approves on the Team page. */
@@ -85,6 +85,7 @@ export function AdoptButton({ toolId, compact = false, className }: { toolId: st
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [asking, setAsking] = useState(false);
+  const reqBtnRef = useRef<HTMLButtonElement>(null);
   const [reason, setReason] = useState("");
   const [seats, setSeats] = useState(1);
   const adopted = s.adopted.has(toolId);
@@ -138,16 +139,18 @@ export function AdoptButton({ toolId, compact = false, className }: { toolId: st
     };
     return (
       <span className={cn("inline-flex flex-col", compact ? "items-end" : "items-start", className)}>
-        {!asking ? (
-          <button
-            onClick={() => setAsking(true)}
-            disabled={s.status !== "ready"}
-            className={cn(compact ? "btn border border-emerald-600 bg-white px-2.5 py-1 text-xs text-emerald-800 hover:bg-emerald-50" : "btn-primary")}
-          >
-            <Send size={compact ? 13 : 16} /> {compact ? "Request" : "Request this tool"}
-          </button>
-        ) : (
-          <form onSubmit={submit} className="w-64 space-y-2 rounded-xl border border-stone-200 bg-white p-3 text-left shadow-lg">
+        <button
+          ref={reqBtnRef}
+          onClick={() => setAsking((a) => !a)}
+          disabled={s.status !== "ready"}
+          aria-expanded={asking}
+          className={cn(compact ? "btn border border-emerald-600 bg-white px-2.5 py-1 text-xs text-emerald-800 hover:bg-emerald-50" : "btn-primary")}
+        >
+          <Send size={compact ? 13 : 16} /> {compact ? "Request" : "Request this tool"}
+        </button>
+        {/* Rendered in a portal so small card footers can't clip the form. */}
+        <AnchoredPopover anchorRef={reqBtnRef} open={asking} onClose={() => setAsking(false)} width={272} label="Request this tool">
+          <form onSubmit={submit} className="space-y-2">
             <label className="block text-xs font-medium text-stone-700">
               What would you use it for?
               <input autoFocus className="input mt-1 py-1.5" maxLength={300} placeholder="e.g. answer calls during lunch" value={reason} onChange={(e) => setReason(e.target.value)} />
@@ -161,7 +164,7 @@ export function AdoptButton({ toolId, compact = false, className }: { toolId: st
               <button className="btn-primary px-3 py-1 text-xs" disabled={busy}>{busy ? <Spinner className="h-3 w-3" /> : "Send request"}</button>
             </div>
           </form>
-        )}
+        </AnchoredPopover>
         {msg && <span role="status" className={cn("mt-1 text-xs", msg.ok ? "text-emerald-700" : "text-red-700")}>{msg.text}</span>}
       </span>
     );

@@ -712,236 +712,156 @@
    "agent": "planner",
    "data": {
     "plan": {
-     "first_step_today": "Sign up for a free 7shifts account and invite your most reliable student employee to test the app with you.",
-     "scenarios": [
-      {
-       "title": "A student can't make their Tuesday shift",
-       "steps": [
-        {
-         "time": "7:15 AM",
-         "actor": "Staff",
-         "action": "A student employee posts a shift-drop request in the app because of a sudden exam review session.",
-         "handoff_to": "7shifts",
-         "result": "Request logged instantly, no text thread started."
-        },
-        {
-         "time": "7:20 AM",
-         "actor": "7shifts",
-         "action": "Sends a notification to qualified teammates who are free, offering the open shift.",
-         "handoff_to": "Staff",
-         "result": "Coverage is sought without the owner involved."
-        },
-        {
-         "time": "7:45 AM",
-         "actor": "Staff",
-         "action": "A coworker picks up the shift with one tap in the app.",
-         "handoff_to": "Owner",
-         "result": "Shift is filled before the owner wakes up."
-        },
-        {
-         "time": "8:00 AM",
-         "actor": "Owner",
-         "action": "Approves the swap with one tap from the notification.",
-         "handoff_to": "7shifts",
-         "result": "Schedule updated; no manual rewrite needed."
-        },
-        {
-         "time": "8:01 AM",
-         "actor": "7shifts",
-         "action": "Updates the published schedule and notifies everyone affected.",
-         "handoff_to": null,
-         "result": "Everyone sees the correct schedule."
-        }
-       ]
-      },
-      {
-       "title": "Launching a slow-afternoon student promo",
-       "steps": [
-        {
-         "time": "10:00 AM",
-         "actor": "Owner",
-         "action": "Creates a 2-5pm weekday offer in Square Marketing using customers from Square POS.",
-         "handoff_to": "square-marketing",
-         "result": "Campaign built in minutes."
-        },
-        {
-         "time": "10:10 AM",
-         "actor": "square-marketing",
-         "action": "Sends the text or email offer to past customers who have bought with Square.",
-         "handoff_to": "Customer",
-         "result": "Offer reaches regulars without manual list building."
-        },
-        {
-         "time": "10:15 AM",
-         "actor": "Owner",
-         "action": "Schedules an Instagram post about the same offer in Meta Business Suite.",
-         "handoff_to": "meta-business-suite",
-         "result": "Offer is promoted to campus followers too."
-        },
-        {
-         "time": "2:40 PM",
-         "actor": "Customer",
-         "action": "A student shows the offer and pays at the counter.",
-         "handoff_to": "square-pos",
-         "result": "A slow-hour sale is added."
-        },
-        {
-         "time": "2:41 PM",
-         "actor": "square-pos",
-         "action": "Records the sale and ties it to the customer's profile.",
-         "handoff_to": "square-marketing",
-         "result": "Redemptions show if the promo works."
-        },
-        {
-         "time": "5:30 PM",
-         "actor": "square-marketing",
-         "action": "Shows how many customers redeemed the afternoon offer.",
-         "handoff_to": "Owner",
-         "result": "Owner sees whether the promo paid off."
-        }
-       ]
-      }
-     ],
+     "first_step_today": "Sign up for a free 7shifts account at 7shifts.com using your owner email.",
      "weeks": [
       {
        "week": 1,
-       "theme": "Scheduling: quickest payback",
+       "theme": "Get 7shifts running for scheduling (fastest payback)",
        "tasks": [
         {
          "tool_id": "7shifts",
-         "text": "Create the 7shifts account, add the location, and enter the 6 employees with their roles.",
-         "owner": "Owner",
-         "minutes": 45
-        },
-        {
-         "tool_id": "7shifts",
-         "text": "Collect each student's semester availability via the app so you stop texting them one by one.",
-         "owner": "Staff",
-         "minutes": 15
-        },
-        {
-         "tool_id": "7shifts",
-         "text": "Build and publish the first full schedule from the availability data.",
-         "owner": "Owner",
-         "minutes": 45
-        },
-        {
-         "tool_id": "7shifts",
-         "text": "Show staff how to swap and drop shifts in the app at a quick huddle.",
+         "text": "Create your 7shifts account and add Joe's Corner Coffee as a location.",
          "owner": "Owner",
          "minutes": 15
+        },
+        {
+         "tool_id": "7shifts",
+         "text": "In Team, add all 6 employees with their email addresses and roles.",
+         "owner": "Owner",
+         "minutes": 20
+        },
+        {
+         "tool_id": "7shifts",
+         "text": "In Availability, ask each employee to submit their semester class-schedule availability.",
+         "owner": "Owner",
+         "minutes": 10
+        },
+        {
+         "tool_id": "7shifts",
+         "text": "In Schedule, build this week's shifts and click Publish to notify staff.",
+         "owner": "Owner",
+         "minutes": 40
+        },
+        {
+         "tool_id": "7shifts",
+         "text": "Install the 7shifts mobile app on your phone and sign in.",
+         "owner": "Owner",
+         "minutes": 10
         }
        ]
       },
       {
        "week": 2,
-       "theme": "Fill the slow afternoons",
-       "tasks": [
-        {
-         "tool_id": "square-marketing",
-         "text": "Connect Square Marketing to your existing Square account and review your customer list.",
-         "owner": "Owner",
-         "minutes": 30
-        },
-        {
-         "tool_id": "square-marketing",
-         "text": "Create one 2-5pm weekday student offer, such as a discounted drink with a student ID, and send it.",
-         "owner": "Owner",
-         "minutes": 45
-        },
-        {
-         "tool_id": "7shifts",
-         "text": "Tell staff to use shift swaps in the app for all coverage; stop handling it by text.",
-         "owner": "Owner",
-         "minutes": 10
-        },
-        {
-         "tool_id": null,
-         "text": "Ask staff to mention the afternoon offer at the counter.",
-         "owner": "Staff",
-         "minutes": 10
-        }
-       ]
-      },
-      {
-       "week": 3,
-       "theme": "Wake up Instagram",
-       "tasks": [
-        {
-         "tool_id": "meta-business-suite",
-         "text": "Link your Instagram account to Meta Business Suite and set up the content planner.",
-         "owner": "Owner",
-         "minutes": 30
-        },
-        {
-         "tool_id": "meta-business-suite",
-         "text": "Have a student employee take 10 photos and short videos of drinks and the shop during a quiet shift.",
-         "owner": "Staff",
-         "minutes": 30
-        },
-        {
-         "tool_id": "meta-business-suite",
-         "text": "Schedule 3 posts for the week, including one about the afternoon offer.",
-         "owner": "Owner",
-         "minutes": 30
-        },
-        {
-         "tool_id": "square-marketing",
-         "text": "Check redemptions from the first offer and tweak the wording or discount.",
-         "owner": "Owner",
-         "minutes": 20
-        }
-       ]
-      },
-      {
-       "week": 4,
-       "theme": "Measure and tune",
+       "theme": "Staff adoption and weekday afternoon offer",
        "tasks": [
         {
          "tool_id": "7shifts",
-         "text": "Count the hours spent on scheduling this month versus the earlier 4 hours per week.",
+         "text": "Have staff install the 7shifts app and test the Shift Swap and Cover feature.",
+         "owner": "Manager",
+         "minutes": 30
+        },
+        {
+         "tool_id": "7shifts",
+         "text": "In Schedule, save a repeating weekly template from your published schedule.",
          "owner": "Owner",
          "minutes": 15
         },
         {
          "tool_id": "square-marketing",
-         "text": "Compare 2-5pm weekday transactions in Square against the pre-campaign weeks.",
+         "text": "In Square Dashboard, open Marketing and connect your customer directory.",
+         "owner": "Owner",
+         "minutes": 15
+        },
+        {
+         "tool_id": "square-marketing",
+         "text": "In Marketing, create a Loyalty program: a free drink after 8 visits.",
          "owner": "Owner",
          "minutes": 30
+        }
+       ]
+      },
+      {
+       "week": 3,
+       "theme": "Launch the student offer and restart Instagram",
+       "tasks": [
+        {
+         "tool_id": "square-marketing",
+         "text": "In Marketing > Campaigns, send a 2-5pm weekday student discount email.",
+         "owner": "Owner",
+         "minutes": 30
+        },
+        {
+         "tool_id": "square-marketing",
+         "text": "Print a loyalty sign-up QR code and place it at the counter.",
+         "owner": "Front staff",
+         "minutes": 15
         },
         {
          "tool_id": "meta-business-suite",
-         "text": "Review post reach and follower growth, then plan next month's batch of posts.",
+         "text": "Log in to Meta Business Suite and connect your Instagram account.",
          "owner": "Owner",
-         "minutes": 30
+         "minutes": 15
         },
         {
-         "tool_id": null,
-         "text": "Ask staff what is working and what is not, then keep the best parts.",
+         "tool_id": "meta-business-suite",
+         "text": "In Planner, schedule 3 posts for the week, including the afternoon offer.",
          "owner": "Owner",
-         "minutes": 20
+         "minutes": 40
+        },
+        {
+         "tool_id": "meta-business-suite",
+         "text": "Ask a student employee to photograph drinks for upcoming posts.",
+         "owner": "Manager",
+         "minutes": 15
+        }
+       ]
+      },
+      {
+       "week": 4,
+       "theme": "Check results and adjust",
+       "tasks": [
+        {
+         "tool_id": "7shifts",
+         "text": "In 7shifts, review how many shifts were covered through the app instead of texts.",
+         "owner": "Owner",
+         "minutes": 15
+        },
+        {
+         "tool_id": "square-marketing",
+         "text": "In Square Marketing, check campaign redemptions and new loyalty sign-ups.",
+         "owner": "Owner",
+         "minutes": 15
+        },
+        {
+         "tool_id": "meta-business-suite",
+         "text": "In Insights, note which posts earned the most reach and likes.",
+         "owner": "Owner",
+         "minutes": 15
+        },
+        {
+         "tool_id": "meta-business-suite",
+         "text": "In Planner, schedule next month's posts using your best-performing post type.",
+         "owner": "Owner",
+         "minutes": 30
         }
        ]
       }
      ],
      "success_metrics": [
       {
-       "metric": "Owner hours per week on scheduling and shift coverage",
-       "target": "Under 1 hour, down from 4"
+       "metric": "Weekly owner hours spent on scheduling and shift-cover texts",
+       "target": "Down from 4 hours to 1 hour or less"
       },
       {
-       "metric": "Weekday 2-5pm transactions per day",
-       "target": "2-3 more than the current baseline"
+       "metric": "Weekday 2-5pm transactions in Square",
+       "target": "2-3 more per day than before the offer"
       },
       {
        "metric": "Instagram posts published per week",
-       "target": "3 per week"
-      },
-      {
-       "metric": "Afternoon offer redemptions per week",
-       "target": "15 or more by week 4"
+       "target": "At least 3 posts every week"
       }
-     ]
+     ],
+     "scenarios": []
     },
     "approved_tool_ids": [
      "7shifts",
@@ -1495,236 +1415,156 @@
    "meta-business-suite"
   ],
   "plan": {
-   "first_step_today": "Sign up for a free 7shifts account and invite your most reliable student employee to test the app with you.",
-   "scenarios": [
-    {
-     "title": "A student can't make their Tuesday shift",
-     "steps": [
-      {
-       "time": "7:15 AM",
-       "actor": "Staff",
-       "action": "A student employee posts a shift-drop request in the app because of a sudden exam review session.",
-       "handoff_to": "7shifts",
-       "result": "Request logged instantly, no text thread started."
-      },
-      {
-       "time": "7:20 AM",
-       "actor": "7shifts",
-       "action": "Sends a notification to qualified teammates who are free, offering the open shift.",
-       "handoff_to": "Staff",
-       "result": "Coverage is sought without the owner involved."
-      },
-      {
-       "time": "7:45 AM",
-       "actor": "Staff",
-       "action": "A coworker picks up the shift with one tap in the app.",
-       "handoff_to": "Owner",
-       "result": "Shift is filled before the owner wakes up."
-      },
-      {
-       "time": "8:00 AM",
-       "actor": "Owner",
-       "action": "Approves the swap with one tap from the notification.",
-       "handoff_to": "7shifts",
-       "result": "Schedule updated; no manual rewrite needed."
-      },
-      {
-       "time": "8:01 AM",
-       "actor": "7shifts",
-       "action": "Updates the published schedule and notifies everyone affected.",
-       "handoff_to": null,
-       "result": "Everyone sees the correct schedule."
-      }
-     ]
-    },
-    {
-     "title": "Launching a slow-afternoon student promo",
-     "steps": [
-      {
-       "time": "10:00 AM",
-       "actor": "Owner",
-       "action": "Creates a 2-5pm weekday offer in Square Marketing using customers from Square POS.",
-       "handoff_to": "square-marketing",
-       "result": "Campaign built in minutes."
-      },
-      {
-       "time": "10:10 AM",
-       "actor": "square-marketing",
-       "action": "Sends the text or email offer to past customers who have bought with Square.",
-       "handoff_to": "Customer",
-       "result": "Offer reaches regulars without manual list building."
-      },
-      {
-       "time": "10:15 AM",
-       "actor": "Owner",
-       "action": "Schedules an Instagram post about the same offer in Meta Business Suite.",
-       "handoff_to": "meta-business-suite",
-       "result": "Offer is promoted to campus followers too."
-      },
-      {
-       "time": "2:40 PM",
-       "actor": "Customer",
-       "action": "A student shows the offer and pays at the counter.",
-       "handoff_to": "square-pos",
-       "result": "A slow-hour sale is added."
-      },
-      {
-       "time": "2:41 PM",
-       "actor": "square-pos",
-       "action": "Records the sale and ties it to the customer's profile.",
-       "handoff_to": "square-marketing",
-       "result": "Redemptions show if the promo works."
-      },
-      {
-       "time": "5:30 PM",
-       "actor": "square-marketing",
-       "action": "Shows how many customers redeemed the afternoon offer.",
-       "handoff_to": "Owner",
-       "result": "Owner sees whether the promo paid off."
-      }
-     ]
-    }
-   ],
+   "first_step_today": "Sign up for a free 7shifts account at 7shifts.com using your owner email.",
    "weeks": [
     {
      "week": 1,
-     "theme": "Scheduling: quickest payback",
+     "theme": "Get 7shifts running for scheduling (fastest payback)",
      "tasks": [
       {
        "tool_id": "7shifts",
-       "text": "Create the 7shifts account, add the location, and enter the 6 employees with their roles.",
-       "owner": "Owner",
-       "minutes": 45
-      },
-      {
-       "tool_id": "7shifts",
-       "text": "Collect each student's semester availability via the app so you stop texting them one by one.",
-       "owner": "Staff",
-       "minutes": 15
-      },
-      {
-       "tool_id": "7shifts",
-       "text": "Build and publish the first full schedule from the availability data.",
-       "owner": "Owner",
-       "minutes": 45
-      },
-      {
-       "tool_id": "7shifts",
-       "text": "Show staff how to swap and drop shifts in the app at a quick huddle.",
+       "text": "Create your 7shifts account and add Joe's Corner Coffee as a location.",
        "owner": "Owner",
        "minutes": 15
+      },
+      {
+       "tool_id": "7shifts",
+       "text": "In Team, add all 6 employees with their email addresses and roles.",
+       "owner": "Owner",
+       "minutes": 20
+      },
+      {
+       "tool_id": "7shifts",
+       "text": "In Availability, ask each employee to submit their semester class-schedule availability.",
+       "owner": "Owner",
+       "minutes": 10
+      },
+      {
+       "tool_id": "7shifts",
+       "text": "In Schedule, build this week's shifts and click Publish to notify staff.",
+       "owner": "Owner",
+       "minutes": 40
+      },
+      {
+       "tool_id": "7shifts",
+       "text": "Install the 7shifts mobile app on your phone and sign in.",
+       "owner": "Owner",
+       "minutes": 10
       }
      ]
     },
     {
      "week": 2,
-     "theme": "Fill the slow afternoons",
-     "tasks": [
-      {
-       "tool_id": "square-marketing",
-       "text": "Connect Square Marketing to your existing Square account and review your customer list.",
-       "owner": "Owner",
-       "minutes": 30
-      },
-      {
-       "tool_id": "square-marketing",
-       "text": "Create one 2-5pm weekday student offer, such as a discounted drink with a student ID, and send it.",
-       "owner": "Owner",
-       "minutes": 45
-      },
-      {
-       "tool_id": "7shifts",
-       "text": "Tell staff to use shift swaps in the app for all coverage; stop handling it by text.",
-       "owner": "Owner",
-       "minutes": 10
-      },
-      {
-       "tool_id": null,
-       "text": "Ask staff to mention the afternoon offer at the counter.",
-       "owner": "Staff",
-       "minutes": 10
-      }
-     ]
-    },
-    {
-     "week": 3,
-     "theme": "Wake up Instagram",
-     "tasks": [
-      {
-       "tool_id": "meta-business-suite",
-       "text": "Link your Instagram account to Meta Business Suite and set up the content planner.",
-       "owner": "Owner",
-       "minutes": 30
-      },
-      {
-       "tool_id": "meta-business-suite",
-       "text": "Have a student employee take 10 photos and short videos of drinks and the shop during a quiet shift.",
-       "owner": "Staff",
-       "minutes": 30
-      },
-      {
-       "tool_id": "meta-business-suite",
-       "text": "Schedule 3 posts for the week, including one about the afternoon offer.",
-       "owner": "Owner",
-       "minutes": 30
-      },
-      {
-       "tool_id": "square-marketing",
-       "text": "Check redemptions from the first offer and tweak the wording or discount.",
-       "owner": "Owner",
-       "minutes": 20
-      }
-     ]
-    },
-    {
-     "week": 4,
-     "theme": "Measure and tune",
+     "theme": "Staff adoption and weekday afternoon offer",
      "tasks": [
       {
        "tool_id": "7shifts",
-       "text": "Count the hours spent on scheduling this month versus the earlier 4 hours per week.",
+       "text": "Have staff install the 7shifts app and test the Shift Swap and Cover feature.",
+       "owner": "Manager",
+       "minutes": 30
+      },
+      {
+       "tool_id": "7shifts",
+       "text": "In Schedule, save a repeating weekly template from your published schedule.",
        "owner": "Owner",
        "minutes": 15
       },
       {
        "tool_id": "square-marketing",
-       "text": "Compare 2-5pm weekday transactions in Square against the pre-campaign weeks.",
+       "text": "In Square Dashboard, open Marketing and connect your customer directory.",
+       "owner": "Owner",
+       "minutes": 15
+      },
+      {
+       "tool_id": "square-marketing",
+       "text": "In Marketing, create a Loyalty program: a free drink after 8 visits.",
        "owner": "Owner",
        "minutes": 30
+      }
+     ]
+    },
+    {
+     "week": 3,
+     "theme": "Launch the student offer and restart Instagram",
+     "tasks": [
+      {
+       "tool_id": "square-marketing",
+       "text": "In Marketing > Campaigns, send a 2-5pm weekday student discount email.",
+       "owner": "Owner",
+       "minutes": 30
+      },
+      {
+       "tool_id": "square-marketing",
+       "text": "Print a loyalty sign-up QR code and place it at the counter.",
+       "owner": "Front staff",
+       "minutes": 15
       },
       {
        "tool_id": "meta-business-suite",
-       "text": "Review post reach and follower growth, then plan next month's batch of posts.",
+       "text": "Log in to Meta Business Suite and connect your Instagram account.",
        "owner": "Owner",
-       "minutes": 30
+       "minutes": 15
       },
       {
-       "tool_id": null,
-       "text": "Ask staff what is working and what is not, then keep the best parts.",
+       "tool_id": "meta-business-suite",
+       "text": "In Planner, schedule 3 posts for the week, including the afternoon offer.",
        "owner": "Owner",
-       "minutes": 20
+       "minutes": 40
+      },
+      {
+       "tool_id": "meta-business-suite",
+       "text": "Ask a student employee to photograph drinks for upcoming posts.",
+       "owner": "Manager",
+       "minutes": 15
+      }
+     ]
+    },
+    {
+     "week": 4,
+     "theme": "Check results and adjust",
+     "tasks": [
+      {
+       "tool_id": "7shifts",
+       "text": "In 7shifts, review how many shifts were covered through the app instead of texts.",
+       "owner": "Owner",
+       "minutes": 15
+      },
+      {
+       "tool_id": "square-marketing",
+       "text": "In Square Marketing, check campaign redemptions and new loyalty sign-ups.",
+       "owner": "Owner",
+       "minutes": 15
+      },
+      {
+       "tool_id": "meta-business-suite",
+       "text": "In Insights, note which posts earned the most reach and likes.",
+       "owner": "Owner",
+       "minutes": 15
+      },
+      {
+       "tool_id": "meta-business-suite",
+       "text": "In Planner, schedule next month's posts using your best-performing post type.",
+       "owner": "Owner",
+       "minutes": 30
       }
      ]
     }
    ],
    "success_metrics": [
     {
-     "metric": "Owner hours per week on scheduling and shift coverage",
-     "target": "Under 1 hour, down from 4"
+     "metric": "Weekly owner hours spent on scheduling and shift-cover texts",
+     "target": "Down from 4 hours to 1 hour or less"
     },
     {
-     "metric": "Weekday 2-5pm transactions per day",
-     "target": "2-3 more than the current baseline"
+     "metric": "Weekday 2-5pm transactions in Square",
+     "target": "2-3 more per day than before the offer"
     },
     {
      "metric": "Instagram posts published per week",
-     "target": "3 per week"
-    },
-    {
-     "metric": "Afternoon offer redemptions per week",
-     "target": "15 or more by week 4"
+     "target": "At least 3 posts every week"
     }
-   ]
+   ],
+   "scenarios": []
   }
  }
 }

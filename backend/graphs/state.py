@@ -99,7 +99,7 @@ class VerdictOut(BaseModel):
 
 class PlanTask(BaseModel):
     tool_id: Optional[str] = None
-    text: str
+    text: str = Field(description="ONE concrete setup or usage step, imperative, at most 14 words, naming the exact screen or setting, e.g. 'In Rosie, set call forwarding to start after 3 rings'")
     owner: str = Field(description="who does it, e.g. Owner, Manager, Front staff")
     minutes: int = Field(ge=5, le=480)
 
@@ -107,7 +107,7 @@ class PlanTask(BaseModel):
 class PlanWeek(BaseModel):
     week: int = Field(ge=1, le=4)
     theme: str
-    tasks: list[PlanTask] = Field(description="2 to 5 tasks")
+    tasks: list[PlanTask] = Field(description="2 to 5 steps, in the order to do them")
 
 
 class Metric(BaseModel):
@@ -129,10 +129,11 @@ class Scenario(BaseModel):
 
 
 class PlanOut(BaseModel):
-    first_step_today: str
-    scenarios: list[Scenario] = Field(description="exactly 2 day-in-the-life scenarios showing the approved tools and the owner's existing tools working together")
+    first_step_today: str = Field(description="the single first step to do today, at most 14 words")
     weeks: list[PlanWeek] = Field(description="exactly 4 weeks, week 1 to 4")
-    success_metrics: list[Metric] = Field(description="2 to 4 metrics")
+    success_metrics: list[Metric] = Field(description="2 to 3 checks the owner can count")
+    # Kept for backward compatibility (dashboard preview / adoption refresh); the War Room plan no longer generates them.
+    scenarios: list[Scenario] = Field(default_factory=list, description="leave empty")
 
 
 # ---------- graph state ----------

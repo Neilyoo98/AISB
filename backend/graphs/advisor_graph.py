@@ -240,7 +240,7 @@ async def adoption_planner(state: AdvisorState):
         plan = out.model_dump()
         plan["weeks"] = plan["weeks"][:4]
         plan["success_metrics"] = plan["success_metrics"][:4]
-        plan["scenarios"] = [sc | {"steps": sc["steps"][:7]} for sc in plan.get("scenarios", [])[:2]]
+        plan["scenarios"] = []  # War Room plans are step-by-step only; no hypothetical day-in-the-life cases
         for w in plan["weeks"]:
             w["tasks"] = w["tasks"][:5]
             for t in w["tasks"]:

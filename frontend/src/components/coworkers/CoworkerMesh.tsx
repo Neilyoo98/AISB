@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo } from "react";
+import { useLogFollow } from "@/components/ui";
 import { Bot, Moon, User } from "lucide-react";
 import { cn } from "@/lib/api";
 import type { Tool } from "@/lib/types";
@@ -32,10 +33,8 @@ export function CoworkerMesh({ view, employees, catalog }: { view: CoworkerView;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [running, beats.length]);
 
-  const logRef = useRef<HTMLOListElement>(null);
-  useEffect(() => {
-    logRef.current?.querySelector<HTMLElement>(`[data-step="${p.i}"]`)?.scrollIntoView({ block: "nearest" });
-  }, [p.i]);
+  // Follow the current step inside the log box only (never scrolls the page; pauses after a manual scroll).
+  const logRef = useLogFollow<HTMLOListElement>(p.i);
 
   const nodes: MeshNode[] = layout.nodes.map((n) => {
     let icon: React.ReactNode = <User size={14} />;

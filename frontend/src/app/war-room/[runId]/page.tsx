@@ -8,7 +8,6 @@ import { api, money } from "@/lib/api";
 import type { Business, Tool, User } from "@/lib/types";
 import { useRunStream } from "@/hooks/useRunStream";
 import { AppHeader, FlowStepper, Spinner, useTitle } from "@/components/ui";
-import { ToolsGraph } from "@/components/agent-graph";
 import { AdvisorTeamReplay } from "@/components/advisor-replay";
 import { useAdoptions } from "@/hooks/useAdoptions";
 import { MeshPanel, PainCards, Pipeline, PlanView, ProfileCard, ScoutGrid, Section, StackPanel } from "@/components/war-room";
@@ -36,16 +35,33 @@ export default function WarRoom() {
     if (view.stack) setSelected(new Set(view.stack.tool_ids));
   }, [view.stack]);
 
-  // follow the newest section while the run is streaming
+  // Follow the newest section ONLY while the run is streaming and the owner isn't scrolling themselves;
+  // never auto-scroll once the run is done (that fought the user's own scrolling).
   const sectionCount = [view.profile, view.pains.length, view.meshStarted, view.stack, view.plan].filter(Boolean).length;
   const firstRender = useRef(true);
+  const lastUserScroll = useRef(0);
+  useEffect(() => {
+    const mark = () => (lastUserScroll.current = Date.now());
+    const onKey = (e: KeyboardEvent) => {
+      if (["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", " "].includes(e.key)) mark();
+    };
+    window.addEventListener("wheel", mark, { passive: true });
+    window.addEventListener("touchmove", mark, { passive: true });
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("wheel", mark);
+      window.removeEventListener("touchmove", mark);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, []);
   useEffect(() => {
     if (firstRender.current) {
       firstRender.current = false;
       return;
     }
-    if (view.status !== "running" && view.status !== "awaiting_approval") return;
-    const ids = ["s-profile", "s-pains", "s-mesh", "s-stack", view.plan?.scenarios?.length ? "s-flow" : "s-plan"];
+    if (view.status !== "running") return;
+    if (Date.now() - lastUserScroll.current < 2000) return;
+    const ids = ["s-profile", "s-pains", "s-mesh", "s-stack", "s-plan"];
     const el = document.getElementById(ids[sectionCount - 1]);
     el?.scrollIntoView({ behavior: "smooth", block: "start" });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -213,17 +229,6 @@ export default function WarRoom() {
             </div>
           )}
 
-          {view.plan && (view.plan.scenarios?.length ?? 0) > 0 && (
-            <Section
-              id="s-flow"
-              eyebrow="A typical day"
-              title="Your tools, working together"
-              help="How your new tools hand work to each other and to the tools you already use."
-            >
-              <ToolsGraph scenarios={view.plan.scenarios!} catalog={catalog} approved={view.approved || []} />
-            </Section>
-          )}
-
           {(view.status === "complete" || view.status === "awaiting_approval") && (
             <details className="card group p-5">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-3 font-semibold">
@@ -237,7 +242,7 @@ export default function WarRoom() {
           )}
 
           {view.plan && (
-            <Section id="s-plan" eyebrow="Your plan" title="Your 30-day plan">
+            <Section id="s-plan" eyebrow="Your plan" title="Your setup plan, step by step">
               <PlanView plan={view.plan} catalog={catalog} />
               {view.memorySaved && (
                 <div className="mt-4 flex flex-col gap-3 rounded-2xl bg-stone-900 p-5 text-white sm:flex-row sm:items-center sm:justify-between">

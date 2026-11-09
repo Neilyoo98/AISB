@@ -48,6 +48,28 @@ type Dash = {
   runs: { id: string; status: string; mode: string; created_at: string }[];
 };
 
+type Me = { user: User; account_role?: "owner" | "employee"; person_id?: string | null };
+type PersonTool = { tool_id: string | null; name: string; source: "uses" | "approved_request" | "self_declared" | "assigned_task"; catalog: boolean; monthly_cost: number | null };
+type PersonDetail = {
+  id: string;
+  name: string;
+  role: string;
+  ai_tools: PersonTool[];
+  requests: { id: number; tool_id: string; name: string; status: string; created_at: string }[];
+};
+
+const TOOL_SOURCE: Record<PersonTool["source"], string> = {
+  uses: "You use it",
+  approved_request: "Approved for you",
+  self_declared: "You added it",
+  assigned_task: "Used in your tasks",
+};
+const REQUEST_STATUS: Record<string, { label: string; cls: string }> = {
+  pending: { label: "Waiting for approval", cls: "border-amber-200 bg-amber-50 text-amber-800" },
+  approved: { label: "Approved", cls: "border-emerald-200 bg-emerald-50 text-emerald-800" },
+  denied: { label: "Not approved", cls: "border-stone-200 bg-stone-50 text-stone-600" },
+};
+
 const weekOf = (t: Task) => (t.week && t.week > 0 ? t.week : 0);
 const weekLabel = (w: number) => (w === 0 ? "Setup" : `Week ${w}`);
 
@@ -63,12 +85,14 @@ export default function Dashboard() {
   const [publishing, setPublishing] = useState(false);
   const [taskErr, setTaskErr] = useState<string | null>(null);
   const { data: adoptions } = useAdoptions();
+  const [me, setMe] = useState<Me | null>(null);
 
   const load = () => {
     setErr(null);
-    api<Dash>("/dashboard")
-      .then((x) => {
-        if (!x.business && !x.user.is_demo) router.replace("/onboard");
+    Promise.all([api<Dash>("/dashboard"), api<Me>("/me")])
+      .then(([x, m]) => {
+        setMe(m);
+        if (!x.business && !x.user.is_demo && m.account_role !== "employee") router.replace("/onboard");
         else setD(x);
       })
       .catch((e) => setErr(e.message));
@@ -134,6 +158,8 @@ export default function Dashboard() {
         <main className="mx-auto max-w-6xl px-4 pt-8">{err ? <PageState kind="error" message={err} onRetry={load} /> : <PageState kind="loading" />}</main>
       </div>
     );
+
+  if (me?.account_role === "employee") return <EmployeeDashboard d={d} me={me} onToggle={toggle} />;
 
   const { user, business: b, latest } = d;
   const done = d.tasks.filter((t) => t.done).length;
@@ -340,12 +366,12 @@ export default function Dashboard() {
                   <span className="mt-3 font-semibold">Browse AI tools</span>
                   <span className="mt-1 text-sm text-stone-600">Search, filter and compare real tools.</span>
                 </Link>
-                <Link href="/agents" className={cardLink}>
+                <Link href="/team?tab=tasks" className={cardLink}>
                   <span className="grid h-10 w-10 place-items-center rounded-xl bg-emerald-50 text-emerald-700">
                     <Network size={20} />
                   </span>
-                  <span className="mt-3 font-semibold">See how agents work</span>
-                  <span className="mt-1 text-sm text-stone-600">Watch AI agents hand work to each other.</span>
+                  <span className="mt-3 font-semibold">Give your team a task</span>
+                  <span className="mt-1 text-sm text-stone-600">AI coworkers plan who does what.</span>
                 </Link>
               </div>
             </section>
@@ -419,7 +445,7 @@ export default function Dashboard() {
                   <section>
                     <div className="mb-3 flex items-end justify-between gap-2">
                       <h2 className="font-semibold">How your tools work together</h2>
-                      <Link href="/agents" className="flex items-center gap-1 text-sm font-semibold text-emerald-700 hover:underline">
+                      <Link href="/team?tab=tasks" className="flex items-center gap-1 text-sm font-semibold text-emerald-700 hover:underline">
                         Full view <ArrowRight size={14} />
                       </Link>
                     </div>
@@ -455,6 +481,134 @@ export default function Dashboard() {
             </div>
           </>
         )}
+      </main>
+    </div>
+  );
+}
+
+/** What an employee sees: their own tasks, the AI tools they use, and their tool requests. No spending or owner actions. */
+function EmployeeDashboard({ d, me, onToggle }: { d: Dash; me: Me; onToggle: (t: Task) => void }) {
+  const [person, setPerson] = useState<PersonDetail | null>(null);
+  const [personErr, setPersonErr] = useState<string | null>(null);
+  const [welcome, setWelcome] = useState(false);
+  const firstName = me.user.name.split(" ")[0];
+  const b = d.business;
+
+  useEffect(() => {
+    setWelcome(new URLSearchParams(window.location.search).get("welcome") === "1");
+    if (!me.person_id) return;
+    api<PersonDetail>(`/people/${me.person_id}`)
+      .then(setPerson)
+      .catch((e) => setPersonErr(e.message));
+  }, [me.person_id]);
+
+  const mine = d.tasks.filter((t) => t.assignee && t.assignee.id === me.person_id);
+  const team = d.tasks.filter((t) => !t.assignee && !t.done);
+  const tools = person?.ai_tools ?? [];
+  const requests = person?.requests ?? [];
+
+  const taskRow = (t: Task) => (
+    <li key={t.id}>
+      <button onClick={() => onToggle(t)} className="flex w-full items-start gap-3 rounded-lg px-2 py-2 text-left hover:bg-stone-50" aria-pressed={t.done}>
+        <span className={cn("mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-md border transition-colors", t.done ? "border-emerald-600 bg-emerald-600 text-white" : "border-stone-300 bg-white")}>
+          {t.done && <Check size={14} strokeWidth={3} />}
+        </span>
+        <span className={cn("min-w-0 flex-1 text-sm leading-snug", t.done && "text-stone-400 line-through")}>{t.text}</span>
+      </button>
+    </li>
+  );
+
+  return (
+    <div className="min-h-dvh pb-24">
+      <AppHeader businessName={b?.name} isDemo={me.user.is_demo} />
+      <main className="mx-auto max-w-5xl px-4 pt-8">
+        <PageHeader
+          eyebrow={person?.role || "Employee"}
+          title={`Hi ${firstName}${b?.name ? ` — ${b.name}` : ""}`}
+          actions={
+            <Link href="/tools" className="btn-primary">
+              <Compass size={18} /> Find a tool to request
+            </Link>
+          }
+        />
+        {welcome && (
+          <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm text-emerald-950">
+            <b>You&apos;re on the team.</b> Your tasks show up here. If an AI tool would help your work, find it in Discover and press <b>Request</b>.
+          </div>
+        )}
+
+        <div className="mt-6 grid gap-6 lg:grid-cols-[1.2fr_1fr]">
+          <section className="card p-6">
+            <h2 className="font-semibold">My tasks</h2>
+            {mine.length === 0 ? (
+              <p className="mt-3 text-sm text-stone-500">Nothing assigned to you yet.</p>
+            ) : (
+              <ul className="mt-3 space-y-1">{mine.map(taskRow)}</ul>
+            )}
+            {team.length > 0 && (
+              <>
+                <div className="mt-5 flex items-center gap-2 border-t border-stone-100 pt-4">
+                  <h3 className="text-sm font-semibold text-stone-700">Team plan</h3>
+                  <HelpTip>Open tasks on your business&apos;s plan that aren&apos;t assigned to anyone yet.</HelpTip>
+                </div>
+                <ul className="mt-2 space-y-1">{team.slice(0, 8).map(taskRow)}</ul>
+              </>
+            )}
+          </section>
+
+          <div className="space-y-6">
+            <section className="card p-6">
+              <h2 className="font-semibold">My AI tools</h2>
+              {personErr ? (
+                <p className="mt-3 text-sm text-red-700">{personErr}</p>
+              ) : !person ? (
+                <div className="mt-3 h-16 animate-pulse rounded-xl bg-stone-100" />
+              ) : tools.length === 0 ? (
+                <p className="mt-3 text-sm text-stone-500">No AI tools yet. Request one from Discover.</p>
+              ) : (
+                <ul className="mt-3 divide-y divide-stone-100">
+                  {tools.map((t) => (
+                    <li key={`${t.tool_id ?? t.name}`} className="flex items-center justify-between gap-3 py-2.5">
+                      <span className="min-w-0">
+                        {t.catalog && t.tool_id ? (
+                          <Link href={`/tools/${t.tool_id}`} className="block truncate text-sm font-medium hover:underline">
+                            {t.name}
+                          </Link>
+                        ) : (
+                          <span className="block truncate text-sm font-medium">{t.name}</span>
+                        )}
+                        <span className="block text-xs text-stone-500">{TOOL_SOURCE[t.source]}</span>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+
+            <section className="card p-6">
+              <h2 className="font-semibold">My requests</h2>
+              {!person ? (
+                <div className="mt-3 h-12 animate-pulse rounded-xl bg-stone-100" />
+              ) : requests.length === 0 ? (
+                <p className="mt-3 text-sm text-stone-500">You haven&apos;t requested any tools.</p>
+              ) : (
+                <ul className="mt-3 space-y-2">
+                  {requests.map((r) => {
+                    const s = REQUEST_STATUS[r.status] || { label: r.status, cls: "border-stone-200 bg-stone-50 text-stone-600" };
+                    return (
+                      <li key={r.id} className="flex items-center justify-between gap-3 text-sm">
+                        <Link href={`/tools/${r.tool_id}`} className="min-w-0 truncate font-medium hover:underline">
+                          {r.name}
+                        </Link>
+                        <span className={cn("chip shrink-0", s.cls)}>{s.label}</span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </section>
+          </div>
+        </div>
       </main>
     </div>
   );

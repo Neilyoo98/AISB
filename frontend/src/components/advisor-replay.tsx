@@ -1,6 +1,6 @@
 "use client";
 // The StackSmith advisor-team replay (moved out of the Agents page so the War Room can host it).
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   BadgeDollarSign, BookOpen, BrainCircuit, Calculator, ClipboardList, Hand, PiggyBank, Plug, Search, Smile,
@@ -10,7 +10,7 @@ import type { RunEvent, Tool } from "@/lib/types";
 import { AGENT_LABEL, AGENT_LINKS, AGENT_NODES, PHASES, VIEW, adoptionHops, hopsFromEvents, type AgentIcon, type Hop } from "@/lib/agents";
 import { Graph, PlayerControls, TourCallouts, usePlayer, type MeshNode } from "@/components/agent-graph";
 import { useAdoptions } from "@/hooks/useAdoptions";
-import { PageState } from "@/components/ui";
+import { PageState, useLogFollow } from "@/components/ui";
 
 const ICONS: Record<AgentIcon, typeof Search> = {
   intake: BookOpen,
@@ -57,11 +57,8 @@ export function AdvisorTeamReplay({ runId, catalog, showWarRoomLink = false }: {
     [events, names, adoptions],
   );
   const p = usePlayer(hops.length, 2200);
-  const logRef = useRef<HTMLOListElement>(null);
-
-  useEffect(() => {
-    logRef.current?.querySelector<HTMLElement>(`[data-step="${p.i}"]`)?.scrollIntoView({ block: "nearest" });
-  }, [p.i]);
+  // Follow the current step inside the log box only (scrollIntoView would scroll the whole page while the user scrolls).
+  const logRef = useLogFollow<HTMLOListElement>(p.i);
 
   if (!events) return <PageState kind="loading" />;
   if (!hops.length) return <p className="text-sm text-stone-500">Nothing to replay for this analysis yet.</p>;
@@ -69,7 +66,7 @@ export function AdvisorTeamReplay({ runId, catalog, showWarRoomLink = false }: {
   const phaseNow = cur?.phase;
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
+    <div className="grid gap-4 lg:grid-cols-[1fr_320px] [&>*]:min-w-0">
       <div className="space-y-3">
         <Graph
           nodes={MESH_NODES}

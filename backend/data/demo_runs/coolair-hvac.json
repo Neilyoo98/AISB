@@ -813,230 +813,156 @@
    "agent": "planner",
    "data": {
     "plan": {
-     "first_step_today": "Sign up for Rosie AI Answering (about 30 minutes) and forward your business line to Rosie after 3 rings so no summer call goes unanswered.",
-     "scenarios": [
-      {
-       "title": "A no-cooling call while the crew is on a roof",
-       "steps": [
-        {
-         "time": "1:15 PM",
-         "actor": "Customer",
-         "action": "Calls the business line with no AC in 95-degree heat; the techs are all on jobs.",
-         "handoff_to": "rosie",
-         "result": "Call is caught instead of going to voicemail."
-        },
-        {
-         "time": "1:16 PM",
-         "actor": "rosie",
-         "action": "Answers after 3 rings, collects name, address and problem, and offers to pass the details to the team.",
-         "handoff_to": "Owner",
-         "result": "Lead captured with all details in two minutes."
-        },
-        {
-         "time": "1:30 PM",
-         "actor": "Owner",
-         "action": "Reads Rosie's message between jobs and creates the request in Jobber.",
-         "handoff_to": "jobber",
-         "result": "Request is logged without a callback game."
-        },
-        {
-         "time": "1:35 PM",
-         "actor": "jobber",
-         "action": "Schedules the visit for 4 PM and sends the customer a confirmation.",
-         "handoff_to": "google-calendar",
-         "result": "Customer knows when to expect a tech."
-        },
-        {
-         "time": "4:40 PM",
-         "actor": "Staff",
-         "action": "Tech builds the repair quote in Jobber on a phone and the customer approves it on the spot.",
-         "handoff_to": "jobber",
-         "result": "Quote done on site, no typing at night."
-        },
-        {
-         "time": "5:30 PM",
-         "actor": "jobber",
-         "action": "Sends the invoice with an online pay link after the job is marked complete.",
-         "handoff_to": "quickbooks",
-         "result": "Customer pays faster, and the payment syncs to the books."
-        }
-       ]
-      },
-      {
-       "title": "An evening that used to be quote-typing time",
-       "steps": [
-        {
-         "time": "9:10 AM",
-         "actor": "Customer",
-         "action": "Requests a replacement-system estimate; Rosie takes the call while the owner is on a job.",
-         "handoff_to": "rosie",
-         "result": "Installation lead isn't lost to a competitor."
-        },
-        {
-         "time": "9:12 AM",
-         "actor": "rosie",
-         "action": "Captures the details and sends the owner a summary.",
-         "handoff_to": "Owner",
-         "result": "Owner sees the lead within minutes."
-        },
-        {
-         "time": "12:00 PM",
-         "actor": "Owner",
-         "action": "Books the site visit in Jobber, which shows up on Google Calendar.",
-         "handoff_to": "google-calendar",
-         "result": "Visit is on the schedule with no double entry."
-        },
-        {
-         "time": "3:00 PM",
-         "actor": "Owner",
-         "action": "Builds a good/better/best quote from saved Jobber templates on site and sends it.",
-         "handoff_to": "jobber",
-         "result": "Quote sent in 15 minutes, not typed at night."
-        },
-        {
-         "time": "3:30 PM",
-         "actor": "Customer",
-         "action": "Approves the quote by email and pays the deposit online.",
-         "handoff_to": "quickbooks",
-         "result": "Deposit comes in the same day and syncs to QuickBooks."
-        }
-       ]
-      }
-     ],
+     "first_step_today": "Sign up for a Rosie AI Answering account at heyrosie.com",
      "weeks": [
       {
        "week": 1,
-       "theme": "Stop missing calls with Rosie",
+       "theme": "Rosie live: stop missing calls",
        "tasks": [
         {
          "tool_id": "rosie",
-         "text": "Sign up, enter business hours, services, service area and emergency rules, and record the greeting",
-         "owner": "Owner",
-         "minutes": 30
-        },
-        {
-         "tool_id": "rosie",
-         "text": "Forward your business line to Rosie after 3 rings and place 3 test calls",
+         "text": "Sign up at heyrosie.com and enter CoolAir HVAC's business name, hours and services.",
          "owner": "Owner",
          "minutes": 20
         },
         {
          "tool_id": "rosie",
-         "text": "Tell the techs that calls now go to Rosie and where to read her messages",
+         "text": "In Rosie, enter your service area, pricing guidance and emergency-call rules for no-cooling calls.",
+         "owner": "Owner",
+         "minutes": 20
+        },
+        {
+         "tool_id": "rosie",
+         "text": "In your phone carrier settings, set call forwarding to Rosie after 3 rings.",
          "owner": "Owner",
          "minutes": 15
         },
         {
          "tool_id": "rosie",
-         "text": "Review each day's Rosie call summaries and fix any wrong answers in her setup",
+         "text": "In Rosie, set call summaries to text your phone after every call.",
          "owner": "Owner",
-         "minutes": 30
+         "minutes": 10
+        },
+        {
+         "tool_id": "rosie",
+         "text": "Call your business line from another phone and test the full Rosie answering flow.",
+         "owner": "Owner",
+         "minutes": 15
         }
        ]
       },
       {
        "week": 2,
-       "theme": "Set up Jobber: clients, calendar, quote templates",
+       "theme": "Jobber core setup: quotes first",
        "tasks": [
         {
          "tool_id": "jobber",
-         "text": "Create the Jobber account, import your customer list, and connect Google Calendar and QuickBooks",
+         "text": "Sign up for Jobber and add company name, logo and service area under Settings.",
          "owner": "Owner",
-         "minutes": 90
+         "minutes": 30
         },
         {
          "tool_id": "jobber",
-         "text": "Build quote templates for the 5 most common repairs and a good/better/best replacement",
+         "text": "In Jobber, create quote templates for your 5 most common HVAC jobs.",
          "owner": "Owner",
          "minutes": 60
         },
         {
          "tool_id": "jobber",
-         "text": "Turn on online payments and set up the invoice template with a pay link",
-         "owner": "Manager",
+         "text": "In Jobber, import your customer list from QuickBooks using Settings, then Import Data.",
+         "owner": "Owner",
          "minutes": 30
+        },
+        {
+         "tool_id": "jobber",
+         "text": "In Jobber, turn on Google Calendar sync under Settings, Calendar Sync.",
+         "owner": "Owner",
+         "minutes": 15
         }
        ]
       },
       {
        "week": 3,
-       "theme": "Go live with quotes and invoices",
+       "theme": "Jobber invoicing, payments and team",
        "tasks": [
         {
          "tool_id": "jobber",
-         "text": "Train the techs to open jobs and send quotes from the Jobber mobile app on site",
+         "text": "In Jobber, turn on Jobber Payments and connect your business bank account.",
+         "owner": "Owner",
+         "minutes": 30
+        },
+        {
+         "tool_id": "jobber",
+         "text": "In Jobber, enable automatic invoice reminders for unpaid invoices under Settings, Invoice follow-ups.",
+         "owner": "Owner",
+         "minutes": 15
+        },
+        {
+         "tool_id": "jobber",
+         "text": "In Jobber, connect QuickBooks Online under Apps and Integrations.",
+         "owner": "Owner",
+         "minutes": 20
+        },
+        {
+         "tool_id": "jobber",
+         "text": "Invite your 4 technicians to Jobber and show them the mobile app.",
          "owner": "Owner",
          "minutes": 45
         },
         {
          "tool_id": "jobber",
-         "text": "Send every new quote from Jobber and stop writing them on paper",
+         "text": "Send your next real quote from a Jobber template and email the invoice from Jobber.",
          "owner": "Owner",
-         "minutes": 30
-        },
-        {
-         "tool_id": "jobber",
-         "text": "Send every invoice from Jobber with a pay link and turn on automatic payment reminders",
-         "owner": "Front staff",
-         "minutes": 30
-        },
-        {
-         "tool_id": "rosie",
-         "text": "Create Jobber requests from Rosie's messages and note any calls she handled badly",
-         "owner": "Front staff",
          "minutes": 20
         }
        ]
       },
       {
        "week": 4,
-       "theme": "Measure results and adjust",
+       "theme": "Check results and adjust",
        "tasks": [
         {
          "tool_id": "rosie",
-         "text": "Count calls Rosie answered and how many became booked jobs",
+         "text": "In Rosie, review call logs and fix any wrong answers in your business info.",
          "owner": "Owner",
          "minutes": 30
         },
         {
          "tool_id": "jobber",
-         "text": "Compare hours spent on quotes this week with your old 6 hours",
+         "text": "In Jobber, open Reports and note quotes sent, quotes approved and unpaid invoices.",
          "owner": "Owner",
          "minutes": 20
         },
         {
          "tool_id": "jobber",
-         "text": "Check the average days to payment on Jobber invoices against your old paper invoices",
-         "owner": "Front staff",
-         "minutes": 20
-        },
-        {
-         "tool_id": null,
-         "text": "Decide what to tweak or expand next, such as follow-ups or more quote templates",
+         "text": "In Jobber, edit quote templates that still need manual changes on every job.",
          "owner": "Owner",
          "minutes": 30
+        },
+        {
+         "tool_id": "jobber",
+         "text": "Ask technicians what slows them in the Jobber app and fix one issue.",
+         "owner": "Owner",
+         "minutes": 20
         }
        ]
       }
      ],
      "success_metrics": [
       {
-       "metric": "Calls answered by Rosie that become booked jobs per week",
-       "target": "3+ per week"
+       "metric": "Calls answered by Rosie or staff, out of total calls",
+       "target": "95% or more answered"
       },
       {
        "metric": "Owner hours per week spent writing and typing quotes",
-       "target": "Under 2 hours (from 6)"
+       "target": "2 hours or less, down from 6"
       },
       {
-       "metric": "Average days from invoice sent to payment",
-       "target": "Under 7 days"
-      },
-      {
-       "metric": "Missed calls per week",
-       "target": "Fewer than 3"
+       "metric": "Invoices sent from Jobber and paid online within 14 days",
+       "target": "All new invoices sent digitally, 60% paid within 14 days"
       }
-     ]
+     ],
+     "scenarios": []
     },
     "approved_tool_ids": [
      "rosie",
@@ -1685,230 +1611,156 @@
    "jobber"
   ],
   "plan": {
-   "first_step_today": "Sign up for Rosie AI Answering (about 30 minutes) and forward your business line to Rosie after 3 rings so no summer call goes unanswered.",
-   "scenarios": [
-    {
-     "title": "A no-cooling call while the crew is on a roof",
-     "steps": [
-      {
-       "time": "1:15 PM",
-       "actor": "Customer",
-       "action": "Calls the business line with no AC in 95-degree heat; the techs are all on jobs.",
-       "handoff_to": "rosie",
-       "result": "Call is caught instead of going to voicemail."
-      },
-      {
-       "time": "1:16 PM",
-       "actor": "rosie",
-       "action": "Answers after 3 rings, collects name, address and problem, and offers to pass the details to the team.",
-       "handoff_to": "Owner",
-       "result": "Lead captured with all details in two minutes."
-      },
-      {
-       "time": "1:30 PM",
-       "actor": "Owner",
-       "action": "Reads Rosie's message between jobs and creates the request in Jobber.",
-       "handoff_to": "jobber",
-       "result": "Request is logged without a callback game."
-      },
-      {
-       "time": "1:35 PM",
-       "actor": "jobber",
-       "action": "Schedules the visit for 4 PM and sends the customer a confirmation.",
-       "handoff_to": "google-calendar",
-       "result": "Customer knows when to expect a tech."
-      },
-      {
-       "time": "4:40 PM",
-       "actor": "Staff",
-       "action": "Tech builds the repair quote in Jobber on a phone and the customer approves it on the spot.",
-       "handoff_to": "jobber",
-       "result": "Quote done on site, no typing at night."
-      },
-      {
-       "time": "5:30 PM",
-       "actor": "jobber",
-       "action": "Sends the invoice with an online pay link after the job is marked complete.",
-       "handoff_to": "quickbooks",
-       "result": "Customer pays faster, and the payment syncs to the books."
-      }
-     ]
-    },
-    {
-     "title": "An evening that used to be quote-typing time",
-     "steps": [
-      {
-       "time": "9:10 AM",
-       "actor": "Customer",
-       "action": "Requests a replacement-system estimate; Rosie takes the call while the owner is on a job.",
-       "handoff_to": "rosie",
-       "result": "Installation lead isn't lost to a competitor."
-      },
-      {
-       "time": "9:12 AM",
-       "actor": "rosie",
-       "action": "Captures the details and sends the owner a summary.",
-       "handoff_to": "Owner",
-       "result": "Owner sees the lead within minutes."
-      },
-      {
-       "time": "12:00 PM",
-       "actor": "Owner",
-       "action": "Books the site visit in Jobber, which shows up on Google Calendar.",
-       "handoff_to": "google-calendar",
-       "result": "Visit is on the schedule with no double entry."
-      },
-      {
-       "time": "3:00 PM",
-       "actor": "Owner",
-       "action": "Builds a good/better/best quote from saved Jobber templates on site and sends it.",
-       "handoff_to": "jobber",
-       "result": "Quote sent in 15 minutes, not typed at night."
-      },
-      {
-       "time": "3:30 PM",
-       "actor": "Customer",
-       "action": "Approves the quote by email and pays the deposit online.",
-       "handoff_to": "quickbooks",
-       "result": "Deposit comes in the same day and syncs to QuickBooks."
-      }
-     ]
-    }
-   ],
+   "first_step_today": "Sign up for a Rosie AI Answering account at heyrosie.com",
    "weeks": [
     {
      "week": 1,
-     "theme": "Stop missing calls with Rosie",
+     "theme": "Rosie live: stop missing calls",
      "tasks": [
       {
        "tool_id": "rosie",
-       "text": "Sign up, enter business hours, services, service area and emergency rules, and record the greeting",
-       "owner": "Owner",
-       "minutes": 30
-      },
-      {
-       "tool_id": "rosie",
-       "text": "Forward your business line to Rosie after 3 rings and place 3 test calls",
+       "text": "Sign up at heyrosie.com and enter CoolAir HVAC's business name, hours and services.",
        "owner": "Owner",
        "minutes": 20
       },
       {
        "tool_id": "rosie",
-       "text": "Tell the techs that calls now go to Rosie and where to read her messages",
+       "text": "In Rosie, enter your service area, pricing guidance and emergency-call rules for no-cooling calls.",
+       "owner": "Owner",
+       "minutes": 20
+      },
+      {
+       "tool_id": "rosie",
+       "text": "In your phone carrier settings, set call forwarding to Rosie after 3 rings.",
        "owner": "Owner",
        "minutes": 15
       },
       {
        "tool_id": "rosie",
-       "text": "Review each day's Rosie call summaries and fix any wrong answers in her setup",
+       "text": "In Rosie, set call summaries to text your phone after every call.",
        "owner": "Owner",
-       "minutes": 30
+       "minutes": 10
+      },
+      {
+       "tool_id": "rosie",
+       "text": "Call your business line from another phone and test the full Rosie answering flow.",
+       "owner": "Owner",
+       "minutes": 15
       }
      ]
     },
     {
      "week": 2,
-     "theme": "Set up Jobber: clients, calendar, quote templates",
+     "theme": "Jobber core setup: quotes first",
      "tasks": [
       {
        "tool_id": "jobber",
-       "text": "Create the Jobber account, import your customer list, and connect Google Calendar and QuickBooks",
+       "text": "Sign up for Jobber and add company name, logo and service area under Settings.",
        "owner": "Owner",
-       "minutes": 90
+       "minutes": 30
       },
       {
        "tool_id": "jobber",
-       "text": "Build quote templates for the 5 most common repairs and a good/better/best replacement",
+       "text": "In Jobber, create quote templates for your 5 most common HVAC jobs.",
        "owner": "Owner",
        "minutes": 60
       },
       {
        "tool_id": "jobber",
-       "text": "Turn on online payments and set up the invoice template with a pay link",
-       "owner": "Manager",
+       "text": "In Jobber, import your customer list from QuickBooks using Settings, then Import Data.",
+       "owner": "Owner",
        "minutes": 30
+      },
+      {
+       "tool_id": "jobber",
+       "text": "In Jobber, turn on Google Calendar sync under Settings, Calendar Sync.",
+       "owner": "Owner",
+       "minutes": 15
       }
      ]
     },
     {
      "week": 3,
-     "theme": "Go live with quotes and invoices",
+     "theme": "Jobber invoicing, payments and team",
      "tasks": [
       {
        "tool_id": "jobber",
-       "text": "Train the techs to open jobs and send quotes from the Jobber mobile app on site",
+       "text": "In Jobber, turn on Jobber Payments and connect your business bank account.",
+       "owner": "Owner",
+       "minutes": 30
+      },
+      {
+       "tool_id": "jobber",
+       "text": "In Jobber, enable automatic invoice reminders for unpaid invoices under Settings, Invoice follow-ups.",
+       "owner": "Owner",
+       "minutes": 15
+      },
+      {
+       "tool_id": "jobber",
+       "text": "In Jobber, connect QuickBooks Online under Apps and Integrations.",
+       "owner": "Owner",
+       "minutes": 20
+      },
+      {
+       "tool_id": "jobber",
+       "text": "Invite your 4 technicians to Jobber and show them the mobile app.",
        "owner": "Owner",
        "minutes": 45
       },
       {
        "tool_id": "jobber",
-       "text": "Send every new quote from Jobber and stop writing them on paper",
+       "text": "Send your next real quote from a Jobber template and email the invoice from Jobber.",
        "owner": "Owner",
-       "minutes": 30
-      },
-      {
-       "tool_id": "jobber",
-       "text": "Send every invoice from Jobber with a pay link and turn on automatic payment reminders",
-       "owner": "Front staff",
-       "minutes": 30
-      },
-      {
-       "tool_id": "rosie",
-       "text": "Create Jobber requests from Rosie's messages and note any calls she handled badly",
-       "owner": "Front staff",
        "minutes": 20
       }
      ]
     },
     {
      "week": 4,
-     "theme": "Measure results and adjust",
+     "theme": "Check results and adjust",
      "tasks": [
       {
        "tool_id": "rosie",
-       "text": "Count calls Rosie answered and how many became booked jobs",
+       "text": "In Rosie, review call logs and fix any wrong answers in your business info.",
        "owner": "Owner",
        "minutes": 30
       },
       {
        "tool_id": "jobber",
-       "text": "Compare hours spent on quotes this week with your old 6 hours",
+       "text": "In Jobber, open Reports and note quotes sent, quotes approved and unpaid invoices.",
        "owner": "Owner",
        "minutes": 20
       },
       {
        "tool_id": "jobber",
-       "text": "Check the average days to payment on Jobber invoices against your old paper invoices",
-       "owner": "Front staff",
-       "minutes": 20
-      },
-      {
-       "tool_id": null,
-       "text": "Decide what to tweak or expand next, such as follow-ups or more quote templates",
+       "text": "In Jobber, edit quote templates that still need manual changes on every job.",
        "owner": "Owner",
        "minutes": 30
+      },
+      {
+       "tool_id": "jobber",
+       "text": "Ask technicians what slows them in the Jobber app and fix one issue.",
+       "owner": "Owner",
+       "minutes": 20
       }
      ]
     }
    ],
    "success_metrics": [
     {
-     "metric": "Calls answered by Rosie that become booked jobs per week",
-     "target": "3+ per week"
+     "metric": "Calls answered by Rosie or staff, out of total calls",
+     "target": "95% or more answered"
     },
     {
      "metric": "Owner hours per week spent writing and typing quotes",
-     "target": "Under 2 hours (from 6)"
+     "target": "2 hours or less, down from 6"
     },
     {
-     "metric": "Average days from invoice sent to payment",
-     "target": "Under 7 days"
-    },
-    {
-     "metric": "Missed calls per week",
-     "target": "Fewer than 3"
+     "metric": "Invoices sent from Jobber and paid online within 14 days",
+     "target": "All new invoices sent digitally, 60% paid within 14 days"
     }
-   ]
+   ],
+   "scenarios": []
   }
  }
 }

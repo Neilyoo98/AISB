@@ -6,7 +6,7 @@
 // - usePlayer / PlayerControls: step-by-step autoplay ("Step x of y")
 // - ToolsGraph: the business's AI tools handing work to each other (Agents page, dashboard, War Room)
 // - TourCallouts: first-visit numbered annotations over a canvas
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Pause, Play, RotateCcw, Sparkles, User, Wrench, X } from "lucide-react";
@@ -86,18 +86,31 @@ export function Graph({
   const [hover, setHover] = useState<string | null>(null);
   const [open, setOpen] = useState<string | null>(null);
   const pos = useMemo(() => Object.fromEntries(nodes.map((n) => [n.id, n])), [nodes]);
+  // Measured canvas width, used to keep the connection card inside the visible area.
+  const boxRef = useRef<HTMLDivElement>(null);
+  const [boxW, setBoxW] = useState(720);
+  useEffect(() => {
+    const el = boxRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([e]) => setBoxW(e.contentRect.width));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
   const activeKeys = new Set(from ? to.map((t) => `${from}>${t}`) : []);
   const openLink = links.find((l) => key(l) === open);
   const samples = Array.from({ length: 13 }, (_, i) => i / 12);
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-stone-200 bg-stone-50 shadow-[0_1px_2px_rgba(28,25,23,0.04)]" onClick={() => setOpen(null)}>
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-70"
-        style={{ backgroundImage: "linear-gradient(rgba(168,162,158,0.16) 1px, transparent 1px), linear-gradient(90deg, rgba(168,162,158,0.16) 1px, transparent 1px)", backgroundSize: "48px 48px" }}
-      />
-      <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,transparent_45%,#fafaf9_94%)]" />
+    // No overflow-hidden on the frame: connection cards and tour callouts may extend past the canvas edge.
+    // Only the decorative grid/vignette layers are clipped to the rounded frame.
+    <div className="relative rounded-2xl border border-stone-200 bg-stone-50 shadow-[0_1px_2px_rgba(28,25,23,0.04)]" onClick={() => setOpen(null)}>
+      <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl">
+        <div
+          className="absolute inset-0 opacity-70"
+          style={{ backgroundImage: "linear-gradient(rgba(168,162,158,0.16) 1px, transparent 1px), linear-gradient(90deg, rgba(168,162,158,0.16) 1px, transparent 1px)", backgroundSize: "48px 48px" }}
+        />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,transparent_45%,#fafaf9_94%)]" />
+      </div>
 
       <div className="relative flex items-center justify-between px-4 pt-3 sm:px-5">
         <p className="font-mono text-[10px] uppercase tracking-[3px] text-emerald-700">{`// ${title}`}</p>
@@ -118,7 +131,7 @@ export function Graph({
         </div>
       )}
 
-      <div className="relative">
+      <div className="relative" ref={boxRef}>
         <svg viewBox={`0 0 ${w} ${h}`} className="h-auto w-full" role="img" aria-label={label} style={{ overflow: "visible" }}>
           <defs>
             <filter id="mesh-glow" x="-50%" y="-50%" width="200%" height="200%">
@@ -270,6 +283,7 @@ export function Graph({
               at={curve(pos[openLink.from], pos[openLink.to]).at(0.5)}
               w={w}
               h={h}
+              boxW={boxW}
               onClose={() => setOpen(null)}
             />
           )}
@@ -277,7 +291,7 @@ export function Graph({
         {overlay}
       </div>
 
-      <div className="relative flex flex-wrap items-center justify-between gap-2 border-t border-stone-200 bg-white/70 px-4 py-2.5 sm:px-5">
+      <div className="relative flex flex-wrap items-center justify-between gap-2 rounded-b-2xl border-t border-stone-200 bg-white/70 px-4 py-2.5 sm:px-5">
         <span className="font-mono text-[9.5px] uppercase tracking-[1.5px] text-stone-500">Tap a line to see what it carries</span>
         {legend && (
           <span className="flex flex-wrap gap-3">
@@ -294,21 +308,24 @@ export function Graph({
   );
 }
 
-function ConnectionCard({ link, fromLabel, toLabel, at, w, h, onClose }: { link: MeshLink; fromLabel: string; toLabel: string; at: { x: number; y: number }; w: number; h: number; onClose: () => void }) {
-  const left = Math.min(78, Math.max(22, (at.x / w) * 100));
+function ConnectionCard({ link, fromLabel, toLabel, at, w, h, boxW, onClose }: { link: MeshLink; fromLabel: string; toLabel: string; at: { x: number; y: number }; w: number; h: number; boxW: number; onClose: () => void }) {
+  // Clamp in pixels against the measured canvas width so the card is never cut off, even on phones.
+  const cardW = Math.max(200, Math.min(288, boxW - 16));
+  const centerX = (at.x / w) * boxW;
+  const left = Math.max(8, Math.min(centerX - cardW / 2, boxW - cardW - 8));
   const below = at.y / h < 0.55;
   return (
     <motion.div
       role="dialog"
       aria-label={`${fromLabel} to ${toLabel}`}
       // framer-motion owns `transform`, so the -50% centering must go through motion (a Tailwind translate class would be overwritten)
-      initial={{ opacity: 0, x: "-50%", y: below ? -6 : 6 }}
-      animate={{ opacity: 1, x: "-50%", y: 0 }}
+      initial={{ opacity: 0, y: below ? -6 : 6 }}
+      animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.18, ease: EASE }}
       onClick={(e) => e.stopPropagation()}
-      className="absolute z-20 w-72 max-w-[calc(100%-1.5rem)] rounded-xl border border-stone-200 bg-white shadow-xl"
-      style={{ left: `${left}%`, ...(below ? { top: `calc(${(at.y / h) * 100}% + 16px)` } : { bottom: `calc(${100 - (at.y / h) * 100}% + 16px)` }) }}
+      className="absolute z-30 rounded-xl border border-stone-200 bg-white shadow-xl"
+      style={{ left, width: cardW, ...(below ? { top: `calc(${(at.y / h) * 100}% + 16px)` } : { bottom: `calc(${100 - (at.y / h) * 100}% + 16px)` }) }}
     >
       <div className="flex items-center justify-between border-b border-stone-100 px-3 py-2">
         <span className="font-mono text-[9px] uppercase tracking-[2px] text-stone-500">

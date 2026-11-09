@@ -96,7 +96,7 @@ export function ToolQuickView({ tool, onClose }: { tool: Tool | null; onClose: (
               <button className="btn-ghost px-2" onClick={onClose} aria-label="Close"><X size={18} /></button>
             </div>
 
-            <div className="flex-1 space-y-5 overflow-y-auto p-5 text-sm">
+            <div className="flex-1 space-y-5 overflow-y-auto overscroll-contain p-5 text-sm">
               <p className="text-base leading-relaxed text-stone-800">{tool.description}</p>
               {tool.reviews && (
                 <div className="flex items-center gap-1.5 text-xs text-stone-500">

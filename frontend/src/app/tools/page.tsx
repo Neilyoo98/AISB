@@ -192,9 +192,9 @@ function DiscoverInner() {
                       <Stars value={t.reviews.overall} size={12} /> ({t.reviews.count})
                     </div>
                   )}
-                  <div className="mt-auto flex items-center justify-between gap-2 pt-4 text-xs text-stone-500">
+                  <div className="mt-auto flex flex-wrap items-center justify-between gap-2 pt-4 text-xs text-stone-500">
                     <button onClick={() => setQuick(t)} className="btn-ghost px-2 py-1 text-xs">Details</button>
-                    <span className="flex items-center gap-1">
+                    <span className="flex flex-wrap items-center justify-end gap-1">
                       <button onClick={() => toggle(t.id)} disabled={!on && picked.length >= 4} aria-pressed={on}
                         className={cn("btn px-2 py-1 text-xs", on ? "bg-stone-900 text-white" : "text-stone-600 hover:bg-stone-100")} title="Add to comparison">
                         {on ? <Check size={13} /> : <Scale size={13} />} {on ? "Comparing" : "Compare"}

@@ -3,7 +3,7 @@ import json
 import logging
 from contextlib import asynccontextmanager
 
-from fastapi import Depends, FastAPI, Header, HTTPException, Request, Response
+from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, EmailStr, Field
@@ -15,6 +15,8 @@ import evaluate as ev
 import risk
 import seed
 from categories import with_categories
+from people import account_role, parse_invite_code
+from routers import team as team_router_module
 from auth import clear, client_ip, current_user, hash_password, issue, rate_limit, verify_password
 from config import (ADMIN_TOKEN, FRONTEND_ORIGIN, LIVE_RUNS_PER_IP_PER_DAY_DEMO, LIVE_RUNS_PER_USER_PER_DAY,
                     SPEND_CAP_USD)
@@ -51,6 +53,8 @@ class RegisterIn(BaseModel):
     name: str = Field(min_length=1, max_length=100)
     email: EmailStr
     password: str = Field(min_length=8, max_length=128)
+    account_type: str = Field(default="owner", pattern="^(owner|employee)$")
+    invite_code: str | None = Field(default=None, max_length=300)  # employees: the code or the full join link
 
 
 class LoginIn(BaseModel):
@@ -140,22 +144,29 @@ def ready():
 @app.get("/auth/demo-accounts")
 def demo_accounts():
     return [{"id": p["id"], "business_name": p["business_name"], "owner_name": p["owner_name"],
-             "vertical": p["vertical"], "emoji": p["emoji"], "tagline": p["tagline"], "location": p["location"]}
+             "vertical": p["vertical"], "emoji": p["emoji"], "tagline": p["tagline"], "location": p["location"],
+             "employee": seed.demo_employee(p["id"])}
             for p in seed.load_personas()]
 
 
 @app.post("/auth/demo/{persona_id}")
-def demo_login(persona_id: str, request: Request, response: Response):
+def demo_login(persona_id: str, request: Request, response: Response, as_: str = Query(default="owner", alias="as",
+                                                                                         pattern="^(owner|employee)$")):
     rate_limit(request, "demo", 30)
     p = seed.persona(persona_id)
     if not p:
         raise HTTPException(404, "Unknown sample business")
-    u = db.get_user_by_email(p["email"])
+    email = seed.demo_employee_email(persona_id) if as_ == "employee" else p["email"]
+    if not email:
+        raise HTTPException(404, "This sample business has no employee login")
+    u = db.get_user_by_email(email)
     if not u:
         seed.seed_demos()
-        u = db.get_user_by_email(p["email"])
+        u = db.get_user_by_email(email)
+    if not u:
+        raise HTTPException(503, "Sample accounts are still being set up - try again in a moment")
     issue(response, u["id"])
-    return {"user": _user_out(u)}
+    return {"user": _user_out(u), "account_role": as_}
 
 
 @app.post("/auth/register")
@@ -163,9 +174,20 @@ def register(body: RegisterIn, request: Request, response: Response):
     rate_limit(request, "register", 5)
     if body.email.lower().endswith("@demo.stacksmith") or db.get_user_by_email(body.email):
         raise HTTPException(409, "An account with that email already exists")
+    inv = None
+    if body.account_type == "employee":
+        code = parse_invite_code(body.invite_code)
+        if not code:
+            raise HTTPException(400, "Employees join with the invite link or code from their owner. Paste it here.")
+        try:
+            inv = team_router_module.check_invite(code)  # validate BEFORE creating the account
+        except HTTPException as ex:
+            raise HTTPException(400, ex.detail if ex.status_code in (404, 410) else "That invite can't be used.")
     uid = db.create_user(body.email, body.name.strip(), hash_password(body.password))
+    joined = team_router_module.join_with_invite(db.get_user(uid), inv) if inv else None
     issue(response, uid)
-    return {"user": _user_out(db.get_user(uid))}
+    return {"user": _user_out(db.get_user(uid)), "account_role": "employee" if inv else "owner",
+            "business_name": joined["business_name"] if joined else None}
 
 
 @app.post("/auth/login")
@@ -186,7 +208,10 @@ def logout(response: Response):
 
 @app.get("/me")
 def me(user=Depends(current_user)):
-    return {"user": _user_out(user), "business": _biz_out(db.get_user_business(user["id"]))}
+    b = db.get_user_business(user["id"])
+    person = next((e for e in coworkers.list_employees(b["id"]) if e["user_id"] == user["id"]), None) if b else None
+    return {"user": _user_out(user), "business": _biz_out(b), "account_role": account_role(b, user["id"]),
+            "person_id": person["id"] if person else None}
 
 
 # ---------------- business ----------------
@@ -516,3 +541,5 @@ from routers.assistant import router as assistant_router  # noqa: E402  (Ask Sta
 app.include_router(assistant_router)
 from routers.coworkers import router as coworkers_router  # noqa: E402  (coworker mesh: employees + tasks)
 app.include_router(coworkers_router)
+from routers.people import router as people_router  # noqa: E402  (merged People view: profile + login + AI tools)
+app.include_router(people_router)

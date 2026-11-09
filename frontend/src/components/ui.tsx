@@ -1,8 +1,9 @@
 "use client";
-import { useEffect, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { AlertTriangle, Check, CircleHelp, Compass, Hammer, LayoutDashboard, LogOut, Network, Radio, Star, UserRound, Users2 } from "lucide-react";
+import { AlertTriangle, Check, CircleHelp, Compass, Hammer, LayoutDashboard, LogOut, Radio, Star, UserRound, Users2 } from "lucide-react";
 import { api, cn } from "@/lib/api";
 
 export function Logo({ className, light }: { className?: string; light?: boolean }) {
@@ -21,20 +22,22 @@ export function AppHeader({ businessName, isDemo, loggedOut }: { businessName?: 
   const pathname = usePathname();
   const logout = async () => {
     await api("/auth/logout", { method: "POST" }).catch(() => {});
+    accountRoleCache = null;
     router.push("/");
   };
+  const accountRole = useAccountRole(!loggedOut);
   const links = loggedOut
     ? [{ href: "/tools", label: "Discover tools", icon: Compass }]
     : [
         { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-        { href: "/war-room", label: "War Room", icon: Radio },
-        { href: "/agents", label: "Coworkers", icon: Network },
-        { href: "/tools", label: "Discover", icon: Compass },
+        // employees don't run business analyses, so the War Room is owner-only
+        ...(accountRole === "employee" ? [] : [{ href: "/war-room", label: "War Room", icon: Radio }]),
         { href: "/team", label: "Team", icon: Users2 },
+        { href: "/tools", label: "Discover", icon: Compass },
         { href: "/profile", label: "Profile", icon: UserRound },
       ];
   return (
-    <header className="sticky top-0 z-30 border-b border-stone-200/80 bg-[#fafaf7]/90 backdrop-blur">
+    <header className="sticky top-0 z-30 border-b border-stone-200/80 bg-[#fafaf7]/90 backdrop-blur [transform:translateZ(0)]">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-3 px-4">
         <div className="flex min-w-0 items-center gap-3">
           <Logo />
@@ -122,12 +125,49 @@ export function useTitle(title: string) {
 /** A small "?" button that reveals longer explanations on demand (click / Enter; Esc or outside click closes). */
 export function HelpTip({ children, label = "More info", align = "left" }: { children: React.ReactNode; label?: string; align?: "left" | "right" }) {
   const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLSpanElement>(null);
+  const [pos, setPos] = useState<{ top: number; left: number; placeAbove: boolean } | null>(null);
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const popRef = useRef<HTMLSpanElement>(null);
   const id = useId();
+
+  // Position in viewport coordinates so no parent `overflow-hidden` can clip the popover.
+  const place = useCallback(() => {
+    const b = btnRef.current?.getBoundingClientRect();
+    if (!b) return;
+    const W = Math.min(288, window.innerWidth - 32);
+    const H = popRef.current?.offsetHeight ?? 160;
+    let left = align === "right" ? b.right - W : b.left;
+    left = Math.max(16, Math.min(left, window.innerWidth - W - 16));
+    const placeAbove = b.bottom + 8 + H > window.innerHeight - 8 && b.top - 8 - H > 8;
+    const top = placeAbove ? b.top - 8 - H : b.bottom + 8;
+    setPos({ top, left, placeAbove });
+  }, [align]);
+
+  useLayoutEffect(() => {
+    if (!open) return;
+    place();
+    const raf = requestAnimationFrame(place); // re-measure once the popover has its real height
+    window.addEventListener("scroll", place, true);
+    window.addEventListener("resize", place);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", place, true);
+      window.removeEventListener("resize", place);
+    };
+  }, [open, place]);
+
   useEffect(() => {
     if (!open) return;
-    const onDoc = (e: MouseEvent) => !ref.current?.contains(e.target as Node) && setOpen(false);
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    const onDoc = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (!btnRef.current?.contains(t) && !popRef.current?.contains(t)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setOpen(false);
+        btnRef.current?.focus();
+      }
+    };
     document.addEventListener("mousedown", onDoc);
     document.addEventListener("keydown", onKey);
     return () => {
@@ -135,9 +175,11 @@ export function HelpTip({ children, label = "More info", align = "left" }: { chi
       document.removeEventListener("keydown", onKey);
     };
   }, [open]);
+
   return (
-    <span ref={ref} className="relative inline-flex align-middle">
+    <span className="relative inline-flex align-middle">
       <button
+        ref={btnRef}
         type="button"
         aria-label={label}
         aria-expanded={open}
@@ -147,20 +189,55 @@ export function HelpTip({ children, label = "More info", align = "left" }: { chi
       >
         <CircleHelp size={16} />
       </button>
-      {open && (
-        <span
-          id={id}
-          role="dialog"
-          className={cn(
-            "absolute top-8 z-50 w-72 max-w-[calc(100vw-2rem)] rounded-xl border border-stone-200 bg-white p-3.5 text-left text-sm font-normal normal-case leading-relaxed tracking-normal text-stone-700 shadow-xl",
-            align === "right" ? "right-0" : "left-0",
-          )}
-        >
-          {children}
-        </span>
-      )}
+      {open &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <span
+            ref={popRef}
+            id={id}
+            role="dialog"
+            aria-label={label}
+            style={{ position: "fixed", top: pos?.top ?? -9999, left: pos?.left ?? -9999, width: "min(18rem, calc(100vw - 2rem))", visibility: pos ? "visible" : "hidden" }}
+            className="z-[60] block max-h-[60vh] overflow-y-auto rounded-xl border border-stone-200 bg-white p-3.5 text-left text-sm font-normal normal-case leading-relaxed tracking-normal text-stone-700 shadow-xl"
+          >
+            {children}
+          </span>,
+          document.body,
+        )}
     </span>
   );
+}
+
+/**
+ * Keep the current row of a step log in view by scrolling ONLY the log container (never the page).
+ * Following pauses for a few seconds after the user scrolls the log themselves.
+ */
+export function useLogFollow<T extends HTMLElement>(index: number) {
+  const ref = useRef<T>(null);
+  const userScrolledAt = useRef(0);
+  const programmatic = useRef(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const onScroll = () => {
+      if (programmatic.current) programmatic.current = false;
+      else userScrolledAt.current = Date.now();
+    };
+    el.addEventListener("scroll", onScroll, { passive: true });
+    return () => el.removeEventListener("scroll", onScroll);
+  }, []);
+  useEffect(() => {
+    const box = ref.current;
+    if (!box || Date.now() - userScrolledAt.current < 4000) return;
+    const row = box.querySelector<HTMLElement>(`[data-step="${index}"]`);
+    if (!row) return;
+    const top = row.offsetTop - box.offsetTop - 8;
+    const visible = row.offsetTop - box.offsetTop >= box.scrollTop && row.offsetTop - box.offsetTop + row.offsetHeight <= box.scrollTop + box.clientHeight;
+    if (visible) return;
+    programmatic.current = true;
+    box.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+  }, [index]);
+  return ref;
 }
 
 /** Standard page header: eyebrow, title (+ optional help), and actions on the right. */
@@ -252,4 +329,94 @@ export function Ease({ n }: { n: number }) {
       ))}
     </span>
   );
+}
+
+/**
+ * A popover rendered in a portal with fixed positioning next to an anchor element, so no parent frame
+ * (cards, tables, `overflow-hidden`) can clip it. Flips above / shifts left near viewport edges.
+ */
+export function AnchoredPopover({ anchorRef, open, onClose, width = 256, align = "end", label, children }: {
+  anchorRef: React.RefObject<HTMLElement | null>;
+  open: boolean;
+  onClose: () => void;
+  width?: number;
+  align?: "start" | "end";
+  label: string;
+  children: React.ReactNode;
+}) {
+  const popRef = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
+
+  const place = useCallback(() => {
+    const a = anchorRef.current?.getBoundingClientRect();
+    if (!a) return;
+    const W = Math.min(width, window.innerWidth - 32);
+    const H = popRef.current?.offsetHeight ?? 180;
+    let left = align === "end" ? a.right - W : a.left;
+    left = Math.max(16, Math.min(left, window.innerWidth - W - 16));
+    const above = a.bottom + 8 + H > window.innerHeight - 8 && a.top - 8 - H > 8;
+    setPos({ top: above ? a.top - 8 - H : a.bottom + 8, left });
+  }, [anchorRef, width, align]);
+
+  useLayoutEffect(() => {
+    if (!open) return;
+    place();
+    const raf = requestAnimationFrame(place);
+    window.addEventListener("scroll", place, true);
+    window.addEventListener("resize", place);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", place, true);
+      window.removeEventListener("resize", place);
+    };
+  }, [open, place]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onDoc = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (!popRef.current?.contains(t) && !anchorRef.current?.contains(t)) onClose();
+    };
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    document.addEventListener("mousedown", onDoc);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDoc);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open, onClose, anchorRef]);
+
+  if (!open || typeof document === "undefined") return null;
+  return createPortal(
+    <div
+      ref={popRef}
+      role="dialog"
+      aria-label={label}
+      style={{ position: "fixed", top: pos?.top ?? -9999, left: pos?.left ?? -9999, width: `min(${width}px, calc(100vw - 2rem))`, visibility: pos ? "visible" : "hidden" }}
+      className="z-[60] rounded-xl border border-stone-200 bg-white p-3 text-left shadow-xl"
+    >
+      {children}
+    </div>,
+    document.body,
+  );
+}
+
+// "owner" | "employee" for the signed-in account (null until known). Cached per page load so every header
+// render doesn't refetch; a raw fetch (not api()) so a logged-out 401 never redirects.
+let accountRoleCache: Promise<string | null> | null = null;
+export function useAccountRole(enabled = true): "owner" | "employee" | null {
+  const [role, setRole] = useState<"owner" | "employee" | null>(null);
+  useEffect(() => {
+    if (!enabled) return;
+    accountRoleCache ??= fetch("/api/me", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((m) => (m?.account_role as string | undefined) ?? null)
+      .catch(() => null);
+    let alive = true;
+    accountRoleCache.then((r) => alive && setRole(r === "employee" ? "employee" : r === "owner" ? "owner" : null));
+    return () => {
+      alive = false;
+    };
+  }, [enabled]);
+  return role;
 }

@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
 // Marketing hero: crossfading photos of the kinds of businesses StackSmith serves.
@@ -17,8 +17,20 @@ const SLIDE_MS = 6000;
 
 export function HeroSlideshow({ onChange }: { onChange?: (i: number) => void }) {
   const [i, setI] = useState(0);
+  const [offscreen, setOffscreen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  // Stop cycling and drifting while the hero is scrolled out of view (no off-screen work during scroll).
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(([e]) => setOffscreen(!e.isIntersecting), { threshold: 0 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   useEffect(() => {
+    if (offscreen) return;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
     if (reduce.matches) return; // static first image
     let id: ReturnType<typeof setInterval> | null = null;
@@ -36,12 +48,12 @@ export function HeroSlideshow({ onChange }: { onChange?: (i: number) => void }) 
       stop();
       document.removeEventListener("visibilitychange", onVis);
     };
-  }, []);
+  }, [offscreen]);
 
   useEffect(() => onChange?.(i), [i, onChange]);
 
   return (
-    <div className="hero-slides absolute inset-0 overflow-hidden bg-stone-900" aria-hidden>
+    <div ref={rootRef} className="hero-slides absolute inset-0 overflow-hidden bg-stone-900" data-paused={offscreen} aria-hidden>
       {HERO_SLIDES.map((s, k) => (
         <div key={s.src} className="hero-slide absolute inset-0" data-active={k === i}>
           <Image src={s.src} alt="" fill priority={k === 0} sizes="100vw" className="object-cover" />

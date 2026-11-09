@@ -35,7 +35,7 @@ export function WorkflowMap({ view, employees, catalog }: { view: CoworkerView; 
   steps.forEach((s) => addLane(laneOf(s)));
 
   return (
-    <div className="card overflow-hidden">
+    <div className="card">
       <div className="flex items-center justify-between gap-3 border-b border-stone-100 px-5 py-3">
         <h3 className="flex items-center gap-1 font-semibold">
           The workflow

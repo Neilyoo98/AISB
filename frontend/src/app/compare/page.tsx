@@ -109,8 +109,8 @@ function CompareInner() {
           actions={list.length < 4 && <Link href="/tools" className="btn-secondary"><Plus size={16} /> Add a tool</Link>}
         />
 
-        <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
-          <aside className="space-y-4 lg:sticky lg:top-20 lg:h-fit">
+        <div className="grid gap-6 lg:grid-cols-[280px_1fr] [&>*]:min-w-0">
+          <aside className="space-y-4 lg:sticky lg:top-20 lg:h-fit lg:max-h-[calc(100dvh-6rem)] lg:overflow-y-auto lg:overscroll-contain lg:pb-2">
             <div className="card p-5">
               <div className="flex items-center justify-between">
                 <h2 className="text-sm font-semibold">What matters most?</h2>
@@ -166,7 +166,7 @@ function CompareInner() {
           {!tools || !ev ? (
             <PageState kind="loading" />
           ) : (
-            <div className="card overflow-x-auto">
+            <div className="card min-w-0 overflow-x-auto">
               <table className="w-full min-w-[640px] text-sm">
                 <thead>
                   <tr className="border-b border-stone-100">
@@ -318,7 +318,7 @@ function CompareInner() {
   );
 }
 
-const cell = (best: boolean) => cn("px-4 py-3 align-top text-stone-800", best && "bg-emerald-50/70");
+const cell = (best: boolean) => cn("break-words px-4 py-3 align-top text-stone-800", best && "bg-emerald-50/70");
 
 function Row({ label, help, sub, children }: { label: string; help?: string; sub?: boolean; children: React.ReactNode }) {
   return (

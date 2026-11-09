@@ -70,6 +70,7 @@ invites = Table(
     Column("created_by", String(32), nullable=False),
     Column("expires_at", DateTime(timezone=True), nullable=False),
     Column("used_by", String(32)),
+    Column("person_id", String(32)),  # invite bound to an existing person profile (joining links the login to it)
     Column("revoked", Boolean, default=False, nullable=False),
     Column("created_at", DateTime(timezone=True), default=_now),
 )
@@ -266,10 +267,7 @@ def team_me(user=Depends(current_user)):
 def create_invite(body: InviteIn, request: Request, user=Depends(current_user)):
     rate_limit(request, "team_invite", 20)
     b = _admin(user)
-    code = secrets.token_urlsafe(9)
-    with engine.begin() as c:
-        c.execute(insert(invites).values(code=code, business_id=b["id"], name=body.name.strip() or None, role=body.role,
-                                         created_by=user["id"], expires_at=_now() + timedelta(days=pr.INVITE_DAYS)))
+    code = create_invite_row(b["id"], user["id"], body.name, body.role)
     return {"code": code, "url": f"/join/{code}", "expires_in_days": pr.INVITE_DAYS}
 
 
@@ -305,23 +303,72 @@ def invite_info(code: str):
             "name": inv["name"], "role": inv["role"], "status": status, "message": _INVITE_MSG.get(status)}
 
 
-@router.post("/join/{code}")
-def join_team(code: str, request: Request, user=Depends(current_user)):
-    rate_limit(request, "team_join", 10)
+def create_invite_row(business_id: str, created_by: str, name: str | None = None, role: str = "member",
+                      person_id: str | None = None) -> str:
+    code = secrets.token_urlsafe(9)
+    with engine.begin() as c:
+        c.execute(insert(invites).values(code=code, business_id=business_id, name=(name or "").strip() or None, role=role,
+                                         created_by=created_by, person_id=person_id,
+                                         expires_at=_now() + timedelta(days=pr.INVITE_DAYS)))
+    return code
+
+
+def pending_invite_for_person(business_id: str, person_id: str) -> str | None:
+    """Join link of a still-valid invite bound to this person, if any."""
+    now = _now()
+    with engine.begin() as c:
+        rs = _rows(c, select(invites).where(invites.c.business_id == business_id, invites.c.person_id == person_id)
+                   .order_by(invites.c.created_at.desc()))
+    inv = next((i for i in rs if pr.invite_status(i, now) == "valid"), None)
+    return f"/join/{inv['code']}" if inv else None
+
+
+def check_invite(code: str) -> dict:
+    """The invite row if it can still be used; HTTP 410 with a friendly message otherwise."""
     inv = _invite(code)
     status = pr.invite_status(inv, _now())
     if status != "valid":
         raise HTTPException(410, _INVITE_MSG[status])
+    return inv
+
+
+def _link_person(inv: dict, user: dict) -> str:
+    """Attach the new login to the person the invite was made for, or give them a fresh person profile."""
+    import coworkers as cw  # local import keeps router import order simple
+    bid = inv["business_id"]
+    staff = cw.list_employees(bid)
+    mine = next((e for e in staff if e["user_id"] == user["id"]), None)
+    if mine:
+        return mine["id"]
+    pid = inv.get("person_id")
+    if pid:
+        e = next((e for e in staff if e["id"] == pid), None)
+        if e and not e["user_id"]:
+            cw.update_employee(pid, user_id=user["id"])
+            return pid
+    e = cw.create_employee(bid, user["name"], "Team member", [], "", [], user_id=user["id"])
+    return e["id"]
+
+
+def join_with_invite(user: dict, inv: dict) -> dict:
+    """Make `user` a member of the invite's business and link their person profile. Used by /join and sign-up."""
     current = db.get_user_business(user["id"])
     if current and current["id"] == inv["business_id"]:
-        return {"ok": True, "business_name": current["name"], "already_member": True}
+        return {"ok": True, "business_name": current["name"], "already_member": True,
+                "person_id": _link_person(inv, user)}
     if current:
         raise HTTPException(409, f"You already belong to {current['name']}. Use a different account to join this team.")
     with engine.begin() as c:
         c.execute(insert(org_members).values(business_id=inv["business_id"], user_id=user["id"], role=inv["role"]))
-        c.execute(update(invites).where(invites.c.code == code).values(used_by=user["id"]))
+        c.execute(update(invites).where(invites.c.code == inv["code"]).values(used_by=user["id"]))
     b = db.get_business(inv["business_id"])
-    return {"ok": True, "business_name": b["name"] if b else None}
+    return {"ok": True, "business_name": b["name"] if b else None, "person_id": _link_person(inv, user)}
+
+
+@router.post("/join/{code}")
+def join_team(code: str, request: Request, user=Depends(current_user)):
+    rate_limit(request, "team_join", 10)
+    return join_with_invite(user, check_invite(code))
 
 
 @router.delete("/members/{user_id}")

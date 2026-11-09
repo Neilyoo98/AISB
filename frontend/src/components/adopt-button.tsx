@@ -24,7 +24,8 @@ async function load() {
     const [a, t] = await Promise.all([fetch("/api/adoptions", { cache: "no-store" }), fetch("/api/team/me", { cache: "no-store" })]);
     if (a.status === 401) return set({ status: "anon", adopted: new Set(), role: null, requested: new Set() });
     const d: { items: Adoption[] } = a.ok ? await a.json() : { items: [] };
-    const me: { role: Role; my_pending_tool_ids?: string[] } = t.ok ? await t.json() : { role: null };
+    // If the role lookup fails, fall back to the safe "member" path (Request) rather than owner-style Adopt.
+    const me: { role: Role; my_pending_tool_ids?: string[] } = t.ok ? await t.json() : { role: "member" };
     set({ status: "ready", adopted: new Set(d.items.map((i) => i.tool_id)), role: me.role, requested: new Set(me.my_pending_tool_ids || []) });
   } catch {
     set({ status: "ready", adopted: new Set(), role: null, requested: new Set() });

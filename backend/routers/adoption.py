@@ -41,6 +41,12 @@ def adoption_payload(b: dict) -> dict:
             "tasks": db.get_business_tasks(b["id"], run["id"] if run else None)}
 
 
+def _require_owner(b, user):
+    """Only the business owner changes the stack; employees go through Request -> owner approval."""
+    if b["user_id"] != user["id"]:
+        raise HTTPException(403, "Only the owner can add or remove tools. Use Request instead, and the owner will approve it.")
+
+
 @router.get("/adoptions")
 def get_adoptions(user=Depends(current_user)):
     return adoption_payload(_business(user))
@@ -51,6 +57,7 @@ async def post_adoption(body: AdoptIn, request: Request, user=Depends(current_us
     if body.tool_id not in store.load_catalog():
         raise HTTPException(404, "Unknown tool")
     b = _business(user)
+    _require_owner(b, user)
     if body.tool_id in adoptions.adopted_ids(b["id"]):
         raise HTTPException(409, "Already in your stack")
     rate_limit(request, f"adopt:{user['id']}", 10, window_s=24 * 3600)
@@ -61,6 +68,7 @@ async def post_adoption(body: AdoptIn, request: Request, user=Depends(current_us
 @router.delete("/adoptions/{tool_id}")
 async def delete_adoption(tool_id: str, user=Depends(current_user)):
     b = _business(user)
+    _require_owner(b, user)
     if not adoptions.remove(b["id"], tool_id):
         raise HTTPException(404, "That tool isn't in your stack")
     if adoptions.adopted_ids(b["id"]):

@@ -39,6 +39,7 @@ def _bg(coro):
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await asyncio.to_thread(seed.seed_all)
+    await asyncio.to_thread(coworkers.expire_stale_live_tasks)
     yield
 
 
@@ -229,6 +230,9 @@ def upsert_business(body: BusinessIn, user=Depends(current_user)):
                            details=details)
         return _biz_out(db.get_business(b["id"]))
     bid = db.create_business(user["id"], body.name, None, body.location, body.description, details=details)
+    # The owner is a person on their own team, so People isn't empty and tasks can be assigned right away.
+    coworkers.create_employee(bid, user["name"], "Owner", [], "Runs the business", list((details or {}).get("current_tools") or []),
+                              user_id=user["id"])
     return _biz_out(db.get_business(bid))
 
 
@@ -311,10 +315,16 @@ def toggle_task(task_id: int, body: TaskIn, user=Depends(current_user)):
 
 # ---------------- runs ----------------
 
+def _owner_only(b, user, message: str):
+    if not b or b["user_id"] != user["id"]:
+        raise HTTPException(403, message)
+
+
 @app.post("/runs")
 async def create_run(body: RunIn, request: Request, user=Depends(current_user)):
     rate_limit(request, "runs", 6)
     b = _my_business(user)
+    _owner_only(b, user, "Only the owner can run an analysis")
     ip = client_ip(request)
     mode = body.mode
     if mode == "auto":
@@ -464,6 +474,7 @@ def get_weights(request: Request):
 @app.put("/businesses/me/weights")
 def put_weights(body: WeightsIn, user=Depends(current_user)):
     b = _my_business(user)
+    _owner_only(b, user, "Only the owner can save the business's default weights")
     w = ev.normalize_weights(body.weights)
     db.update_business(b["id"], weights=w)
     return {"saved": w}
@@ -511,6 +522,8 @@ async def stream(run_id: str, request: Request, after: int = -1, user=Depends(cu
 @app.post("/runs/{run_id}/approve")
 async def approve(run_id: str, body: ApproveIn, user=Depends(current_user)):
     r = _own_run(run_id, user)
+    owner_biz = db.get_business(r["business_id"])
+    _owner_only(owner_biz, user, "Only the owner can approve the stack")
     ch = RUNS.get(run_id)
     status = ch.status if ch else r["status"]
     if status != "awaiting_approval":

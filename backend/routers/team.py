@@ -210,8 +210,12 @@ def get_team(user=Depends(current_user)):
             members.append({"user_id": u["id"], "name": u["name"], "email": u["email"], "role": m["role"], "owner": False})
     spend = _spend(b)
     adopted = set(_adopted_tool_ids(b["id"]))
-    if role != "admin":  # members only see their own requests
+    if role != "admin":
+        # Employees see only their own requests and declarations, no spending/licences, and no one else's email.
         reqs = [r for r in reqs if r["requester_id"] == user["id"]]
+        shadow = [s for s in shadow if s["user_id"] == user["id"]]
+        lic = []
+        members = [m | {"email": m["email"] if m["user_id"] == user["id"] else None} for m in members]
     pending_invites = []
     if role == "admin":
         now = _now()
@@ -232,7 +236,7 @@ def get_team(user=Depends(current_user)):
                       "requester": uname(r["requester_id"]), "decided_by": uname(r["decided_by"]) if r["decided_by"] else None,
                       "decided_at": _iso(r["decided_at"]), "created_at": _iso(r["created_at"]),
                       "impact": pr.request_impact(spend["cap"], spend["committed_monthly"], r["est_monthly_cost"],
-                                                  r["tool_id"] in adopted) if r["status"] == "pending" else None}
+                                                  r["tool_id"] in adopted) if r["status"] == "pending" and role == "admin" else None}
                      for r in reqs],
         "licenses": [{"id": l["id"], "tool_id": l["tool_id"], "name": cat.get(l["tool_id"], {}).get("name", l["tool_id"]),
                       "seats_bought": l["seats_bought"], "seats_assigned": l["seats_assigned"], "renewal_date": l["renewal_date"],
@@ -242,7 +246,7 @@ def get_team(user=Depends(current_user)):
                     "user": uname(s["user_id"]), "catalog_id": _match_catalog(s["tool_name"]), "created_at": _iso(s["created_at"])}
                    for s in shadow],
         "adopted": sorted(adopted),
-        "spend": spend,
+        "spend": spend if role == "admin" else None,
     }
 
 

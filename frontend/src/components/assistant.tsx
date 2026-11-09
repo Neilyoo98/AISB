@@ -14,15 +14,48 @@ type Reply = { answer: string; tools: ToolCard[]; follow_ups: string[]; mode: "a
 const EASE = [0.23, 1, 0.32, 1] as const;
 const HIDDEN = [/^\/$/, /^\/login/, /^\/join/];
 
+/** Text the assistant reads from the page: open drawers first, then headings, card titles and content - never nav,
+ *  buttons, inputs or filter-chip rows. De-duplicated and capped. */
+const SKIP = "nav, header, button, input, textarea, select, [role=tablist], [aria-hidden=true], [data-assistant-skip], [data-assistant-panel]";
+const PICK = "[data-assistant], h1, h2, h3, h4, p, li, td, th, dt, dd, a, label, [class*='font-semibold'], [class*='font-medium']";
+
+function collectText(root: Element, budget: number, seen: Set<string>): string[] {
+  const lines: string[] = [];
+  let used = 0;
+  for (const el of Array.from(root.querySelectorAll<HTMLElement>(PICK))) {
+    if (el.closest(SKIP)) continue;
+    if (el.getClientRects().length === 0) continue; // not rendered
+    const t = (el.innerText || "").replace(/\s+/g, " ").trim();
+    if (t.length < 3 || t.length > 320 || seen.has(t)) continue;
+    seen.add(t);
+    lines.push(t);
+    used += t.length + 1;
+    if (used >= budget) break;
+  }
+  return lines;
+}
+
+function pageText(): string {
+  const seen = new Set<string>();
+  const dialogs = Array.from(document.querySelectorAll("[role=dialog]")).filter((d) => !d.closest("[data-assistant-panel]"));
+  const parts: string[] = [];
+  for (const d of dialogs) parts.push(...collectText(d, 1500, seen));
+  const main = document.querySelector("main");
+  if (main) parts.push(...collectText(main, 4000, seen));
+  return parts.join("\n").slice(0, 4000);
+}
+
 const PAGES: [string, string, string[]][] = [
   ["/dashboard", "Dashboard", ["What should I do this week?", "How much will this save me?", "Which task should I start with?"]],
   ["/war-room", "War Room", ["What are these advisors doing?", "Why was this tool recommended?", "What happens when I approve?"]],
-  ["/agents", "Agents", ["How are these agents linked?", "What does the message log mean?", "How do my tools work together?"]],
+  ["/team/tasks/", "Task", ["Why was this assigned to them?", "What's left to do?", "Which drafts should I send?"]],
   ["/tools/", "Tool details", ["Is this tool right for me?", "What does Trust & risk mean?", "How long does setup take?"]],
-  ["/tools", "Discover", ["Which tool answers my phone?", "What's a cheap way to get more reviews?", "How do I compare tools?"]],
+  ["/tools", "Discover", ["Which tool fits my business best?", "What's a cheap way to get more reviews?", "How do I compare tools?"]],
   ["/compare", "Compare", ["Which of these should I pick?", "What does the overall score mean?", "Why is total cost higher than the price?"]],
-  ["/team", "Collaboration", ["How do I add an employee?", "How do tool requests work?", "What is the spend cap?"]],
-  ["/profile", "Profile", ["What happens when I save?", "Which details matter most?", "Should I re-run the analysis?"]],
+  ["/team", "Collaboration", ["Who is working on what?", "How much of my AI budget is left?", "Which requests need my OK?"]],
+  ["/people", "People", ["What AI tools does each person use?", "Who is off today?", "How do I invite someone?"]],
+  ["/agents", "Collaboration", ["Who is working on what?", "How do my tools work together?", "How do tasks get assigned?"]],
+  ["/profile", "Profile", ["Am I set up as owner or employee?", "What happens when I save?", "Should I re-run the analysis?"]],
   ["/onboard", "Describe your business", ["What should I write here?", "What happens after I submit?", "Is my information private?"]],
 ];
 
@@ -93,8 +126,12 @@ export function Assistant() {
     const history = msgs.slice(-4).map((m) => ({ role: m.role, content: m.content.slice(0, 900) }));
     setMsgs((m) => [...m, { role: "user", content: q }]);
     setBusy(true);
-    const main = document.querySelector("main") as HTMLElement | null;
-    const context = { path: pathname, page_title: document.title, visible_text: (main?.innerText || "").replace(/\s+\n/g, "\n").slice(0, 2500) };
+    const context = {
+      path: pathname,
+      query: window.location.search.slice(0, 400),
+      page_title: document.title,
+      visible_text: pageText(),
+    };
     try {
       const r = await api<Reply>("/assistant/chat", { method: "POST", json: { message: q, history, context } });
       setMsgs((m) => [...m, { role: "assistant", content: r.answer, tools: r.tools, followUps: r.follow_ups, template: r.mode === "template" }]);
@@ -130,6 +167,7 @@ export function Assistant() {
           <motion.div
             role="dialog"
             aria-label="Ask StackSmith"
+            data-assistant-panel
             initial={{ opacity: 0, y: 16, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 12, scale: 0.98 }}

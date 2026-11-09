@@ -152,6 +152,17 @@ def create_task(business_id: str, created_by: str | None, text: str, mode: str, 
     return tid
 
 
+def expire_stale_live_tasks() -> int:
+    """At startup: live tasks still planning/awaiting approval lost their in-memory graph state in the restart.
+    Mark them as errors so the queue doesn't show tasks that can never be approved."""
+    with engine.begin() as c:
+        res = c.execute(update(coworker_tasks)
+                        .where(coworker_tasks.c.mode == "live",
+                               coworker_tasks.c.status.in_(["running", "awaiting_approval"]))
+                        .values(status="error"))
+        return res.rowcount or 0
+
+
 def update_task(task_id: str, **vals):
     for k in ("result", "events"):
         if k in vals:

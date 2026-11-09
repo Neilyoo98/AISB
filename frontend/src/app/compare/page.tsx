@@ -32,7 +32,7 @@ function CompareInner() {
   const ids = (useSearchParams().get("ids") || "").split(",").filter(Boolean).slice(0, 4);
   const idKey = ids.join(",");
   const [tools, setTools] = useState<Record<string, Tool> | null>(null);
-  const [me, setMe] = useState<{ user: User; business: Business | null } | null | undefined>(undefined);
+  const [me, setMe] = useState<{ user: User; business: Business | null; account_role?: "owner" | "employee" } | null | undefined>(undefined);
   const [presets, setPresets] = useState<Record<string, Record<string, number>>>({});
   const [criteria, setCriteria] = useState<string[]>([]);
   const [weights, setWeights] = useState<Record<string, number> | null>(null);
@@ -134,7 +134,7 @@ function CompareInner() {
                   </label>
                 ))}
               </div>}
-              {customize && me?.business && (
+              {customize && me?.business && me.account_role !== "employee" && (
                 <button onClick={saveWeights} className="btn-secondary mt-4 w-full py-2 text-xs">{saved ? <><Check size={14} /> Saved</> : <><Save size={14} /> Save as my default</>}</button>
               )}
             </div>

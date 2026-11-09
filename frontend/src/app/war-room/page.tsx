@@ -16,9 +16,11 @@ export default function WarRoomIndex() {
 
   const load = () => {
     setErr(null);
-    api<{ user: User; runs: { id: string }[]; business: unknown }>("/dashboard")
-      .then((d) => {
-        if (d.runs.length) router.replace(`/war-room/${d.runs[0].id}`);
+    Promise.all([api<{ account_role?: string }>("/me"), api<{ user: User; runs: { id: string }[]; business: unknown }>("/dashboard")])
+      .then(([me, d]) => {
+        // The War Room is the owner's analysis workspace; employees work from their dashboard and Collaboration.
+        if (me.account_role === "employee") router.replace("/dashboard");
+        else if (d.runs.length) router.replace(`/war-room/${d.runs[0].id}`);
         else if (!d.business && !d.user.is_demo) router.replace("/onboard");
         else setEmpty({ user: d.user });
       })

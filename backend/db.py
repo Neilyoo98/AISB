@@ -79,6 +79,7 @@ plan_tasks = Table(
     Column("done", Boolean, default=False, nullable=False),
     Column("business_id", String(32)),  # set for setup tasks created by a manual adoption
     Column("source", String(16)),  # null = plan/adoption task, "custom" = published by the owner/team
+    Column("created_by", String(32)),  # user id that published a custom task (only they or the owner may delete it)
     Column("suggestions_json", Text),  # tool suggestions for a published task [{tool_id, reason}]
     Column("assignee_employee_id", String(32)),  # set when an approved coworker task assigns the step to an employee
     Column("coworker_task_id", String(32)),  # the coworker task this step came from (task queue progress)
@@ -283,10 +284,11 @@ def get_business_tasks(business_id, latest_run_id=None):
         return [_task_out(r) for r in rs]
 
 
-def add_custom_task(business_id, run_id, text, week, owner) -> int:
+def add_custom_task(business_id, run_id, text, week, owner, created_by=None) -> int:
     with engine.begin() as c:
         res = c.execute(insert(plan_tasks).values(run_id=run_id, business_id=business_id, week=week, text=text,
-                                                  owner=owner, minutes=None, done=False, source="custom"))
+                                                  owner=owner, minutes=None, done=False, source="custom",
+                                                  created_by=created_by))
         return int(res.inserted_primary_key[0])
 
 
@@ -302,10 +304,13 @@ def get_task(task_id):
         return _task_out(r) if r else None
 
 
-def delete_custom_task(task_id, business_id) -> bool:
+def delete_custom_task(task_id, business_id, user_id=None, is_owner=True) -> bool:
+    """Delete a published task. Only the business owner, or the person who published it, may delete it."""
+    conds = [plan_tasks.c.id == task_id, plan_tasks.c.business_id == business_id, plan_tasks.c.source == "custom"]
+    if not is_owner:
+        conds.append(plan_tasks.c.created_by == user_id)
     with engine.begin() as c:
-        res = c.execute(delete(plan_tasks).where(plan_tasks.c.id == task_id, plan_tasks.c.business_id == business_id,
-                                                 plan_tasks.c.source == "custom"))
+        res = c.execute(delete(plan_tasks).where(*conds))
         return res.rowcount > 0
 
 

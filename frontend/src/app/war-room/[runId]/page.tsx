@@ -28,8 +28,13 @@ export default function WarRoom() {
 
   useEffect(() => {
     api<Tool[]>("/catalog").then((ts) => setCatalog(Object.fromEntries(ts.map((t) => [t.id, t]))));
-    api<{ user: User; business: Business | null }>("/me").then(setMe).catch(() => {});
-  }, []);
+    api<{ user: User; business: Business | null; account_role?: string }>("/me")
+      .then((m) => {
+        if (m.account_role === "employee") router.replace("/dashboard"); // owner-only workspace
+        else setMe(m);
+      })
+      .catch(() => {});
+  }, [router]);
 
   useEffect(() => {
     if (view.stack) setSelected(new Set(view.stack.tool_ids));

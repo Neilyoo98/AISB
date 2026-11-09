@@ -6,10 +6,9 @@ import { motion } from "framer-motion";
 import { ArrowRight, Check, ChevronDown, Compass, ExternalLink, Footprints, Network, PlayCircle, Plus, Sparkles, X, Zap } from "lucide-react";
 import { api, cn, money } from "@/lib/api";
 import type { Business, Pain, Scenario, Stack, Tool, User } from "@/lib/types";
-import { ToolsGraph } from "@/components/agent-graph";
+import { WorkflowCard } from "@/components/workflow-graph";
 import { ToolIcon } from "@/lib/tool-icons";
 import { CATEGORY_LABEL, categoryOfVertical } from "@/lib/categories";
-import { useAdoptions } from "@/hooks/useAdoptions";
 import { AdoptButton } from "@/components/adopt-button";
 import { AppHeader, HelpTip, PageHeader, PageState, Spinner, Stat, useTitle } from "@/components/ui";
 
@@ -84,7 +83,6 @@ export default function Dashboard() {
   const [draft, setDraft] = useState("");
   const [publishing, setPublishing] = useState(false);
   const [taskErr, setTaskErr] = useState<string | null>(null);
-  const { data: adoptions } = useAdoptions();
   const [me, setMe] = useState<Me | null>(null);
 
   const load = () => {
@@ -169,7 +167,6 @@ export default function Dashboard() {
   const currentWeek = weeks.find((w) => d.tasks.some((t) => weekOf(t) === w && !t.done)) ?? weeks[weeks.length - 1];
   const isOpen = (w: number) => w === currentWeek || openWeeks.has(w);
   const adoptedTools: AdoptedTool[] = d.adopted ?? (latest?.approved.map((a) => ({ ...a, source: "plan" as const })) || []);
-  const scenarios = adoptions?.scenarios?.length ? adoptions.scenarios : latest?.scenarios || [];
   const category = (b?.details as { business_category?: string } | null | undefined)?.business_category || (b?.vertical ? categoryOfVertical(b.vertical) : null);
   const firstName = user.name.split(" ")[0];
   const cardLink = "card group flex flex-col items-start p-5 text-left transition-[border-color,box-shadow] hover:border-emerald-300 hover:shadow-md";
@@ -441,24 +438,7 @@ export default function Dashboard() {
                   </ul>
                 </div>
 
-                {scenarios.length > 0 && (
-                  <section>
-                    <div className="mb-3 flex items-end justify-between gap-2">
-                      <h2 className="font-semibold">How your tools work together</h2>
-                      <Link href="/team?tab=tasks" className="flex items-center gap-1 text-sm font-semibold text-emerald-700 hover:underline">
-                        Full view <ArrowRight size={14} />
-                      </Link>
-                    </div>
-                    <ToolsGraph
-                      key={scenarios.map((x) => x.title).join("|")}
-                      compact
-                      scenarios={scenarios}
-                      catalog={catalog}
-                      approved={adoptedTools.map((a) => a.id)}
-                      note={adoptions?.scenarios_status === "updating" ? "Updating with your new tool…" : null}
-                    />
-                  </section>
-                )}
+                <WorkflowCard title="How your team works with AI" />
 
                 {d.runs.length > 0 && (
                   <details className="card p-5 text-sm">
@@ -609,6 +589,12 @@ function EmployeeDashboard({ d, me, onToggle }: { d: Dash; me: Me; onToggle: (t:
             </section>
           </div>
         </div>
+
+        {me.person_id && (
+          <div className="mt-6">
+            <WorkflowCard personId={me.person_id} title="Your workflow" />
+          </div>
+        )}
       </main>
     </div>
   );

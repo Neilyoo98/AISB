@@ -14,7 +14,7 @@ import { ApproveBar, AssignedTasks } from "@/components/coworkers/ApproveBar";
 import { SendLog } from "@/components/coworkers/SendLog";
 import type { CoworkerTask, Employee } from "@/components/coworkers/types";
 
-export function TasksTab({ catalog, isOwnerView, initialTaskId, peopleCount }: { catalog: Record<string, Tool>; isOwnerView: boolean; initialTaskId: string | null; peopleCount: number }) {
+export function TasksTab({ catalog, isOwnerView, initialTaskId, peopleCount, autoStartDemo = false }: { catalog: Record<string, Tool>; isOwnerView: boolean; initialTaskId: string | null; peopleCount: number; /** sample businesses: replay the first recorded task ($0) so the mesh is visible right away */ autoStartDemo?: boolean }) {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [tasks, setTasks] = useState<CoworkerTask[] | null>(null);
   const [examples, setExamples] = useState<string[]>([]);
@@ -40,6 +40,19 @@ export function TasksTab({ catalog, isOwnerView, initialTaskId, peopleCount }: {
   }, [loadTasks]);
 
   const { view, decide } = useCoworkerTask(taskId, loadTasks);
+
+  // Sample businesses start with no tasks after a reset: replay the first recorded one so the graph shows immediately.
+  const autoStarted = useRef(false);
+  useEffect(() => {
+    if (!autoStartDemo || !isOwnerView || autoStarted.current || !tasks || tasks.length > 0 || !examples[0]) return;
+    autoStarted.current = true;
+    api<{ id: string }>("/coworker-tasks", { method: "POST", json: { text: examples[0] } })
+      .then((r) => {
+        setTaskId(r.id);
+        loadTasks();
+      })
+      .catch(() => {});
+  }, [autoStartDemo, isOwnerView, tasks, examples, loadTasks]);
 
   // Only move the page when the owner just started/opened a task (never on timers).
   useEffect(() => {

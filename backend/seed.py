@@ -124,6 +124,23 @@ def seed_demo_staff(business_id: str, persona_id: str, owner_user_id: str | None
     return out
 
 
+def seed_demo_coworker_history(business_id: str, persona_id: str, owner_user_id: str, staff: list[dict]) -> int:
+    """Store the sample business's recorded coworker tasks as already-approved history (no dashboard tasks, no
+    memory writes), so the workflow map has real hand-offs on first login. Recordings stay replayable."""
+    from graphs.coworker_graph import _mapping_for, list_recordings, remap_ids
+    n = 0
+    now = datetime.now(timezone.utc)
+    for i, rec in enumerate(list_recordings(persona_id)):
+        mapping = _mapping_for(rec, staff)
+        result = remap_ids(rec.get("result") or {}, mapping)
+        result["assigned_tasks"] = []  # history only: no dashboard tasks were created for these
+        tid = coworkers.create_task(business_id, owner_user_id, rec["text"], "replay",
+                                    recording=f"{persona_id}/{rec['slug']}", created_at=now - timedelta(days=3 + i))
+        coworkers.update_task(tid, status="approved", result=result, events=remap_ids(rec.get("events") or [], mapping))
+        n += 1
+    return n
+
+
 def delete_staff(business_ids: list[str]):
     """Remove employees, their coworker memory and coworker tasks for these businesses."""
     from graphs.coworker_graph import delete_employee_memory
@@ -168,7 +185,8 @@ def seed_demos():
             store.add_episode(bid, p["vertical"], f"{p['business_name']} adopted {name} for {', '.join(pains)}",
                               {"tool_id": t, "pains": pains, "run_id": rid})
         team.seed_demo_team(bid, uid, p["id"], (res.get("profile") or {}).get("monthly_budget"))
-        seed_demo_staff(bid, p["id"], owner_user_id=uid)
+        staff = seed_demo_staff(bid, p["id"], owner_user_id=uid)
+        seed_demo_coworker_history(bid, p["id"], uid, staff)
         log.info("seeded demo %s", p["id"])
 
 

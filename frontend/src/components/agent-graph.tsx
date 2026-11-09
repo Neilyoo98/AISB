@@ -22,7 +22,9 @@ export type MeshKind = "core" | "scout" | "advisor" | "you" | "new" | "existing"
 /** A dashed "covering for" arc: `from`'s coworker answers for an absent person, `to` does the human step. */
 export type MeshCover = { from: string; to: string; note: string };
 export type MeshNode = { id: string; label: string; sub?: string; x: number; y: number; kind: MeshKind; icon?: React.ReactNode };
-export type MeshLink = { from: string; to: string; label: string; why?: string[]; detail?: React.ReactNode };
+export type MeshLink = { from: string; to: string; label: string; why?: string[]; detail?: React.ReactNode;
+  /** idle stroke width (e.g. by how often the hand-off happens) */ weight?: number;
+  /** "solid" = real hand-off, default dashed = "uses" relationship */ variant?: "dashed" | "solid" };
 /** @deprecated kept for older imports */
 export type GNode = MeshNode;
 
@@ -60,8 +62,12 @@ const key = (l: { from: string; to: string }) => `${l.from}>${l.to}`;
 
 /** The AUBI-style canvas (light stone/emerald). `from`/`to` mark the hand-off happening right now. */
 export function Graph({
-  nodes, links, from, to = [], step = 0, w, h, title, status, columns, legend, overlay, label = "Agents working together", cover, highlight = [],
+  nodes, links, from, to = [], step = 0, w, h, title, status, columns, legend, overlay, label = "Agents working together", cover, highlight = [], onNodeClick, hint,
 }: {
+  /** makes node cards clickable (e.g. focus on a person) */
+  onNodeClick?: (id: string) => void;
+  /** footer hint text */
+  hint?: string;
   /** optional "covering for" arc + annotation (coworker mesh substitution) */
   cover?: MeshCover | null;
   /** nodes to ring even when no hand-off is running (e.g. the task's owner coworker) */
@@ -166,10 +172,10 @@ export function Graph({
                 <motion.path
                   d={c.d}
                   fill="none"
-                  stroke={hot ? GREEN : lit ? "#34d399" : "#d6d3d1"}
-                  strokeWidth={hot ? 2.6 : 1.4}
-                  strokeDasharray={hot ? "none" : "6 9"}
-                  animate={!reduce && !hot ? { strokeDashoffset: [0, -30] } : undefined}
+                  stroke={hot ? GREEN : lit ? "#34d399" : l.variant === "solid" ? "#a8a29e" : "#d6d3d1"}
+                  strokeWidth={hot ? Math.max(2.6, (l.weight ?? 1.4) + 1) : l.weight ?? 1.4}
+                  strokeDasharray={hot || l.variant === "solid" ? "none" : "6 9"}
+                  animate={!reduce && !hot && l.variant !== "solid" ? { strokeDashoffset: [0, -30] } : undefined}
                   transition={{ duration: 1.6, ease: "linear", repeat: Infinity }}
                 />
                 <path d={c.d} fill="none" stroke="transparent" strokeWidth={18} />
@@ -248,8 +254,13 @@ export function Graph({
             return (
               <foreignObject key={n.id} x={n.x - NW / 2} y={n.y - NH / 2} width={NW} height={NH} style={{ overflow: "visible" }}>
                 <div
+                  role={onNodeClick ? "button" : undefined}
+                  tabIndex={onNodeClick ? 0 : undefined}
+                  onClick={onNodeClick ? (e) => { e.stopPropagation(); onNodeClick(n.id); } : undefined}
+                  onKeyDown={onNodeClick ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onNodeClick(n.id); } } : undefined}
                   className={cn(
                     "flex h-full items-center gap-2 rounded-lg border px-2.5 transition-[border-color,box-shadow] duration-300",
+                    onNodeClick && "cursor-pointer hover:border-emerald-300",
                     n.kind === "off" ? "border-dashed bg-stone-100" : "bg-white",
                     hot ? "border-emerald-500 shadow-[0_0_0_3px_rgba(5,150,105,0.12),0_4px_14px_rgba(5,150,105,0.18)]" : "border-stone-200 shadow-[0_1px_2px_rgba(28,25,23,0.06)]",
                   )}
@@ -292,7 +303,7 @@ export function Graph({
       </div>
 
       <div className="relative flex flex-wrap items-center justify-between gap-2 rounded-b-2xl border-t border-stone-200 bg-white/70 px-4 py-2.5 sm:px-5">
-        <span className="font-mono text-[9.5px] uppercase tracking-[1.5px] text-stone-500">Tap a line to see what it carries</span>
+        <span className="font-mono text-[9.5px] uppercase tracking-[1.5px] text-stone-500">{hint ?? "Tap a line to see what it carries"}</span>
         {legend && (
           <span className="flex flex-wrap gap-3">
             {legend.map((l) => (

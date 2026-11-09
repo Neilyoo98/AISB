@@ -1,6 +1,6 @@
 "use client";
 // Team: add your people once → give them work → approve what they need.
-// Tabs: People (each person + their AI coworker + the AI tools they use) · Tasks (coworker mesh) · Spending (owner only).
+// Tabs: People (each person + their AI coworker + the AI tools they use) · Workflow (people ↔ AI tools ↔ customers) · Tasks (coworker mesh) · Spending (owner only).
 import { Suspense, useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Send, UserPlus, X } from "lucide-react";
@@ -12,12 +12,13 @@ import { AppHeader, PageHeader, PageState, useTitle } from "@/components/ui";
 import { PeopleTab } from "@/components/team/PeopleTab";
 import { TasksTab } from "@/components/team/TasksTab";
 import { SpendingTab } from "@/components/team/SpendingTab";
+import { WorkflowTab } from "@/components/team/WorkflowTab";
 import { PersonDrawer } from "@/components/team/PersonDrawer";
 import { AddPersonDrawer } from "@/components/team/AddPersonDrawer";
 import type { Person, PersonStatus, TeamData } from "@/components/team/types";
 
 type Me = { user: User; business: Business | null; account_role?: "owner" | "employee"; person_id?: string | null };
-type Tab = "people" | "tasks" | "spending";
+type Tab = "people" | "workflow" | "tasks" | "spending";
 const STEPS_KEY = "ss_team_steps_dismissed";
 
 function TeamInner() {
@@ -40,7 +41,7 @@ function TeamInner() {
 
   const isOwnerView = me ? (me.account_role ? me.account_role === "owner" : team?.role !== "member") : false;
   const requested = (params.get("tab") as Tab) || "people";
-  const tab: Tab = requested === "spending" && !isOwnerView ? "people" : ["people", "tasks", "spending"].includes(requested) ? requested : "people";
+  const tab: Tab = requested === "spending" && !isOwnerView ? "people" : ["people", "workflow", "tasks", "spending"].includes(requested) ? requested : "people";
 
   const loadPeople = useCallback(() => api<Person[]>("/people").then(setPeople), []);
   const loadTeam = useCallback(() => api<TeamData>("/team").then(setTeam).catch(() => setTeam(null)), []);
@@ -119,6 +120,7 @@ function TeamInner() {
   const pendingRequests = team?.requests.filter((r) => r.status === "pending").length ?? 0;
   const tabs: { id: Tab; label: string; badge?: number }[] = [
     { id: "people", label: "People" },
+    { id: "workflow", label: "Workflow" },
     { id: "tasks", label: "Tasks" },
     ...(isOwnerView ? [{ id: "spending" as Tab, label: "Spending", badge: pendingRequests }] : []),
   ];
@@ -201,8 +203,10 @@ function TeamInner() {
             busy={busy}
             act={act}
           />
+        ) : tab === "workflow" ? (
+          <WorkflowTab isOwnerView={isOwnerView} myPersonId={me.person_id ?? null} />
         ) : tab === "tasks" ? (
-          <TasksTab catalog={catalog} isOwnerView={isOwnerView} initialTaskId={params.get("task")} peopleCount={people.length} />
+          <TasksTab catalog={catalog} isOwnerView={isOwnerView} initialTaskId={params.get("task")} peopleCount={people.length} autoStartDemo={!!me.user.is_demo} />
         ) : team ? (
           <SpendingTab t={team} busy={busy} act={act} />
         ) : (

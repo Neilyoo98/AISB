@@ -543,3 +543,5 @@ from routers.coworkers import router as coworkers_router  # noqa: E402  (coworke
 app.include_router(coworkers_router)
 from routers.people import router as people_router  # noqa: E402  (merged People view: profile + login + AI tools)
 app.include_router(people_router)
+from routers.workflow import router as workflow_router  # noqa: E402  (workflow map: people, AI tools, hand-offs)
+app.include_router(workflow_router)

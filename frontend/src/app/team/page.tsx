@@ -19,7 +19,7 @@ type Tab = "queue" | "workflow" | "spending";
 const STEPS_KEY = "ss_team_steps_dismissed";
 
 function TeamInner() {
-  useTitle("Team");
+  useTitle("Collaboration");
   const router = useRouter();
   const params = useSearchParams();
   const [me, setMe] = useState<Me | null>(null);
@@ -98,10 +98,10 @@ function TeamInner() {
   return (
     <div className="min-h-dvh pb-24">
       <AppHeader businessName={me?.business?.name || team?.business_name} isDemo={me?.user.is_demo} />
-      <main className="mx-auto max-w-6xl space-y-6 px-4 pt-8">
+      <main className="page-wrap space-y-6 pt-8">
         <PageHeader
-          eyebrow="Team"
-          title={isOwnerView || !team ? "Your team's work" : `Your work at ${team.business_name}`}
+          eyebrow="Collaboration"
+          title={isOwnerView || !team ? "Collaboration" : `Collaboration at ${team.business_name}`}
           help={
             isOwnerView ? (
               <>
@@ -127,7 +127,7 @@ function TeamInner() {
 
         {showSteps && isOwnerView && <Steps onClose={dismissSteps} />}
 
-        <div role="tablist" aria-label="Team sections" className="flex gap-1 overflow-x-auto overflow-y-hidden border-b border-stone-200 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div role="tablist" aria-label="Collaboration sections" className="flex gap-1 overflow-x-auto overflow-y-hidden border-b border-stone-200 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {tabs.map((t) => (
             <button
               key={t.id}

@@ -65,7 +65,7 @@ export default function ToolPage() {
   return (
     <div className="min-h-dvh pb-16">
       {me !== undefined && <AppHeader loggedOut={!me} businessName={me?.business?.name} isDemo={me?.user.is_demo} />}
-      <main className="mx-auto max-w-5xl px-4 pt-6">
+      <main className="page-wrap pt-6">
         <nav className="text-sm text-stone-500" aria-label="Breadcrumb">
           <Link href="/tools" className="hover:underline">Discover</Link> <span aria-hidden>/</span> <span className="text-stone-800">{t?.name || "…"}</span>
         </nav>

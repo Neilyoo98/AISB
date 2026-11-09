@@ -210,7 +210,7 @@ export function WorkflowCard({ personId = null, title, href = "/team?tab=workflo
       <div className="flex flex-wrap items-end justify-between gap-2">
         <h2 className="font-display text-xl font-bold">{title}</h2>
         <Link href={href} className="flex items-center gap-1 text-sm font-semibold text-emerald-700 hover:underline">
-          Full view <ArrowRight size={14} />
+          Open Collaboration <ArrowRight size={14} />
         </Link>
       </div>
       {err ? (

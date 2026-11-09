@@ -70,7 +70,7 @@ export default function JoinPage() {
 
   return (
     <div className="min-h-dvh">
-      <header className="mx-auto flex h-16 max-w-5xl items-center px-4"><Logo /></header>
+      <header className="page-wrap flex h-16 items-center"><Logo /></header>
       <main className="mx-auto max-w-md px-4 pb-16 pt-6">
         {loadErr ? (
           <Card><p className="text-stone-700">{loadErr}</p><Link href="/" className="btn-secondary mt-5">Go to StackSmith</Link></Card>

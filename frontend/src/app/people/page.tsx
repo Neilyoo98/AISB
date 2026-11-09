@@ -95,7 +95,7 @@ export default function PeoplePage() {
   return (
     <div className="min-h-dvh pb-24">
       <AppHeader businessName={me?.business?.name || team?.business_name} isDemo={me?.user.is_demo} />
-      <main className="mx-auto max-w-6xl space-y-6 px-4 pt-8">
+      <main className="page-wrap space-y-6 pt-8">
         <PageHeader
           eyebrow="People"
           title={isOwnerView || !team ? "Your people" : `Your people at ${team.business_name}`}

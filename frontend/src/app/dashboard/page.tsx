@@ -153,7 +153,7 @@ export default function Dashboard() {
     return (
       <div className="min-h-dvh">
         <AppHeader />
-        <main className="mx-auto max-w-6xl px-4 pt-8">{err ? <PageState kind="error" message={err} onRetry={load} /> : <PageState kind="loading" />}</main>
+        <main className="page-wrap pt-8">{err ? <PageState kind="error" message={err} onRetry={load} /> : <PageState kind="loading" />}</main>
       </div>
     );
 
@@ -305,7 +305,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-dvh pb-24">
       <AppHeader businessName={b?.name} isDemo={user.is_demo} />
-      <main className="mx-auto max-w-6xl px-4 pt-8">
+      <main className="page-wrap pt-8">
         <PageHeader
           eyebrow={`Welcome back, ${firstName}`}
           title={b?.name}
@@ -501,7 +501,7 @@ function EmployeeDashboard({ d, me, onToggle }: { d: Dash; me: Me; onToggle: (t:
   return (
     <div className="min-h-dvh pb-24">
       <AppHeader businessName={b?.name} isDemo={me.user.is_demo} />
-      <main className="mx-auto max-w-5xl px-4 pt-8">
+      <main className="page-wrap pt-8">
         <PageHeader
           eyebrow={person?.role || "Employee"}
           title={`Hi ${firstName}${b?.name ? ` — ${b.name}` : ""}`}

@@ -93,10 +93,10 @@ function LoginInner() {
 
   return (
     <div className="min-h-dvh">
-      <header className="mx-auto flex h-16 max-w-6xl items-center px-4">
+      <header className="page-wrap flex h-16 items-center">
         <Logo />
       </header>
-      <main className="mx-auto grid max-w-6xl gap-8 px-4 pb-16 pt-4 lg:grid-cols-[1.25fr_1fr] lg:gap-12 lg:pt-10">
+      <main className="page-wrap grid gap-8 pb-16 pt-4 lg:grid-cols-[1.25fr_1fr] lg:gap-12 lg:pt-10">
         <section aria-labelledby="samples">
           <p className="eyebrow">Sample businesses</p>
           <h1 id="samples" className="mt-2 font-display text-3xl font-bold tracking-tight sm:text-4xl">
@@ -258,7 +258,7 @@ function LoginInner() {
                     value={form.invite}
                     onChange={(e) => setForm({ ...form, invite: e.target.value })}
                   />
-                  <p className="mt-1 text-xs text-stone-500">Don&apos;t have one? Ask the owner to create an invite link on their Team page.</p>
+                  <p className="mt-1 text-xs text-stone-500">Don&apos;t have one? Ask the owner to create an invite link on their People page.</p>
                 </div>
               )}
               {err && (

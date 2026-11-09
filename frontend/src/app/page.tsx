@@ -22,7 +22,7 @@ export default function Home() {
     <div className="min-h-dvh">
       <section className="relative isolate overflow-hidden">
         <HeroSlideshow />
-        <header className="relative mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
+        <header className="page-wrap relative flex h-16 items-center justify-between">
           <Logo light />
           <div className="flex items-center gap-1">
             <Link href="/tools" className="btn px-3 text-white/90 hover:bg-white/10 hover:text-white">Discover tools</Link>
@@ -30,7 +30,7 @@ export default function Home() {
           </div>
         </header>
 
-        <div className="relative mx-auto max-w-6xl px-4 pb-24 pt-14 sm:pb-32 sm:pt-24">
+        <div className="page-wrap relative pb-24 pt-14 sm:pb-32 sm:pt-24">
           <p className="chip mb-5 border-white/25 bg-white/10 text-white backdrop-blur">For restaurants, salons, trades, shops &amp; every local business</p>
           <h1 className="max-w-3xl font-display text-4xl font-bold leading-[1.05] tracking-tight text-white sm:text-6xl">
             The right AI tools for your business, picked, priced and planned.
@@ -61,7 +61,7 @@ export default function Home() {
 
       <main>
         <section className="border-b border-stone-200 bg-white">
-          <div className="mx-auto max-w-6xl px-4 py-14">
+          <div className="page-wrap py-14">
             <h2 className="eyebrow">How it works</h2>
             <ol className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {steps.map((s, i) => (
@@ -80,7 +80,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-6xl px-4 py-14">
+        <section className="page-wrap py-14">
           <h2 className="max-w-xl font-display text-2xl font-bold sm:text-3xl">Not another directory of thousands of AI tools.</h2>
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {trust.map((t) => (

@@ -106,7 +106,7 @@ export default function WarRoom() {
   return (
     <div className="min-h-dvh pb-24">
       <AppHeader businessName={me?.business?.name} isDemo={me?.user.is_demo} />
-      <div className="mx-auto grid max-w-6xl gap-8 px-4 pt-6 lg:grid-cols-[230px_1fr]">
+      <div className="page-wrap grid gap-8 pt-6 lg:grid-cols-[230px_1fr]">
         <aside className="lg:sticky lg:top-20 lg:h-fit">
           <div className="flex items-center justify-between lg:block">
             <div>

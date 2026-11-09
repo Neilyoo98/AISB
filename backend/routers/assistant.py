@@ -22,7 +22,8 @@ router = APIRouter()
 
 MAX_MESSAGE = 500
 MAX_HISTORY = 4
-MAX_VISIBLE = 2500
+MAX_VISIBLE = 4000
+MAX_PAGE_ITEMS = 40  # cap on list items across PAGE_DATA
 MAX_ANSWER = 900
 
 # ---------------- pure helpers (unit-tested) ----------------
@@ -83,9 +84,10 @@ def clean_task_text(text: str) -> str:
 
 def page_name(path: str) -> str:
     p = (path or "/").split("?")[0]
-    for prefix, name in [("/dashboard", "Dashboard"), ("/war-room", "War Room"), ("/agents", "Agents"),
+    for prefix, name in [("/dashboard", "Dashboard"), ("/war-room", "War Room"), ("/agents", "Collaboration"),
                          ("/tools/", "Tool details"), ("/tools", "Discover"), ("/compare", "Compare"),
-                         ("/team", "Team"), ("/profile", "Profile"), ("/onboard", "Describe your business")]:
+                         ("/team/tasks/", "Task"), ("/team", "Collaboration"), ("/people", "People"),
+                         ("/profile", "Profile"), ("/onboard", "Describe your business")]:
         if p.startswith(prefix):
             return name
     return "StackSmith"
@@ -96,15 +98,17 @@ PAGE_HELP = {
                  "Tick tasks as you finish them, or publish your own task to get tool suggestions.",
     "War Room": "Here StackSmith's AI advisors analyze your business: they put a dollar cost on each problem, look for "
                 "tools, debate the options, then you approve the stack you want.",
-    "Agents": "This page shows how the advisor agents passed work to each other during your analysis, and how your "
-              "adopted tools hand work to each other during a normal day. Press play to step through it.",
+    "Collaboration": "Give your team tasks and track them: the task queue shows who each task went to and how far along "
+                     "it is, Workflow shows who uses which AI tools and hands work to whom, and Spending covers tool "
+                     "requests and your monthly AI limit.",
+    "Task": "One team task: who it was assigned to and why, how the AI coworkers planned it with your tools, ready-to-use "
+            "drafts, and the steps to tick off.",
+    "People": "Everyone on your team: their skills, whether they're available, the AI tools they use, and invite links.",
     "Discover": "Browse verified AI tools. Search in plain words, filter by business type, open Details for a short "
                 "summary and the vendor's website, and Adopt a tool to add it to your workflow.",
     "Tool details": "A summary of one tool: what it does, price, setup time, security facts we could verify, and its website.",
     "Compare": "Compare 2-4 tools side by side: overall score, total cost over time, and whether they work with the "
                "tools you already use. Move the sliders to weight what matters to you.",
-    "Team": "Invite your staff, approve or deny the tools they request, keep an eye on your monthly AI spend, and see "
-            "licenses and tools people are already using.",
     "Profile": "Edit your business details and description. When you save, Dashboard, Discover and Compare use them.",
     "Describe your business": "Tell StackSmith about your business in a few sentences, then the advisors start their analysis.",
     "StackSmith": "StackSmith helps small businesses find, compare and adopt AI tools that pay for themselves.",
@@ -128,6 +132,7 @@ class Turn(BaseModel):
 
 class PageContext(BaseModel):
     path: str = Field(default="/", max_length=200)
+    query: str = Field(default="", max_length=400)
     page_title: str = Field(default="", max_length=200)
     visible_text: str = Field(default="", max_length=20000)  # trimmed server-side to MAX_VISIBLE
 

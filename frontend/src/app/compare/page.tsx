@@ -96,7 +96,7 @@ function CompareInner() {
   return (
     <div className="min-h-dvh pb-16">
       {me !== undefined && <AppHeader loggedOut={!me} businessName={me?.business?.name} isDemo={me?.user.is_demo} />}
-      <main className="mx-auto max-w-6xl space-y-6 px-4 pt-8">
+      <main className="page-wrap space-y-6 pt-8">
         <PageHeader
           eyebrow="Compare"
           title="Side-by-side comparison"

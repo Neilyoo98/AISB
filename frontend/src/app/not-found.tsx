@@ -4,7 +4,7 @@ import { Logo } from "@/components/ui";
 export default function NotFound() {
   return (
     <div className="min-h-dvh">
-      <header className="mx-auto flex h-16 max-w-6xl items-center px-4">
+      <header className="page-wrap flex h-16 items-center">
         <Logo />
       </header>
       <main className="mx-auto grid max-w-md place-items-center px-4 py-24 text-center">

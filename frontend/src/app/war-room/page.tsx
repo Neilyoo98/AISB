@@ -33,7 +33,7 @@ export default function WarRoomIndex() {
   return (
     <div className="min-h-dvh">
       <AppHeader isDemo={empty?.user.is_demo} />
-      <main className="mx-auto max-w-6xl px-4 pt-8">
+      <main className="page-wrap pt-8">
         {err ? (
           <PageState kind="error" message={err} onRetry={load} />
         ) : empty ? (

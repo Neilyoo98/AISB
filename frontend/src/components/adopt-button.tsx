@@ -7,7 +7,7 @@ import type { Adoption } from "@/lib/types";
 import { AnchoredPopover, Spinner } from "@/components/ui";
 
 /* One shared store per page, so every Adopt / Request button stays in sync with a single fetch.
-   Owners adopt tools directly; team members send a request the owner approves on the Team page. */
+   Owners adopt tools directly; team members send a request the owner approves on the Collaboration page. */
 type Role = "admin" | "member" | null;
 type State = { status: "idle" | "loading" | "ready" | "anon"; adopted: Set<string>; role: Role; requested: Set<string> };
 let state: State = { status: "idle", adopted: new Set(), role: null, requested: new Set() };
@@ -134,7 +134,7 @@ export function AdoptButton({ toolId, compact = false, className }: { toolId: st
       if (err) setMsg({ ok: false, text: err });
       else {
         setAsking(false);
-        setMsg({ ok: true, text: "Sent. Your owner will see it on the Team page." });
+        setMsg({ ok: true, text: "Sent. Your owner will see it on the Collaboration page." });
       }
     };
     return (

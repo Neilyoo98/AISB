@@ -59,9 +59,9 @@ export default function TaskPage() {
   return (
     <div className="min-h-dvh pb-28">
       <AppHeader businessName={me?.business?.name} isDemo={me?.user.is_demo} />
-      <main className="mx-auto max-w-6xl space-y-6 px-4 pt-6">
+      <main className="page-wrap space-y-6 pt-6">
         <Link href="/team?tab=queue" className="inline-flex items-center gap-1 text-sm font-semibold text-emerald-700 hover:underline">
-          <ArrowLeft size={14} /> Task queue
+          <ArrowLeft size={14} /> Collaboration
         </Link>
 
         {view.loading ? (

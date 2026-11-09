@@ -21,7 +21,7 @@ const PAGES: [string, string, string[]][] = [
   ["/tools/", "Tool details", ["Is this tool right for me?", "What does Trust & risk mean?", "How long does setup take?"]],
   ["/tools", "Discover", ["Which tool answers my phone?", "What's a cheap way to get more reviews?", "How do I compare tools?"]],
   ["/compare", "Compare", ["Which of these should I pick?", "What does the overall score mean?", "Why is total cost higher than the price?"]],
-  ["/team", "Team", ["How do I add an employee?", "How do tool requests work?", "What is the spend cap?"]],
+  ["/team", "Collaboration", ["How do I add an employee?", "How do tool requests work?", "What is the spend cap?"]],
   ["/profile", "Profile", ["What happens when I save?", "Which details matter most?", "Should I re-run the analysis?"]],
   ["/onboard", "Describe your business", ["What should I write here?", "What happens after I submit?", "Is my information private?"]],
 ];

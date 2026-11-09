@@ -8,9 +8,13 @@
 
 html,
 body {
+  min-height: 100%;
   background: #fafaf7;
   color: #1c1917;
   -webkit-tap-highlight-color: transparent;
+}
+body {
+  min-height: 100dvh;
 }
 
 @layer components {
@@ -37,6 +41,10 @@ body {
   }
   .eyebrow {
     @apply text-xs font-semibold uppercase tracking-[0.08em] text-stone-500;
+  }
+  /* Shared page width: uses wide screens instead of leaving empty margins. */
+  .page-wrap {
+    @apply mx-auto w-full max-w-[1600px] px-4 sm:px-6 lg:px-8;
   }
   .chip {
     @apply inline-flex items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-0.5 text-xs font-medium text-stone-700;

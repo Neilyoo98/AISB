@@ -96,7 +96,7 @@ function DiscoverInner() {
   return (
     <div className="min-h-dvh pb-32">
       {me !== undefined && <AppHeader loggedOut={!me} businessName={me?.business?.name} isDemo={me?.user.is_demo} />}
-      <main className="mx-auto max-w-6xl px-4 pt-8">
+      <main className="page-wrap pt-8">
         <PageHeader
           eyebrow="Discover"
           title="Find AI tools for your business"
@@ -163,7 +163,7 @@ function DiscoverInner() {
         ) : shown.length === 0 ? (
           <PageState kind="empty" message="No tools match those filters. Try clearing one." />
         ) : (
-          <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
             {shown.map((t) => {
               const on = picked.includes(t.id);
               const m = toolType(t.category);

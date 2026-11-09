@@ -3,7 +3,7 @@ import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { AlertTriangle, Check, CircleHelp, Compass, Contact, Hammer, LayoutDashboard, LogOut, Radio, Star, UserRound, Users2 } from "lucide-react";
+import { AlertTriangle, Check, CircleHelp, Compass, Contact, Hammer, Handshake, LayoutDashboard, LogOut, Radio, Star, UserRound } from "lucide-react";
 import { api, cn } from "@/lib/api";
 
 export function Logo({ className, light }: { className?: string; light?: boolean }) {
@@ -32,18 +32,18 @@ export function AppHeader({ businessName, isDemo, loggedOut }: { businessName?: 
         { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
         // employees don't run business analyses, so the War Room is owner-only
         ...(accountRole === "employee" ? [] : [{ href: "/war-room", label: "War Room", icon: Radio }]),
-        { href: "/team", label: "Team", icon: Users2 },
+        { href: "/team", label: "Collaboration", icon: Handshake },
         { href: "/people", label: "People", icon: Contact },
         { href: "/tools", label: "Discover", icon: Compass },
         { href: "/profile", label: "Profile", icon: UserRound },
       ];
   return (
     <header className="sticky top-0 z-30 border-b border-stone-200/80 bg-[#fafaf7]/90 backdrop-blur [transform:translateZ(0)]">
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-3 px-4">
+      <div className="page-wrap flex h-14 items-center justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
           <Logo />
           {businessName && (
-            <span className="hidden min-w-0 max-w-[14rem] truncate border-l border-stone-300 pl-3 text-sm text-stone-600 2xl:block">{businessName}</span>
+            <span className="hidden min-w-0 max-w-[14rem] truncate border-l border-stone-300 pl-3 text-sm text-stone-600 xl:block">{businessName}</span>
           )}
         </div>
         <nav className="flex items-center gap-0.5">
